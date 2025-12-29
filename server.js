@@ -10,14 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 // Security middleware
 app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            scriptSrc: ["'self'", "'unsafe-inline'"],
-            connectSrc: ["'self'", "https://openrouter.ai"]
-        }
-    }
+    contentSecurityPolicy: false // Disable CSP temporarily to fix JavaScript issues
 }));
 
 app.use(cors());
