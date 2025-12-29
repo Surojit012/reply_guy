@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install Reply Guy Extension</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .install-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .install-hero {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .install-hero h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #ff6b35 0%, #f7931e 25%, #ffcc02 50%, #ff6b35 75%, #f7931e 100%);
+            background-size: 200% 200%;
+            animation: gradientText 3s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+        
+        .install-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .install-method {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            box-shadow: 0 8px 32px rgba(255, 107, 53, 0.2);
+            text-align: center;
+        }
+        
+        .method-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .method-title {
+            color: #ff6b35;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .method-description {
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .install-btn {
+            background: linear-gradient(45deg, #ff6b35 0%, #f7931e 50%, #ffcc02 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+        
+        .install-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.6);
+        }
+        
+        .install-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .manual-steps {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 204, 2, 0.3);
+        }
+        
+        .manual-steps h3 {
+            color: #ffcc02;
+            margin-bottom: 15px;
+        }
+        
+        .manual-steps ol {
+            padding-left: 20px;
+        }
+        
+        .manual-steps li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .warning-box h4 {
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: #ffcc02;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: rgba(255, 204, 2, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 204, 2, 0.3);
+        }
+        
+        .back-link:hover {
+            background: rgba(255, 204, 2, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .install-methods {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="install-container">
+            <a href="/" class="back-link">← Back to Reply Guy</a>
+            
+            <div class="install-hero">
+                <h1>🔥 Install Reply Guy Extension</h1>
+                <p>Get AI-powered Twitter replies directly in your browser - completely free!</p>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Security Notice</h4>
+                <p>Chrome will show a security warning because this extension isn't from the Chrome Web Store. This is normal for direct installations. The extension is safe and open-source.</p>
+            </div>
+
+            <div class="install-methods">
+                <div class="install-method">
+                    <div class="method-icon">⚡</div>
+                    <h3 class="method-title">Quick Install</h3>
+                    <p class="method-description">One-click installation directly from your browser. Chrome will ask for permission to install.</p>
+                    <button id="quick-install-btn" class="install-btn">Install Extension</button>
+                    <div id="quick-install-status" style="margin-top: 15px;"></div>
+                </div>
+
+                <div class="install-method">
+                    <div class="method-icon">📦</div>
+                    <h3 class="method-title">Manual Install</h3>
+                    <p class="method-description">Download and install manually using Chrome's developer mode. Works on all systems.</p>
+                    <a href="/extension/reply-guy-extension.zip" class="install-btn" download>Download Extension</a>
+                </div>
+            </div>
+
+            <div class="manual-steps">
+                <h3>📋 Manual Installation Steps</h3>
+                <ol>
+                    <li><strong>Download</strong> the extension ZIP file using the button above</li>
+                    <li><strong>Extract</strong> the ZIP file to a folder on your computer</li>
+                    <li><strong>Open Chrome</strong> and go to <code>chrome://extensions/</code></li>
+                    <li><strong>Enable "Developer mode"</strong> using the toggle in the top right</li>
+                    <li><strong>Click "Load unpacked"</strong> and select the extracted folder</li>
+                    <li><strong>The extension is now installed!</strong> Look for the Reply Guy icon in your toolbar</li>
+                </ol>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <h3 style="color: #ff6b35; margin-bottom: 20px;">🚀 How to Use</h3>
+                <div style="background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 25px; text-align: left;">
+                    <ol>
+                        <li><strong>Visit Twitter/X</strong> and find a tweet you want to reply to</li>
+                        <li><strong>Click the 🔥 button</strong> that appears on tweets, or use the extension popup</li>
+                        <li><strong>Choose your style</strong> (length, tone, writing style)</li>
+                        <li><strong>Generate your reply</strong> and paste it directly to Twitter</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <p style="color: #ffcc02;">Need help? <a href="/" style="color: #ff6b35;">Visit our main site</a> or check the extension documentation.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="extension-installer.js"></script>
+</body>
+</html>
