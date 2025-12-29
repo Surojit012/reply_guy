@@ -273,12 +273,6 @@ document.addEventListener('DOMContentLoaded', () => {
     rateLimitInfo.className = 'rate-limit-info';
     rateLimitInfo.textContent = '⚡ Free service with rate limits: 10 requests per minute';
     container.appendChild(rateLimitInfo);
-    
-    // Extension download functionality
-    const downloadBtn = document.getElementById('download-extension-btn');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', downloadExtension);
-    }
 });
 
 async function downloadExtension() {
