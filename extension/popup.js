@@ -1,6 +1,6 @@
 class ReplyGuyExtension {
     constructor() {
-        this.serverUrl = 'https://reply-ldxtkzltr-surojit-guhas-projects.vercel.app/'; // Change to your production URL
+        this.serverUrl = 'https://reply-guy-eta.vercel.app'; // Production URL
         this.initializeElements();
         this.bindEvents();
         this.loadSettings();
