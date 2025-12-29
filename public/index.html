@@ -1763,30 +1763,74 @@ class TweetReplyGenerator {
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing TweetReplyGenerator');
-    
-    // Debug: Check if elements exist
     const generateBtn = document.getElementById('generate-btn');
     const tweetInput = document.getElementById('tweet-input');
+    const loading = document.getElementById('loading');
+    const outputSection = document.getElementById('output-section');
+    const generatedReply = document.getElementById('generated-reply');
     
-    console.log('Generate button found:', generateBtn);
-    console.log('Tweet input found:', tweetInput);
+    generateBtn.addEventListener('click', async () => {
+        const tweet = tweetInput.value.trim();
+        
+        if (!tweet) {
+            alert('Please paste a tweet first');
+            return;
+        }
+        
+        // Show loading
+        loading.style.display = 'block';
+        generateBtn.disabled = true;
+        
+        try {
+            const preferences = {
+                length: document.getElementById('reply-length').value,
+                style: document.getElementById('writing-style').value,
+                tone: document.getElementById('tone').value,
+                emoji: document.getElementById('include-emoji').checked
+            };
+
+            const response = await fetch('/api/generate-reply', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ tweet, preferences })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to generate reply');
+            }
+
+            // Clean and display result
+            let cleanedReply = result.reply || '';
+            cleanedReply = cleanedReply.replace(/^["']|["']$/g, '').trim();
+            
+            generatedReply.textContent = cleanedReply;
+            outputSection.style.display = 'block';
+            
+        } catch (error) {
+            alert('Error: ' + error.message);
+        } finally {
+            loading.style.display = 'none';
+            generateBtn.disabled = false;
+        }
+    });
     
-    if (generateBtn) {
-        generateBtn.addEventListener('click', () => {
-            console.log('Generate button clicked!');
-            alert('Button clicked! JavaScript is working.');
+    // Copy button
+    const copyBtn = document.getElementById('copy-btn');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(generatedReply.textContent);
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => copyBtn.textContent = 'Copy Reply', 2000);
+            } catch (error) {
+                alert('Failed to copy to clipboard');
+            }
         });
     }
-    
-    new TweetReplyGenerator();
-    
-    // Add rate limit info
-    const container = document.querySelector('.container');
-    const rateLimitInfo = document.createElement('div');
-    rateLimitInfo.className = 'rate-limit-info';
-    rateLimitInfo.textContent = '⚡ Free service with rate limits: 10 requests per minute';
-    container.appendChild(rateLimitInfo);
 });
 
 async function downloadExtension() {
