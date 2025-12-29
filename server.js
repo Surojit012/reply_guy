@@ -51,6 +51,23 @@ app.get('/install', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'install-extension.html'));
 });
 
+app.get('/test.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'test.html'));
+});
+
+// Serve other static files
+app.get('/script.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'script.js'));
+});
+
+app.get('/styles.css', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'styles.css'));
+});
+
+app.get('/extension-installer.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'extension-installer.js'));
+});
+
 // Serve extension files for download
 app.get('/reply-guy-extension.zip', (req, res) => {
     const filePath = path.join(__dirname, 'public', 'reply-guy-extension.zip');
