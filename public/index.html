@@ -1831,6 +1831,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    
+    // Regenerate button
+    const regenerateBtn = document.getElementById('regenerate-btn');
+    if (regenerateBtn) {
+        regenerateBtn.addEventListener('click', () => {
+            // Trigger the same generate function
+            generateBtn.click();
+        });
+    }
 });
 
 async function downloadExtension() {
