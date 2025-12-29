@@ -8,6 +8,26 @@
   ],
   "routes": [
     {
+      "src": "/script.js",
+      "dest": "/public/script.js"
+    },
+    {
+      "src": "/styles.css", 
+      "dest": "/public/styles.css"
+    },
+    {
+      "src": "/extension-installer.js",
+      "dest": "/public/extension-installer.js"
+    },
+    {
+      "src": "/reply-guy-extension.zip",
+      "dest": "/public/reply-guy-extension.zip"
+    },
+    {
+      "src": "/reply-guy-extension.crx",
+      "dest": "/public/reply-guy-extension.crx"
+    },
+    {
       "src": "/(.*)",
       "dest": "/server.js"
     }
