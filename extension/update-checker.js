@@ -2,7 +2,7 @@
 class UpdateChecker {
     constructor() {
         this.currentVersion = chrome.runtime.getManifest().version;
-        this.updateCheckUrl = 'http://localhost:3000/api/extension-version'; // Change to your production URL
+        this.updateCheckUrl = 'https://reply-ldxtkzltr-surojit-guhas-projects.vercel.app//api/extension-version'; // Change to your production URL
         this.checkInterval = 24 * 60 * 60 * 1000; // Check daily
         
         this.init();

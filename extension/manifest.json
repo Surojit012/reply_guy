@@ -10,7 +10,7 @@
     "notifications"
   ],
   "host_permissions": [
-    "http://localhost:3000/*",
+    "https://reply-ldxtkzltr-surojit-guhas-projects.vercel.app//*",
     "https://your-domain.com/*",
     "https://twitter.com/*",
     "https://x.com/*"

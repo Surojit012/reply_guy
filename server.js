@@ -58,6 +58,17 @@ app.get('/install', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'install-extension.html'));
 });
 
+// Serve extension files for download
+app.get('/reply-guy-extension.zip', (req, res) => {
+    const filePath = path.join(__dirname, 'public', 'reply-guy-extension.zip');
+    res.download(filePath, 'reply-guy-extension.zip');
+});
+
+app.get('/reply-guy-extension.crx', (req, res) => {
+    const filePath = path.join(__dirname, 'public', 'reply-guy-extension.crx');
+    res.download(filePath, 'reply-guy-extension.crx');
+});
+
 // AI request handler
 async function makeOpenRouterRequest(messages, maxTokens = 500) {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -190,7 +201,77 @@ Make the reply engaging, relevant, and natural. Don't mention that you're follow
     }
 });
 
-// Extension version check endpoint
+// Chatbot FAQ endpoint
+app.post('/api/chatbot', strictLimiter, async (req, res) => {
+    try {
+        const { message } = req.body;
+
+        if (!message || message.trim().length === 0) {
+            return res.status(400).json({ error: 'Message is required' });
+        }
+
+        if (message.length > 500) {
+            return res.status(400).json({ error: 'Message is too long (max 500 characters)' });
+        }
+
+        const messages = [
+            {
+                role: 'system',
+                content: `You are a helpful assistant for Reply Guy, an AI-powered Twitter reply generator. Answer questions about:
+
+ABOUT REPLY GUY:
+- Reply Guy is a free AI tool that generates personalized Twitter replies
+- It analyzes tweets and creates replies based on user preferences (length, style, tone, emojis)
+- Available as both a website and Chrome extension
+- Uses AI to understand tweet context and generate appropriate responses
+
+FEATURES:
+- Tweet analysis to understand context and purpose
+- Customizable reply length (ultra-short, short, medium, long)
+- Multiple writing styles (casual, professional, friendly, witty, supportive, informative)
+- Various tones (neutral, positive, enthusiastic, empathetic, humorous, thoughtful)
+- Optional emoji inclusion
+- Chrome extension for direct Twitter integration
+
+INSTALLATION:
+- Website: Just visit the site and start using
+- Extension: Download ZIP file, extract, go to chrome://extensions/, enable developer mode, load unpacked
+- No Chrome Web Store account needed - direct installation
+- Free to use with rate limits (10 requests per minute)
+
+USAGE:
+- Paste tweet text into the input field
+- Choose your preferences (length, style, tone)
+- Click "Generate Reply" to create response
+- Copy and paste to Twitter
+- Extension users can auto-fill directly on Twitter
+
+TECHNICAL:
+- Uses OpenRouter API with Mistral AI model
+- Secure backend handles API calls
+- Rate limited for fair usage
+- No user data stored
+- Open source and safe
+
+Keep answers concise, helpful, and friendly. If asked about something not related to Reply Guy, politely redirect to Reply Guy topics.`
+            },
+            {
+                role: 'user',
+                content: message
+            }
+        ];
+
+        const response = await makeOpenRouterRequest(messages, 200);
+        
+        res.json({ response });
+
+    } catch (error) {
+        console.error('Chatbot error:', error);
+        res.status(500).json({ 
+            error: 'Sorry, I\'m having trouble right now. Please try again in a moment.' 
+        });
+    }
+});
 app.get('/api/extension-version', (req, res) => {
     res.json({
         version: '1.0.0', // Update this when you release new versions
