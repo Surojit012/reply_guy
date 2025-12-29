@@ -1478,11 +1478,14 @@ textarea {
     <script>
 class TweetReplyGenerator {
     constructor() {
+        console.log('TweetReplyGenerator constructor called');
         this.initializeElements();
         this.bindEvents();
+        console.log('TweetReplyGenerator initialized');
     }
 
     initializeElements() {
+        console.log('Initializing elements...');
         this.tweetInput = document.getElementById('tweet-input');
         this.analyzeBtn = document.getElementById('analyze-btn');
         this.generateBtn = document.getElementById('generate-btn');
@@ -1499,13 +1502,30 @@ class TweetReplyGenerator {
         this.writingStyle = document.getElementById('writing-style');
         this.tone = document.getElementById('tone');
         this.includeEmoji = document.getElementById('include-emoji');
+        
+        console.log('Elements found:', {
+            tweetInput: !!this.tweetInput,
+            generateBtn: !!this.generateBtn,
+            analyzeBtn: !!this.analyzeBtn
+        });
     }
 
     bindEvents() {
-        this.analyzeBtn.addEventListener('click', () => this.analyzeTweet());
-        this.generateBtn.addEventListener('click', () => this.generateReply());
-        this.copyBtn.addEventListener('click', () => this.copyReply());
-        this.regenerateBtn.addEventListener('click', () => this.generateReply());
+        console.log('Binding events...');
+        if (this.analyzeBtn) {
+            this.analyzeBtn.addEventListener('click', () => this.analyzeTweet());
+            console.log('Analyze button event bound');
+        }
+        if (this.generateBtn) {
+            this.generateBtn.addEventListener('click', () => this.generateReply());
+            console.log('Generate button event bound');
+        }
+        if (this.copyBtn) {
+            this.copyBtn.addEventListener('click', () => this.copyReply());
+        }
+        if (this.regenerateBtn) {
+            this.regenerateBtn.addEventListener('click', () => this.generateReply());
+        }
     }
 
     showLoading() {
@@ -1743,6 +1763,22 @@ class TweetReplyGenerator {
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing TweetReplyGenerator');
+    
+    // Debug: Check if elements exist
+    const generateBtn = document.getElementById('generate-btn');
+    const tweetInput = document.getElementById('tweet-input');
+    
+    console.log('Generate button found:', generateBtn);
+    console.log('Tweet input found:', tweetInput);
+    
+    if (generateBtn) {
+        generateBtn.addEventListener('click', () => {
+            console.log('Generate button clicked!');
+            alert('Button clicked! JavaScript is working.');
+        });
+    }
+    
     new TweetReplyGenerator();
     
     // Add rate limit info
