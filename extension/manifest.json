@@ -10,8 +10,7 @@
     "notifications"
   ],
   "host_permissions": [
-    "https://reply-ldxtkzltr-surojit-guhas-projects.vercel.app//*",
-    "https://your-domain.com/*",
+    "https://reply-guy-eta.vercel.app/*",
     "https://twitter.com/*",
     "https://x.com/*"
   ],

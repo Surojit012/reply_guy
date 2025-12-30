@@ -111,21 +111,39 @@ class ReplyGuyExtension {
     }
 
     async makeAPIRequest(endpoint, data) {
-        const response = await fetch(`${this.serverUrl}/api/${endpoint}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        });
+        console.log(`Making API request to: ${this.serverUrl}/api/${endpoint}`);
+        console.log('Request data:', data);
+        
+        try {
+            const response = await fetch(`${this.serverUrl}/api/${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
 
-        const result = await response.json();
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
 
-        if (!response.ok) {
-            throw new Error(result.error || `Request failed: ${response.status}`);
+            const result = await response.json();
+            console.log('Response data:', result);
+
+            if (!response.ok) {
+                throw new Error(result.error || `Request failed: ${response.status}`);
+            }
+
+            return result;
+        } catch (error) {
+            console.error('API Request Error:', error);
+            console.error('Error details:', {
+                message: error.message,
+                stack: error.stack,
+                serverUrl: this.serverUrl,
+                endpoint: endpoint
+            });
+            throw error;
         }
-
-        return result;
     }
 
     // Clean AI response from unwanted tags and artifacts
