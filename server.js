@@ -311,6 +311,28 @@ app.get('/api/extension-version', (req, res) => {
     });
 });
 
+// Debug endpoint for extension testing
+app.get('/api/debug', (req, res) => {
+    res.json({
+        message: 'Extension debug endpoint working',
+        timestamp: new Date().toISOString(),
+        headers: req.headers,
+        method: req.method,
+        url: req.url
+    });
+});
+
+app.post('/api/debug', (req, res) => {
+    res.json({
+        message: 'Extension POST debug endpoint working',
+        timestamp: new Date().toISOString(),
+        headers: req.headers,
+        method: req.method,
+        url: req.url,
+        body: req.body
+    });
+});
+
 // Health check endpoint with detailed status
 app.get('/api/health', (req, res) => {
     const healthStatus = {

@@ -45,6 +45,42 @@ class ReplyGuyExtension {
         [this.replyLength, this.writingStyle, this.tone, this.includeEmoji].forEach(element => {
             element.addEventListener('change', () => this.saveSettings());
         });
+        
+        // Add debug test button
+        const debugBtn = document.createElement('button');
+        debugBtn.textContent = 'Test API';
+        debugBtn.style.margin = '5px';
+        debugBtn.style.fontSize = '12px';
+        debugBtn.addEventListener('click', () => this.testAPIConnection());
+        document.querySelector('.button-group').appendChild(debugBtn);
+    }
+    
+    async testAPIConnection() {
+        console.log('Testing API connection to:', this.serverUrl);
+        try {
+            const response = await fetch(`${this.serverUrl}/api/debug`, {
+                method: 'GET'
+            });
+            
+            console.log('Response status:', response.status);
+            console.log('Response type:', response.headers.get('content-type'));
+            
+            const text = await response.text();
+            console.log('Raw response:', text);
+            
+            try {
+                const json = JSON.parse(text);
+                console.log('Parsed JSON:', json);
+                this.showSuccess('API connection successful!');
+            } catch (parseError) {
+                console.error('JSON parse error:', parseError);
+                console.log('Response was HTML, first 200 chars:', text.substring(0, 200));
+                this.showError('API returned HTML instead of JSON. Check console.');
+            }
+        } catch (error) {
+            console.error('API test failed:', error);
+            this.showError('API connection failed: ' + error.message);
+        }
     }
 
     async loadSettings() {
