@@ -38,21 +38,41 @@ const strictLimiter = rateLimit({
 
 app.use(limiter);
 
-// Serve static files
+// Serve static files with error handling
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    try {
+        res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    } catch (error) {
+        console.error('Error serving index.html:', error);
+        res.status(500).send('Server Error: Unable to load main page');
+    }
 });
 
 app.get('/privacy', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'privacy.html'));
+    try {
+        res.sendFile(path.join(__dirname, 'public', 'privacy.html'));
+    } catch (error) {
+        console.error('Error serving privacy.html:', error);
+        res.status(500).send('Server Error: Unable to load privacy page');
+    }
 });
 
 app.get('/install', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'install-extension.html'));
+    try {
+        res.sendFile(path.join(__dirname, 'public', 'install-extension.html'));
+    } catch (error) {
+        console.error('Error serving install-extension.html:', error);
+        res.status(500).send('Server Error: Unable to load installation page');
+    }
 });
 
 app.get('/test.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'test.html'));
+    try {
+        res.sendFile(path.join(__dirname, 'public', 'test.html'));
+    } catch (error) {
+        console.error('Error serving test.html:', error);
+        res.status(500).send('Server Error: Unable to load test page');
+    }
 });
 
 // Serve other static files
@@ -291,9 +311,19 @@ app.get('/api/extension-version', (req, res) => {
     });
 });
 
-// Health check endpoint
+// Health check endpoint with detailed status
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'OK', timestamp: new Date().toISOString() });
+    const healthStatus = {
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+        version: '1.0.0',
+        environment: process.env.NODE_ENV || 'development',
+        uptime: process.uptime(),
+        memory: process.memoryUsage(),
+        apiKey: process.env.OPENROUTER_API_KEY ? 'configured' : 'missing'
+    };
+    
+    res.json(healthStatus);
 });
 
 // Extension download endpoint
@@ -334,7 +364,29 @@ app.use((req, res) => {
     res.status(404).json({ error: 'Endpoint not found' });
 });
 
+// Validate environment variables on startup
+function validateEnvironment() {
+    const required = ['OPENROUTER_API_KEY'];
+    const missing = required.filter(key => !process.env[key]);
+    
+    if (missing.length > 0) {
+        console.error('❌ Missing required environment variables:', missing);
+        console.error('💡 Please check your Vercel environment variables');
+        // Don't exit in production, just log the error
+        if (process.env.NODE_ENV !== 'production') {
+            process.exit(1);
+        }
+    } else {
+        console.log('✅ All required environment variables are configured');
+    }
+}
+
+// Validate on startup
+validateEnvironment();
+
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📱 Open http://localhost:${PORT} to view the app`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`⚡ API Key: ${process.env.OPENROUTER_API_KEY ? 'configured' : 'missing'}`);
 });
