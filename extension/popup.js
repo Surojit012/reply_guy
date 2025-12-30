@@ -47,42 +47,6 @@ class ReplyGuyExtension {
         [this.replyLength, this.writingStyle, this.tone, this.includeEmoji].forEach(element => {
             element.addEventListener('change', () => this.saveSettings());
         });
-        
-        // Add debug test button
-        const debugBtn = document.createElement('button');
-        debugBtn.textContent = 'Test API';
-        debugBtn.style.margin = '5px';
-        debugBtn.style.fontSize = '12px';
-        debugBtn.addEventListener('click', () => this.testAPIConnection());
-        document.querySelector('.button-group').appendChild(debugBtn);
-    }
-    
-    async testAPIConnection() {
-        console.log('Testing API connection to:', this.serverUrl);
-        try {
-            const response = await fetch(`${this.serverUrl}/api/debug`, {
-                method: 'GET'
-            });
-            
-            console.log('Response status:', response.status);
-            console.log('Response type:', response.headers.get('content-type'));
-            
-            const text = await response.text();
-            console.log('Raw response:', text);
-            
-            try {
-                const json = JSON.parse(text);
-                console.log('Parsed JSON:', json);
-                this.showSuccess('API connection successful!');
-            } catch (parseError) {
-                console.error('JSON parse error:', parseError);
-                console.log('Response was HTML, first 200 chars:', text.substring(0, 200));
-                this.showError('API returned HTML instead of JSON. Check console.');
-            }
-        } catch (error) {
-            console.error('API test failed:', error);
-            this.showError('API connection failed: ' + error.message);
-        }
     }
 
     async loadSettings() {
@@ -150,12 +114,6 @@ class ReplyGuyExtension {
 
     async makeAPIRequest(endpoint, data) {
         const fullUrl = `${this.serverUrl}/api/${endpoint}`;
-        console.log('=== API REQUEST DEBUG ===');
-        console.log('Server URL:', this.serverUrl);
-        console.log('Endpoint:', endpoint);
-        console.log('Full URL:', fullUrl);
-        console.log('Request data:', data);
-        console.log('========================');
         
         try {
             const response = await fetch(fullUrl, {
@@ -166,22 +124,7 @@ class ReplyGuyExtension {
                 body: JSON.stringify(data)
             });
 
-            console.log('Response status:', response.status);
-            console.log('Response URL:', response.url);
-            console.log('Response type:', response.headers.get('content-type'));
-
-            const text = await response.text();
-            console.log('Raw response text (first 200 chars):', text.substring(0, 200));
-
-            let result;
-            try {
-                result = JSON.parse(text);
-                console.log('Parsed JSON response:', result);
-            } catch (parseError) {
-                console.error('Failed to parse JSON:', parseError);
-                console.log('Response was not JSON, full text:', text);
-                throw new Error('Server returned HTML instead of JSON. Check server configuration.');
-            }
+            const result = await response.json();
 
             if (!response.ok) {
                 throw new Error(result.error || `Request failed: ${response.status}`);
@@ -189,12 +132,7 @@ class ReplyGuyExtension {
 
             return result;
         } catch (error) {
-            console.error('=== API REQUEST ERROR ===');
-            console.error('Error message:', error.message);
-            console.error('Server URL:', this.serverUrl);
-            console.error('Endpoint:', endpoint);
-            console.error('Full URL attempted:', fullUrl);
-            console.error('========================');
+            console.error('API Request Error:', error.message);
             throw error;
         }
     }
