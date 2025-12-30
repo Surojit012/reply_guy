@@ -1,6 +1,8 @@
 class ReplyGuyExtension {
     constructor() {
-        this.serverUrl = 'https://reply-guy-eta.vercel.app'; // Production URL
+        // Clean server URL without any hidden characters
+        this.serverUrl = 'https://reply-guy-eta.vercel.app';
+        console.log('Extension initialized with server URL:', this.serverUrl);
         this.initializeElements();
         this.bindEvents();
         this.loadSettings();
@@ -147,11 +149,16 @@ class ReplyGuyExtension {
     }
 
     async makeAPIRequest(endpoint, data) {
-        console.log(`Making API request to: ${this.serverUrl}/api/${endpoint}`);
+        const fullUrl = `${this.serverUrl}/api/${endpoint}`;
+        console.log('=== API REQUEST DEBUG ===');
+        console.log('Server URL:', this.serverUrl);
+        console.log('Endpoint:', endpoint);
+        console.log('Full URL:', fullUrl);
         console.log('Request data:', data);
+        console.log('========================');
         
         try {
-            const response = await fetch(`${this.serverUrl}/api/${endpoint}`, {
+            const response = await fetch(fullUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -160,10 +167,21 @@ class ReplyGuyExtension {
             });
 
             console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
+            console.log('Response URL:', response.url);
+            console.log('Response type:', response.headers.get('content-type'));
 
-            const result = await response.json();
-            console.log('Response data:', result);
+            const text = await response.text();
+            console.log('Raw response text (first 200 chars):', text.substring(0, 200));
+
+            let result;
+            try {
+                result = JSON.parse(text);
+                console.log('Parsed JSON response:', result);
+            } catch (parseError) {
+                console.error('Failed to parse JSON:', parseError);
+                console.log('Response was not JSON, full text:', text);
+                throw new Error('Server returned HTML instead of JSON. Check server configuration.');
+            }
 
             if (!response.ok) {
                 throw new Error(result.error || `Request failed: ${response.status}`);
@@ -171,13 +189,12 @@ class ReplyGuyExtension {
 
             return result;
         } catch (error) {
-            console.error('API Request Error:', error);
-            console.error('Error details:', {
-                message: error.message,
-                stack: error.stack,
-                serverUrl: this.serverUrl,
-                endpoint: endpoint
-            });
+            console.error('=== API REQUEST ERROR ===');
+            console.error('Error message:', error.message);
+            console.error('Server URL:', this.serverUrl);
+            console.error('Endpoint:', endpoint);
+            console.error('Full URL attempted:', fullUrl);
+            console.error('========================');
             throw error;
         }
     }
