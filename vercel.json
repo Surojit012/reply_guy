@@ -11,6 +11,34 @@
   ],
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/install",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/privacy",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/test.html",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/reply-guy-extension\\.(zip|crx)",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/(.*\\.(js|css|html|json|zip|crx))",
+      "dest": "/server.js"
+    },
+    {
       "src": "/(.*)",
       "dest": "/server.js"
     }
