@@ -193,41 +193,43 @@ app.post('/api/generate-reply', strictLimiter, async (req, res) => {
         const messages = [
             {
                 role: 'system',
-                content: `You are a crypto Twitter expert with deep knowledge of DeFi, Web3, blockchain technology, and crypto culture. 
+                content: `You are a crypto Twitter expert. Generate a reply that strictly follows these requirements:
 
-${personaPrompt} 
-${engagementPrompt}
+LENGTH: ${preferences.length === 'ultra-short' ? 'Maximum 10 words' : preferences.length === 'short' ? '1-2 sentences maximum' : preferences.length === 'medium' ? '2-3 sentences maximum' : '3-4 sentences maximum'}
+EMOJIS: ${preferences.emoji ? 'Include relevant emojis' : 'NO EMOJIS - do not use any emojis at all'}
+STYLE: ${preferences.style}
+TONE: ${preferences.tone}
+PERSONA: ${persona} perspective
+ENGAGEMENT: ${engagementMode}
 
-Tweet Context Detected: ${tweetContext}
-
-Generate a crypto-native reply that:
-- Uses appropriate crypto terminology naturally
-- Matches the ${tweetContext.replace('_', ' ')} context
-- Reflects ${persona} expertise and perspective
-- Follows ${engagementMode} engagement strategy
-- Sounds authentic and adds genuine value
-- Avoids generic responses
-
-Style: ${preferences.style}
-Tone: ${preferences.tone}  
-Length: ${preferences.length}
-Include emojis: ${preferences.emoji ? 'Yes, use relevant crypto/tech emojis' : 'No emojis'}
-
-CRITICAL: Return ONLY the reply text. No labels, no prefixes, no explanations. Just the clean, natural reply.`
+CRITICAL RULES:
+- Respect the length limit strictly
+- ${preferences.emoji ? 'Use emojis appropriately' : 'NEVER use emojis'}
+- Return only the reply text, nothing else
+- Be crypto-native and authentic`
             },
             {
                 role: 'user',
-                content: `Reply to this crypto tweet: "${tweet}"`
+                content: `Reply to: "${tweet}"`
             }
         ];
 
         if (generateVariants) {
             // Generate 3 variants: Safe, Bold, Alpha
             const variants = await generateReplyVariants(messages, tweet, preferences, persona, engagementMode);
-            res.json({ variants });
+            
+            // Clean and enforce preferences for each variant
+            const cleanedVariants = {
+                safe: enforceUserPreferences(cleanAIResponse(variants.safe), preferences),
+                bold: enforceUserPreferences(cleanAIResponse(variants.bold), preferences),
+                alpha: enforceUserPreferences(cleanAIResponse(variants.alpha), preferences)
+            };
+            
+            res.json({ variants: cleanedVariants });
         } else {
             const reply = await makeOpenRouterRequest(messages, 280);
-            res.json({ reply, context: tweetContext });
+            const cleanedReply = enforceUserPreferences(cleanAIResponse(reply), preferences);
+            res.json({ reply: cleanedReply, context: tweetContext });
         }
 
     } catch (error) {
@@ -421,65 +423,72 @@ function buildEngagementPrompt(mode) {
 async function generateReplyVariants(baseMessages, tweet, preferences, persona, engagementMode) {
     const variants = {};
     
+    const lengthInstruction = preferences.length === 'ultra-short' ? 'Maximum 10 words' : 
+                             preferences.length === 'short' ? '1-2 sentences maximum' : 
+                             preferences.length === 'medium' ? '2-3 sentences maximum' : 
+                             '3-4 sentences maximum';
+    
+    const emojiInstruction = preferences.emoji ? 'Include relevant emojis' : 'NO EMOJIS - do not use any emojis at all';
+    
     // Safe variant
     const safeMessages = [
         {
             role: 'system',
-            content: `You are a crypto Twitter expert. Generate a SAFE reply variant that is:
-- Conservative and broadly acceptable
-- Professional but friendly
-- Adds value without being controversial
-- Uses ${persona} perspective
-- Engagement mode: ${engagementMode}
+            content: `Generate a SAFE crypto reply that is conservative and broadly acceptable.
 
-CRITICAL: Return ONLY the reply text, no labels, no markers, no "Safe:" prefix. Just the clean reply.`
+LENGTH: ${lengthInstruction}
+EMOJIS: ${emojiInstruction}
+STYLE: ${preferences.style}
+TONE: ${preferences.tone}
+
+Return only the reply text, no labels or prefixes.`
         },
         {
             role: 'user',
-            content: `Generate a safe crypto reply to: "${tweet}"`
+            content: `Safe reply to: "${tweet}"`
         }
     ];
-    variants.safe = await makeOpenRouterRequest(safeMessages, 150);
+    variants.safe = await makeOpenRouterRequest(safeMessages, 100);
     
     // Bold variant  
     const boldMessages = [
         {
             role: 'system',
-            content: `You are a crypto Twitter expert. Generate a BOLD reply variant that is:
-- Confident and opinionated
-- Conversation-starting
-- Takes a clear stance
-- Uses ${persona} perspective
-- Engagement mode: ${engagementMode}
+            content: `Generate a BOLD crypto reply that is confident and opinionated.
 
-CRITICAL: Return ONLY the reply text, no labels, no markers, no "Bold:" prefix. Just the clean reply.`
+LENGTH: ${lengthInstruction}
+EMOJIS: ${emojiInstruction}
+STYLE: ${preferences.style}
+TONE: ${preferences.tone}
+
+Return only the reply text, no labels or prefixes.`
         },
         {
             role: 'user',
-            content: `Generate a bold crypto reply to: "${tweet}"`
+            content: `Bold reply to: "${tweet}"`
         }
     ];
-    variants.bold = await makeOpenRouterRequest(boldMessages, 150);
+    variants.bold = await makeOpenRouterRequest(boldMessages, 100);
     
     // Alpha variant
     const alphaMessages = [
         {
             role: 'system',
-            content: `You are a crypto Twitter expert. Generate an ALPHA reply variant that is:
-- High-conviction and contrarian
-- Thought-leadership style
-- Challenges conventional thinking
-- Uses ${persona} perspective
-- Engagement mode: ${engagementMode}
+            content: `Generate an ALPHA crypto reply that is high-conviction and contrarian.
 
-CRITICAL: Return ONLY the reply text, no labels, no markers, no "Alpha:" prefix. Just the clean reply.`
+LENGTH: ${lengthInstruction}
+EMOJIS: ${emojiInstruction}
+STYLE: ${preferences.style}
+TONE: ${preferences.tone}
+
+Return only the reply text, no labels or prefixes.`
         },
         {
             role: 'user',
-            content: `Generate an alpha crypto reply to: "${tweet}"`
+            content: `Alpha reply to: "${tweet}"`
         }
     ];
-    variants.alpha = await makeOpenRouterRequest(alphaMessages, 150);
+    variants.alpha = await makeOpenRouterRequest(alphaMessages, 100);
     
     return variants;
 }
@@ -572,3 +581,72 @@ app.listen(PORT, () => {
     console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`⚡ API Key: ${process.env.OPENROUTER_API_KEY ? 'configured' : 'missing'}`);
 });
+
+// Enforce user preferences on the response
+function enforceUserPreferences(text, preferences) {
+    if (!text) return '';
+    
+    let result = text;
+    
+    // Enforce emoji preference
+    if (!preferences.emoji) {
+        // Remove all emojis if user doesn't want them
+        result = result.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+    }
+    
+    // Enforce length preference
+    if (preferences.length === 'ultra-short') {
+        const words = result.split(' ');
+        if (words.length > 10) {
+            result = words.slice(0, 10).join(' ');
+            // Add ellipsis if we cut it off
+            if (!result.endsWith('.') && !result.endsWith('!') && !result.endsWith('?')) {
+                result += '...';
+            }
+        }
+    }
+    
+    return result.trim();
+}
+// Clean AI response from unwanted tags and artifacts
+function cleanAIResponse(text) {
+    if (!text) return '';
+    
+    let cleaned = text;
+    
+    const artifactsToRemove = [
+        /<s>/g, /<\/s>/g, /\[s\]/g, /\[\/s\]/g,
+        /\[BOT\]/g, /\[\/BOT\]/g, /\[B_INST\]/g, /\[\/B_INST\]/g,
+        /\[INST\]/g, /\[\/INST\]/g, /\[SYS\]/g, /\[\/SYS\]/g,
+        /<\|im_start\|>/g, /<\|im_end\|>/g, /<\|system\|>/g,
+        /<\|user\|>/g, /<\|assistant\|>/g, /\[SYSTEM\]/g,
+        /\[\/SYSTEM\]/g, /\[USER\]/g, /\[\/USER\]/g,
+        /\[ASSISTANT\]/g, /\[\/ASSISTANT\]/g, /<[^>]*>/g,
+        /\[[A-Z_\/]+\]/g, /\[[^\]]*INST[^\]]*\]/g,
+        /\[[^\]]*BOT[^\]]*\]/g, /\[[^\]]*SYS[^\]]*\]/g,
+        // Remove variant labels and formatting
+        /\*\*SAFE:\*\*/g, /\*\*BOLD:\*\*/g, /\*\*ALPHA:\*\*/g,
+        /Safe:/g, /Bold:/g, /Alpha:/g,
+        /Safe Reply:/g, /Bold Reply:/g, /Alpha Reply:/g,
+        /\*\*Safe\*\*/g, /\*\*Bold\*\*/g, /\*\*Alpha\*\*/g,
+        // Remove line labels
+        /Line 1:/g, /Line 2:/g, /Hook:/g, /Supporting:/g,
+        // Remove extra asterisks and formatting
+        /\*\*\*+/g, /\*\*/g
+    ];
+    
+    artifactsToRemove.forEach(pattern => {
+        cleaned = cleaned.replace(pattern, '');
+    });
+    
+    // Clean up extra whitespace and newlines
+    cleaned = cleaned.trim().replace(/\s+/g, ' ').replace(/\n\s*\n/g, '\n');
+    
+    // Remove leading/trailing quotes
+    if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || 
+        (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
+        cleaned = cleaned.slice(1, -1).trim();
+    }
+    
+    return cleaned;
+}

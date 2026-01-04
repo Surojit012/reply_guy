@@ -1891,7 +1891,8 @@ class CryptoTweetReplyGenerator {
             });
             
             const cleanedReply = this.cleanAIResponse(result.reply);
-            this.generatedReply.textContent = cleanedReply;
+            const finalReply = this.enforceUserPreferences(cleanedReply, preferences);
+            this.generatedReply.textContent = finalReply;
             
             // Show context info if available
             if (result.context && this.contextInfo) {
@@ -1950,9 +1951,9 @@ class CryptoTweetReplyGenerator {
             });
             
             if (result.variants) {
-                this.safeVariant.textContent = this.cleanAIResponse(result.variants.safe);
-                this.boldVariant.textContent = this.cleanAIResponse(result.variants.bold);
-                this.alphaVariant.textContent = this.cleanAIResponse(result.variants.alpha);
+                this.safeVariant.textContent = this.enforceUserPreferences(this.cleanAIResponse(result.variants.safe), preferences);
+                this.boldVariant.textContent = this.enforceUserPreferences(this.cleanAIResponse(result.variants.bold), preferences);
+                this.alphaVariant.textContent = this.enforceUserPreferences(this.cleanAIResponse(result.variants.alpha), preferences);
                 
                 this.variantsSection.style.display = 'block';
                 this.outputSection.style.display = 'none';
@@ -2077,6 +2078,33 @@ class CryptoTweetReplyGenerator {
         } catch (error) {
             this.fallbackCopy(this.generatedQuote.textContent);
         }
+    }
+
+    // Enforce user preferences on the response
+    enforceUserPreferences(text, preferences) {
+        if (!text) return '';
+        
+        let result = text;
+        
+        // Enforce emoji preference
+        if (!preferences.emoji) {
+            // Remove all emojis if user doesn't want them
+            result = result.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+        }
+        
+        // Enforce length preference
+        if (preferences.length === 'ultra-short') {
+            const words = result.split(' ');
+            if (words.length > 10) {
+                result = words.slice(0, 10).join(' ');
+                // Add ellipsis if we cut it off
+                if (!result.endsWith('.') && !result.endsWith('!') && !result.endsWith('?')) {
+                    result += '...';
+                }
+            }
+        }
+        
+        return result.trim();
     }
 
     fallbackCopy(text) {
