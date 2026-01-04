@@ -111,7 +111,7 @@ async function makeOpenRouterRequest(messages, maxTokens = 500) {
     
     try {
         const requestBody = {
-            model: 'meta-llama/llama-3.2-3b-instruct:free',
+            model: 'google/gemini-2.0-flash-exp:free',
             messages: messages,
             max_tokens: maxTokens,
             temperature: 0.7
