@@ -1,8 +1,7 @@
-class ReplyGuyExtension {
+class CryptoReplyGuyExtension {
     constructor() {
-        // Clean server URL without any hidden characters
         this.serverUrl = 'https://reply-guy-eta.vercel.app';
-        console.log('Extension initialized with server URL:', this.serverUrl);
+        console.log('Crypto Extension initialized with server URL:', this.serverUrl);
         this.initializeElements();
         this.bindEvents();
         this.loadSettings();
@@ -12,6 +11,8 @@ class ReplyGuyExtension {
         this.tweetInput = document.getElementById('tweet-input');
         this.analyzeBtn = document.getElementById('analyze-btn');
         this.generateBtn = document.getElementById('generate-btn');
+        this.variantsBtn = document.getElementById('variants-btn');
+        this.quoteBtn = document.getElementById('quote-btn');
         this.copyBtn = document.getElementById('copy-btn');
         this.pasteTwitterBtn = document.getElementById('paste-twitter-btn');
         this.regenerateBtn = document.getElementById('regenerate-btn');
@@ -20,13 +21,25 @@ class ReplyGuyExtension {
         this.analysisSection = document.getElementById('analysis-section');
         this.analysisResult = document.getElementById('analysis-result');
         this.outputSection = document.getElementById('output-section');
+        this.variantsSection = document.getElementById('variants-section');
+        this.quoteSection = document.getElementById('quote-section');
         this.generatedReply = document.getElementById('generated-reply');
+        this.contextInfo = document.getElementById('context-info');
         this.loading = document.getElementById('loading');
         
+        // Crypto settings
+        this.personaSelect = document.getElementById('persona-select');
+        this.engagementMode = document.getElementById('engagement-mode');
         this.replyLength = document.getElementById('reply-length');
         this.writingStyle = document.getElementById('writing-style');
         this.tone = document.getElementById('tone');
         this.includeEmoji = document.getElementById('include-emoji');
+        
+        // Variant elements
+        this.safeVariant = document.getElementById('safe-variant');
+        this.boldVariant = document.getElementById('bold-variant');
+        this.alphaVariant = document.getElementById('alpha-variant');
+        this.generatedQuote = document.getElementById('generated-quote');
         
         // Hide API key section since we're using backend
         const apiSection = document.getElementById('api-section');
@@ -36,29 +49,66 @@ class ReplyGuyExtension {
     }
 
     bindEvents() {
-        this.analyzeBtn.addEventListener('click', () => this.analyzeTweet());
-        this.generateBtn.addEventListener('click', () => this.generateReply());
-        this.copyBtn.addEventListener('click', () => this.copyReply());
-        this.pasteTwitterBtn.addEventListener('click', () => this.pasteToTwitter());
-        this.regenerateBtn.addEventListener('click', () => this.generateReply());
-        this.autoFillBtn.addEventListener('click', () => this.autoFillFromTwitter());
+        if (this.analyzeBtn) {
+            this.analyzeBtn.addEventListener('click', () => this.analyzeTweet());
+        }
+        if (this.generateBtn) {
+            this.generateBtn.addEventListener('click', () => this.generateReply());
+        }
+        if (this.variantsBtn) {
+            this.variantsBtn.addEventListener('click', () => this.generateVariants());
+        }
+        if (this.quoteBtn) {
+            this.quoteBtn.addEventListener('click', () => this.generateQuote());
+        }
+        if (this.copyBtn) {
+            this.copyBtn.addEventListener('click', () => this.copyReply());
+        }
+        if (this.pasteTwitterBtn) {
+            this.pasteTwitterBtn.addEventListener('click', () => this.pasteToTwitter());
+        }
+        if (this.regenerateBtn) {
+            this.regenerateBtn.addEventListener('click', () => this.generateReply());
+        }
+        if (this.autoFillBtn) {
+            this.autoFillBtn.addEventListener('click', () => this.autoFillFromTwitter());
+        }
+        
+        // Copy variant buttons
+        document.querySelectorAll('.copy-variant').forEach(btn => {
+            btn.addEventListener('click', (e) => this.copyVariant(e.target.dataset.variant));
+        });
+        
+        // Quote tweet buttons
+        const copyQuoteBtn = document.getElementById('copy-quote-btn');
+        const regenerateQuoteBtn = document.getElementById('regenerate-quote-btn');
+        if (copyQuoteBtn) {
+            copyQuoteBtn.addEventListener('click', () => this.copyQuote());
+        }
+        if (regenerateQuoteBtn) {
+            regenerateQuoteBtn.addEventListener('click', () => this.generateQuote());
+        }
         
         // Save preferences when changed
-        [this.replyLength, this.writingStyle, this.tone, this.includeEmoji].forEach(element => {
-            element.addEventListener('change', () => this.saveSettings());
+        [this.personaSelect, this.engagementMode, this.replyLength, this.writingStyle, this.tone, this.includeEmoji].forEach(element => {
+            if (element) {
+                element.addEventListener('change', () => this.saveSettings());
+            }
         });
     }
 
     async loadSettings() {
         try {
             const result = await chrome.storage.sync.get([
-                'replyLength', 'writingStyle', 'tone', 'includeEmoji'
+                'persona', 'engagementMode', 'replyLength', 'writingStyle', 'tone', 'includeEmoji'
             ]);
             
-            if (result.replyLength) this.replyLength.value = result.replyLength;
-            if (result.writingStyle) this.writingStyle.value = result.writingStyle;
-            if (result.tone) this.tone.value = result.tone;
-            if (result.includeEmoji !== undefined) this.includeEmoji.checked = result.includeEmoji;
+            if (this.personaSelect && result.persona) this.personaSelect.value = result.persona;
+            if (this.engagementMode && result.engagementMode) this.engagementMode.value = result.engagementMode;
+            if (this.replyLength && result.replyLength) this.replyLength.value = result.replyLength;
+            if (this.writingStyle && result.writingStyle) this.writingStyle.value = result.writingStyle;
+            if (this.tone && result.tone) this.tone.value = result.tone;
+            if (this.includeEmoji && result.includeEmoji !== undefined) this.includeEmoji.checked = result.includeEmoji;
             
         } catch (error) {
             console.error('Error loading settings:', error);
@@ -68,10 +118,12 @@ class ReplyGuyExtension {
     async saveSettings() {
         try {
             await chrome.storage.sync.set({
-                replyLength: this.replyLength.value,
-                writingStyle: this.writingStyle.value,
-                tone: this.tone.value,
-                includeEmoji: this.includeEmoji.checked
+                persona: this.personaSelect?.value,
+                engagementMode: this.engagementMode?.value,
+                replyLength: this.replyLength?.value,
+                writingStyle: this.writingStyle?.value,
+                tone: this.tone?.value,
+                includeEmoji: this.includeEmoji?.checked
             });
         } catch (error) {
             console.error('Error saving settings:', error);
@@ -80,14 +132,18 @@ class ReplyGuyExtension {
 
     showLoading() {
         this.loading.style.display = 'block';
-        this.analyzeBtn.disabled = true;
-        this.generateBtn.disabled = true;
+        if (this.analyzeBtn) this.analyzeBtn.disabled = true;
+        if (this.generateBtn) this.generateBtn.disabled = true;
+        if (this.variantsBtn) this.variantsBtn.disabled = true;
+        if (this.quoteBtn) this.quoteBtn.disabled = true;
     }
 
     hideLoading() {
         this.loading.style.display = 'none';
-        this.analyzeBtn.disabled = false;
-        this.generateBtn.disabled = false;
+        if (this.analyzeBtn) this.analyzeBtn.disabled = false;
+        if (this.generateBtn) this.generateBtn.disabled = false;
+        if (this.variantsBtn) this.variantsBtn.disabled = false;
+        if (this.quoteBtn) this.quoteBtn.disabled = false;
     }
 
     showError(message) {
@@ -237,20 +293,34 @@ class ReplyGuyExtension {
             this.showLoading();
             
             const preferences = {
-                length: this.replyLength.value,
-                style: this.writingStyle.value,
-                tone: this.tone.value,
-                emoji: this.includeEmoji.checked
+                length: this.replyLength?.value || 'medium',
+                style: this.writingStyle?.value || 'casual',
+                tone: this.tone?.value || 'neutral',
+                emoji: this.includeEmoji?.checked || false
             };
+
+            const persona = this.personaSelect?.value || 'builder';
+            const engagementMode = this.engagementMode?.value || 'neutral';
 
             const result = await this.makeAPIRequest('generate-reply', { 
                 tweet, 
-                preferences 
+                preferences,
+                persona,
+                engagementMode
             });
             
             const cleanedReply = this.cleanAIResponse(result.reply);
             this.generatedReply.textContent = cleanedReply;
+            
+            // Show context info if available
+            if (result.context && this.contextInfo) {
+                this.contextInfo.textContent = `Context: ${result.context.replace('_', ' ')}`;
+                this.contextInfo.style.display = 'block';
+            }
+            
             this.outputSection.style.display = 'block';
+            if (this.variantsSection) this.variantsSection.style.display = 'none';
+            if (this.quoteSection) this.quoteSection.style.display = 'none';
             
         } catch (error) {
             console.error('Generation error:', error);
@@ -261,6 +331,151 @@ class ReplyGuyExtension {
             }
         } finally {
             this.hideLoading();
+        }
+    }
+
+    async generateVariants() {
+        const tweet = this.tweetInput.value.trim();
+        
+        if (!tweet) {
+            this.showError('Please paste a tweet first');
+            return;
+        }
+
+        try {
+            this.showLoading();
+            
+            const preferences = {
+                length: this.replyLength?.value || 'medium',
+                style: this.writingStyle?.value || 'casual',
+                tone: this.tone?.value || 'neutral',
+                emoji: this.includeEmoji?.checked || false
+            };
+
+            const persona = this.personaSelect?.value || 'builder';
+            const engagementMode = this.engagementMode?.value || 'neutral';
+
+            const result = await this.makeAPIRequest('generate-reply', { 
+                tweet, 
+                preferences,
+                persona,
+                engagementMode,
+                generateVariants: true
+            });
+            
+            if (result.variants && this.safeVariant && this.boldVariant && this.alphaVariant) {
+                this.safeVariant.textContent = this.cleanAIResponse(result.variants.safe);
+                this.boldVariant.textContent = this.cleanAIResponse(result.variants.bold);
+                this.alphaVariant.textContent = this.cleanAIResponse(result.variants.alpha);
+                
+                if (this.variantsSection) {
+                    this.variantsSection.style.display = 'block';
+                    this.outputSection.style.display = 'none';
+                    if (this.quoteSection) this.quoteSection.style.display = 'none';
+                }
+            }
+            
+        } catch (error) {
+            console.error('Variants generation error:', error);
+            if (error.message.includes('Rate limit')) {
+                this.showError('Rate limit exceeded. Please wait a moment before trying again.');
+            } else {
+                this.showError(error.message || 'Failed to generate variants. Please try again.');
+            }
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    async generateQuote() {
+        const tweet = this.tweetInput.value.trim();
+        
+        if (!tweet) {
+            this.showError('Please paste a tweet first');
+            return;
+        }
+
+        try {
+            this.showLoading();
+            
+            const persona = this.personaSelect?.value || 'builder';
+            const engagementMode = this.engagementMode?.value || 'neutral';
+
+            const result = await this.makeAPIRequest('generate-quote', { 
+                tweet,
+                persona,
+                engagementMode
+            });
+            
+            if (this.generatedQuote) {
+                const cleanedQuote = this.cleanAIResponse(result.quote);
+                this.generatedQuote.textContent = cleanedQuote;
+                
+                if (this.quoteSection) {
+                    this.quoteSection.style.display = 'block';
+                    this.outputSection.style.display = 'none';
+                    if (this.variantsSection) this.variantsSection.style.display = 'none';
+                }
+            }
+            
+        } catch (error) {
+            console.error('Quote generation error:', error);
+            if (error.message.includes('Rate limit')) {
+                this.showError('Rate limit exceeded. Please wait a moment before trying again.');
+            } else {
+                this.showError(error.message || 'Failed to generate quote tweet. Please try again.');
+            }
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    async copyVariant(variant) {
+        const variantElement = document.getElementById(`${variant}-variant`);
+        if (!variantElement) return;
+        
+        try {
+            await navigator.clipboard.writeText(variantElement.textContent);
+            this.showSuccess(`${variant} variant copied to clipboard!`);
+            
+            const btn = document.querySelector(`[data-variant="${variant}"]`);
+            if (btn) {
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied! ✓';
+                btn.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                }, 2000);
+            }
+            
+        } catch (error) {
+            this.showError('Failed to copy variant to clipboard');
+        }
+    }
+
+    async copyQuote() {
+        if (!this.generatedQuote) return;
+        
+        try {
+            await navigator.clipboard.writeText(this.generatedQuote.textContent);
+            this.showSuccess('Quote tweet copied to clipboard!');
+            
+            const copyQuoteBtn = document.getElementById('copy-quote-btn');
+            if (copyQuoteBtn) {
+                const originalText = copyQuoteBtn.textContent;
+                copyQuoteBtn.textContent = 'Copied! ✓';
+                copyQuoteBtn.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    copyQuoteBtn.textContent = originalText;
+                    copyQuoteBtn.style.background = '';
+                }, 2000);
+            }
+            
+        } catch (error) {
+            this.showError('Failed to copy quote to clipboard');
         }
     }
 
@@ -452,5 +667,5 @@ function pasteReplyToTwitter(replyText) {
 
 // Initialize the extension when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new ReplyGuyExtension();
+    new CryptoReplyGuyExtension();
 });

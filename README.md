@@ -1,16 +1,29 @@
-# Tweet Reply Generator
+# Reply Guy - Crypto Twitter Engagement Tool
 
-A full-stack AI-powered web application that analyzes tweets and generates personalized replies. Built with secure backend API handling and rate limiting for public use.
+A context-aware crypto Twitter engagement tool that generates persona-based replies, variants, and quote tweets. Built with secure backend API and designed specifically for crypto Twitter interactions.
 
-## Features
+## 🚀 Features
 
-- **Tweet Analysis**: AI analyzes the original tweet's purpose, tone, and context
-- **Customizable Replies**: Control length, writing style, tone, and emoji usage
-- **Dark Theme**: Beautiful gradient design optimized for dark mode
-- **Secure Backend**: API key stored safely on server, not exposed to users
-- **Rate Limiting**: Built-in protection against abuse (10 requests/minute per IP)
-- **Responsive Design**: Works on desktop and mobile devices
-- **Production Ready**: Includes security headers, CORS, and error handling
+### Core Crypto Features
+- **Tweet Context Detection**: Automatically classifies tweets (announcement, technical thread, hot take, opinion, partnership/launch)
+- **Crypto Personas**: Builder, Trader, Researcher, Degen, Founder, Community personas
+- **Engagement Modes**: Engagement Max, Neutral, Signal-only modes
+- **Reply Variants**: Generate Safe, Bold, and Alpha variants for each tweet
+- **Quote Tweet Generator**: Create compelling quote tweets with hooks and supporting lines
+- **Session Memory**: Saves user preferences locally
+
+### Advanced Capabilities
+- **Thread-Aware Mode**: Detects and responds appropriately to tweet threads
+- **Crypto-Native Language**: Uses proper crypto terminology and context
+- **Context-Aware Responses**: Adjusts tone and structure based on tweet type
+- **Mobile-First Design**: Optimized for crypto Twitter's mobile-heavy usage
+
+### Technical Features
+- **Chrome Extension**: Direct Twitter integration with auto-fill and paste
+- **Secure Backend**: API key stored safely on server
+- **Rate Limiting**: 10 requests/minute protection
+- **Responsive Design**: Works perfectly on all devices
+- **Zero Chrome Store Cost**: Direct installation without store approval
 
 ## Quick Start
 
@@ -47,20 +60,44 @@ npm start
 
 Visit `http://localhost:3000` to use the app!
 
-## Usage
+## 🎯 Usage
 
-1. **Paste Tweet**: Copy and paste the tweet you want to reply to
-2. **Analyze (Optional)**: Click "Analyze Tweet" to understand the context
-3. **Set Preferences**: Choose your reply length, style, tone, and emoji preference
-4. **Generate**: Click "Generate Reply" to create your response
-5. **Copy & Use**: Copy the generated reply to use on Twitter
+### Website (reply-guy-eta.vercel.app)
+1. **Paste Tweet**: Copy any crypto tweet you want to engage with
+2. **Choose Persona**: Select your crypto persona (Builder, Trader, etc.)
+3. **Set Engagement Mode**: Choose your engagement strategy
+4. **Generate Options**:
+   - **Single Reply**: Generate one optimized reply
+   - **3 Variants**: Get Safe, Bold, and Alpha versions
+   - **Quote Tweet**: Create a compelling quote tweet
+5. **Copy & Engage**: Use the generated content on Twitter
 
-## Customization Options
+### Chrome Extension
+1. **Install**: Download and install the extension directly
+2. **Auto-Fill**: Click to extract tweet text from Twitter
+3. **Generate**: Create replies without leaving Twitter
+4. **Paste**: Directly insert replies into Twitter's reply box
 
-- **Length**: Short (1-2 sentences), Medium (2-3 sentences), Long (3-4 sentences)
-- **Style**: Casual, Professional, Friendly, Witty, Supportive, Informative
-- **Tone**: Neutral, Positive, Enthusiastic, Empathetic, Humorous, Thoughtful
-- **Emojis**: Toggle emoji inclusion on/off
+## ⚙️ Crypto Engagement Settings
+
+### Personas
+- **🔨 Builder**: Technical focus, development-oriented responses
+- **📈 Trader**: Market-focused, price action commentary
+- **🔬 Researcher**: Data-driven, analytical insights
+- **🎲 Degen**: High-risk plays, meme-friendly, casual
+- **🚀 Founder**: Strategic thinking, ecosystem development
+- **🤝 Community**: Collaborative, educational, inclusive
+
+### Engagement Modes
+- **⚖️ Neutral**: Balanced, safe engagement
+- **🔥 Engagement Max**: Hooks, questions, conversation starters
+- **🎯 Signal Only**: Pure insights, minimal fluff
+
+### Customization Options
+- **Length**: Ultra-short to long responses
+- **Style**: Casual, Professional, Technical, Alpha, etc.
+- **Tone**: Neutral, Confident, Contrarian, Bullish, Analytical
+- **Emojis**: Toggle crypto-appropriate emojis
 
 ## Technical Architecture
 
@@ -77,9 +114,27 @@ Visit `http://localhost:3000` to use the app!
 - **Accessibility**: Proper ARIA labels and keyboard navigation
 
 ### API Endpoints
-- `POST /api/analyze` - Analyze tweet content
-- `POST /api/generate-reply` - Generate personalized replies
+- `POST /api/analyze` - Analyze tweet content and context
+- `POST /api/generate-reply` - Generate crypto-aware replies with persona/mode
+- `POST /api/generate-quote` - Generate quote tweets with hooks
+- `GET /api/extension-version` - Extension update checking
 - `GET /api/health` - Health check endpoint
+
+## 🔧 Crypto Context Detection
+
+The AI automatically detects tweet types:
+- **Partnership/Launch**: Announcements, partnerships, product launches
+- **Technical Thread**: Deep dives, technical explanations, tutorials
+- **Hot Take**: Controversial opinions, debate starters
+- **Opinion**: Personal views, market commentary
+- **Announcement**: News, updates, breaking information
+- **General**: Standard crypto discussion
+
+## 🎨 Reply Variants Explained
+
+- **🛡️ Safe**: Conservative, broadly acceptable, low-risk responses
+- **🔥 Bold**: Confident, opinionated, conversation-starting replies
+- **⚡ Alpha**: High-conviction, contrarian, thought-leadership content
 
 ## Deployment
 

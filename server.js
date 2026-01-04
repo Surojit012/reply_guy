@@ -170,10 +170,10 @@ Tweet: "${tweet}"`
     }
 });
 
-// Reply generation endpoint
+// Reply generation endpoint with crypto context awareness
 app.post('/api/generate-reply', strictLimiter, async (req, res) => {
     try {
-        const { tweet, preferences } = req.body;
+        const { tweet, preferences, persona, engagementMode, generateVariants } = req.body;
 
         if (!tweet || tweet.trim().length === 0) {
             return res.status(400).json({ error: 'Tweet content is required' });
@@ -183,37 +183,51 @@ app.post('/api/generate-reply', strictLimiter, async (req, res) => {
             return res.status(400).json({ error: 'Reply preferences are required' });
         }
 
-        const lengthGuide = {
-            'ultra-short': 'under 10 words, extremely concise',
-            short: '1-2 sentences, concise and direct',
-            medium: '2-3 sentences, balanced detail',
-            long: '3-4 sentences, comprehensive response'
-        };
-
+        // Detect tweet context
+        const tweetContext = detectTweetContext(tweet);
+        
+        // Build persona-specific prompt
+        const personaPrompt = buildPersonaPrompt(persona || 'builder');
+        const engagementPrompt = buildEngagementPrompt(engagementMode || 'neutral');
+        
         const messages = [
             {
                 role: 'system',
-                content: `You are an expert at writing engaging Twitter replies. Create replies that are authentic, relevant, and match the requested style perfectly. Always stay respectful and constructive.`
+                content: `You are a crypto Twitter expert generating contextually aware replies. ${personaPrompt} ${engagementPrompt}
+
+Tweet Context: ${tweetContext}
+
+Reply Guidelines:
+- Match the detected context and adjust tone accordingly
+- Use crypto-native language and terminology
+- Be authentic and add genuine value
+- Keep replies concise and engaging
+- Avoid generic responses`
             },
             {
                 role: 'user',
-                content: `Generate a Twitter reply to this tweet with these specifications:
+                content: `Generate a ${preferences.style} reply to this crypto tweet:
 
-Original Tweet: "${tweet}"
+"${tweet}"
 
-Reply Requirements:
-- Length: ${lengthGuide[preferences.length] || lengthGuide.medium}
-- Writing Style: ${preferences.style || 'casual'}
-- Tone: ${preferences.tone || 'neutral'}
-- Include Emojis: ${preferences.emoji ? 'Yes' : 'No'}
-
-Make the reply engaging, relevant, and natural. Don't mention that you're following specifications - just write a great reply.`
+Requirements:
+- Length: ${preferences.length}
+- Tone: ${preferences.tone}
+- Include emojis: ${preferences.emoji ? 'Yes' : 'No'}
+- Context: ${tweetContext}
+- Persona: ${persona || 'builder'}
+- Engagement Mode: ${engagementMode || 'neutral'}`
             }
         ];
 
-        const reply = await makeOpenRouterRequest(messages, 280);
-        
-        res.json({ reply });
+        if (generateVariants) {
+            // Generate 3 variants: Safe, Bold, Alpha
+            const variants = await generateReplyVariants(messages, tweet, preferences, persona, engagementMode);
+            res.json({ variants });
+        } else {
+            const reply = await makeOpenRouterRequest(messages, 280);
+            res.json({ reply, context: tweetContext });
+        }
 
     } catch (error) {
         console.error('Generation error:', error);
@@ -294,6 +308,137 @@ Keep answers concise, helpful, and friendly. If asked about something not relate
         });
     }
 });
+// Quote tweet generation endpoint
+app.post('/api/generate-quote', strictLimiter, async (req, res) => {
+    try {
+        const { tweet, persona, engagementMode } = req.body;
+
+        if (!tweet || tweet.trim().length === 0) {
+            return res.status(400).json({ error: 'Tweet content is required' });
+        }
+
+        const tweetContext = detectTweetContext(tweet);
+        const personaPrompt = buildPersonaPrompt(persona || 'builder');
+        
+        const messages = [
+            {
+                role: 'system',
+                content: `You are a crypto Twitter expert generating quote tweets. ${personaPrompt}
+
+Generate a quote tweet with:
+1. One strong, quotable line (hook/insight)
+2. One supporting line (context/value-add)
+
+Keep it concise, impactful, and crypto-native.`
+            },
+            {
+                role: 'user',
+                content: `Generate a quote tweet for this crypto tweet:
+
+"${tweet}"
+
+Context: ${tweetContext}
+Persona: ${persona || 'builder'}
+Mode: ${engagementMode || 'neutral'}
+
+Format:
+Line 1: [Strong hook/insight]
+Line 2: [Supporting context]`
+            }
+        ];
+
+        const quote = await makeOpenRouterRequest(messages, 200);
+        res.json({ quote, context: tweetContext });
+
+    } catch (error) {
+        console.error('Quote generation error:', error);
+        res.status(500).json({ 
+            error: 'Failed to generate quote tweet. Please try again.' 
+        });
+    }
+});
+
+// Helper functions for crypto context detection
+function detectTweetContext(tweet) {
+    const text = tweet.toLowerCase();
+    
+    // Partnership/Launch indicators
+    if (text.includes('partnership') || text.includes('launch') || text.includes('announcing') || 
+        text.includes('excited to') || text.includes('proud to') || text.includes('introducing')) {
+        return 'partnership_launch';
+    }
+    
+    // Technical thread indicators
+    if (text.includes('thread') || text.includes('1/') || text.includes('🧵') ||
+        text.includes('technical') || text.includes('deep dive') || text.includes('breakdown')) {
+        return 'technical_thread';
+    }
+    
+    // Hot take indicators
+    if (text.includes('unpopular opinion') || text.includes('hot take') || text.includes('controversial') ||
+        text.includes('change my mind') || text.includes('fight me') || text.includes('🔥')) {
+        return 'hot_take';
+    }
+    
+    // Opinion indicators
+    if (text.includes('i think') || text.includes('imo') || text.includes('in my opinion') ||
+        text.includes('believe') || text.includes('feel like') || text.includes('personally')) {
+        return 'opinion';
+    }
+    
+    // Announcement indicators
+    if (text.includes('announcement') || text.includes('news') || text.includes('update') ||
+        text.includes('breaking') || text.includes('just dropped') || text.includes('live now')) {
+        return 'announcement';
+    }
+    
+    return 'general';
+}
+
+function buildPersonaPrompt(persona) {
+    const personas = {
+        builder: "You're a crypto builder focused on technology, development, and practical solutions. Use technical terms confidently but accessibly.",
+        trader: "You're an active crypto trader focused on markets, price action, and trading opportunities. Use market terminology and be direct about risk/reward.",
+        researcher: "You're a crypto researcher focused on fundamentals, analysis, and deep insights. Provide thoughtful, data-driven perspectives.",
+        degen: "You're a crypto degen focused on high-risk plays, memes, and community vibes. Use casual language, memes, and show appetite for risk.",
+        founder: "You're a crypto founder focused on building, scaling, and ecosystem development. Think strategically about growth and adoption.",
+        community: "You're a community-focused crypto enthusiast. Emphasize collaboration, education, and bringing people together."
+    };
+    
+    return personas[persona] || personas.builder;
+}
+
+function buildEngagementPrompt(mode) {
+    const modes = {
+        engagement_max: "Maximize engagement with hooks, questions, and light CTAs. Be bold and conversation-starting.",
+        neutral: "Maintain balanced, safe engagement. Be helpful without being pushy.",
+        signal_only: "Focus purely on insights and value. Be concise and signal-heavy with minimal fluff."
+    };
+    
+    return modes[mode] || modes.neutral;
+}
+
+async function generateReplyVariants(baseMessages, tweet, preferences, persona, engagementMode) {
+    const variants = {};
+    
+    // Safe variant
+    const safeMessages = [...baseMessages];
+    safeMessages[0].content += "\n\nGenerate a SAFE variant: Conservative, low-risk, broadly acceptable.";
+    variants.safe = await makeOpenRouterRequest(safeMessages, 200);
+    
+    // Bold variant  
+    const boldMessages = [...baseMessages];
+    boldMessages[0].content += "\n\nGenerate a BOLD variant: Confident, opinionated, conversation-starting.";
+    variants.bold = await makeOpenRouterRequest(boldMessages, 200);
+    
+    // Alpha variant
+    const alphaMessages = [...baseMessages];
+    alphaMessages[0].content += "\n\nGenerate an ALPHA variant: High-conviction, contrarian, thought-leadership.";
+    variants.alpha = await makeOpenRouterRequest(alphaMessages, 200);
+    
+    return variants;
+}
+
 app.get('/api/extension-version', (req, res) => {
     res.json({
         version: '1.0.0', // Update this when you release new versions

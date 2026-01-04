@@ -276,3 +276,70 @@ textarea {
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 107, 53, 0.8);
 }
+
+/* Crypto Features Styles */
+.context-info {
+    background: rgba(255, 107, 53, 0.1);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    border-radius: 6px;
+    padding: 8px;
+    margin-bottom: 10px;
+    font-size: 11px;
+    color: #ffcc02;
+}
+
+.variants-section, .quote-section {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(15px);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 2px solid rgba(255, 107, 53, 0.3);
+    box-shadow: 0 4px 20px rgba(255, 107, 53, 0.2);
+}
+
+.variants-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.variant-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid rgba(255, 107, 53, 0.2);
+}
+
+.variant-item h4 {
+    color: #ff6b35;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.quote-box {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+    border-left: 3px solid #ffcc02;
+    margin: 10px 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    box-shadow: 0 2px 8px rgba(255, 204, 2, 0.2);
+    font-size: 12px;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 11px;
+    min-width: 50px;
+}
+
+.variants-section h3, .quote-section h3 {
+    color: #ff6b35;
+    margin-bottom: 12px;
+    font-size: 1rem;
+    text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+}

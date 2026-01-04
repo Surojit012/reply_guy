@@ -845,6 +845,82 @@ textarea {
     color: rgba(255, 255, 255, 0.8);
 }
 
+/* Crypto Features Styles */
+.context-info {
+    background: rgba(255, 107, 53, 0.1);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    color: #ffcc02;
+}
+
+.variants-section {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 2px solid rgba(255, 107, 53, 0.3);
+    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.2), 0 0 50px rgba(255, 204, 2, 0.1);
+}
+
+.variants-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.variant-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid rgba(255, 107, 53, 0.2);
+}
+
+.variant-item h4 {
+    color: #ff6b35;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.quote-section {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 2px solid rgba(255, 204, 2, 0.3);
+    box-shadow: 0 8px 32px rgba(255, 204, 2, 0.2), 0 0 50px rgba(255, 107, 53, 0.1);
+}
+
+.quote-box {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 4px solid #ffcc02;
+    margin: 15px 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    box-shadow: 0 4px 15px rgba(255, 204, 2, 0.2);
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .variants-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .variant-item {
+        padding: 15px;
+    }
+}
+
 /* Floating Chatbot Styles */
 .chatbot-container {
     position: fixed;
@@ -1158,7 +1234,7 @@ textarea {
     <div class="container">
         <header>
             <h1>🔥 Reply Guy</h1>
-            <p>AI-powered replies tailored to your style</p>
+            <p>Context-aware Crypto Twitter engagement tool</p>
             <div class="creator-badge">
                 <span class="badge-text">Created by</span>
                 <a href="https://x.com/surojitpvt" target="_blank" class="creator-twitter">
@@ -1181,8 +1257,31 @@ textarea {
                 </div>
 
                 <div class="preferences-section">
-                    <h3>⚙️ Reply Preferences</h3>
+                    <h3>⚙️ Crypto Engagement Settings</h3>
                     
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="persona-select">Persona:</label>
+                            <select id="persona-select">
+                                <option value="builder">🔨 Builder</option>
+                                <option value="trader">📈 Trader</option>
+                                <option value="researcher">🔬 Researcher</option>
+                                <option value="degen">🎲 Degen</option>
+                                <option value="founder">🚀 Founder</option>
+                                <option value="community">🤝 Community</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="engagement-mode">Engagement Mode:</label>
+                            <select id="engagement-mode">
+                                <option value="neutral">⚖️ Neutral</option>
+                                <option value="engagement_max">🔥 Engagement Max</option>
+                                <option value="signal_only">🎯 Signal Only</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="reply-length">Reply Length:</label>
@@ -1201,8 +1300,8 @@ textarea {
                                 <option value="professional">Professional</option>
                                 <option value="friendly">Friendly</option>
                                 <option value="witty">Witty</option>
-                                <option value="supportive">Supportive</option>
-                                <option value="informative">Informative</option>
+                                <option value="technical">Technical</option>
+                                <option value="alpha">Alpha</option>
                             </select>
                         </div>
                     </div>
@@ -1213,10 +1312,10 @@ textarea {
                             <select id="tone">
                                 <option value="neutral" selected>Neutral</option>
                                 <option value="positive">Positive</option>
-                                <option value="enthusiastic">Enthusiastic</option>
-                                <option value="empathetic">Empathetic</option>
-                                <option value="humorous">Humorous</option>
-                                <option value="thoughtful">Thoughtful</option>
+                                <option value="confident">Confident</option>
+                                <option value="contrarian">Contrarian</option>
+                                <option value="bullish">Bullish</option>
+                                <option value="analytical">Analytical</option>
                             </select>
                         </div>
 
@@ -1231,17 +1330,50 @@ textarea {
                 </div>
 
                 <div class="button-group">
-                    <button id="analyze-btn" class="btn btn-secondary">Analyze Tweet</button>
+                    <button id="analyze-btn" class="btn btn-secondary">Analyze Context</button>
                     <button id="generate-btn" class="btn btn-primary">Generate Reply</button>
+                    <button id="variants-btn" class="btn btn-outline">3 Variants</button>
+                    <button id="quote-btn" class="btn btn-outline">Quote Tweet</button>
                 </div>
             </div>
 
             <div class="output-section" id="output-section" style="display: none;">
                 <h3>✨ Generated Reply</h3>
+                <div id="context-info" class="context-info" style="display: none;"></div>
                 <div id="generated-reply" class="reply-box"></div>
                 <div class="reply-actions">
                     <button id="copy-btn" class="btn btn-outline">Copy Reply</button>
                     <button id="regenerate-btn" class="btn btn-secondary">Regenerate</button>
+                </div>
+            </div>
+
+            <div class="variants-section" id="variants-section" style="display: none;">
+                <h3>🎯 Reply Variants</h3>
+                <div class="variants-container">
+                    <div class="variant-item">
+                        <h4>🛡️ Safe</h4>
+                        <div id="safe-variant" class="reply-box"></div>
+                        <button class="btn btn-sm btn-outline copy-variant" data-variant="safe">Copy</button>
+                    </div>
+                    <div class="variant-item">
+                        <h4>🔥 Bold</h4>
+                        <div id="bold-variant" class="reply-box"></div>
+                        <button class="btn btn-sm btn-outline copy-variant" data-variant="bold">Copy</button>
+                    </div>
+                    <div class="variant-item">
+                        <h4>⚡ Alpha</h4>
+                        <div id="alpha-variant" class="reply-box"></div>
+                        <button class="btn btn-sm btn-outline copy-variant" data-variant="alpha">Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quote-section" id="quote-section" style="display: none;">
+                <h3>💬 Quote Tweet</h3>
+                <div id="generated-quote" class="quote-box"></div>
+                <div class="reply-actions">
+                    <button id="copy-quote-btn" class="btn btn-outline">Copy Quote</button>
+                    <button id="regenerate-quote-btn" class="btn btn-secondary">Regenerate</button>
                 </div>
             </div>
 
@@ -1476,12 +1608,13 @@ textarea {
     </div>
 
     <script>
-class TweetReplyGenerator {
+class CryptoTweetReplyGenerator {
     constructor() {
-        console.log('TweetReplyGenerator constructor called');
+        console.log('CryptoTweetReplyGenerator constructor called');
         this.initializeElements();
         this.bindEvents();
-        console.log('TweetReplyGenerator initialized');
+        this.loadUserPreferences();
+        console.log('CryptoTweetReplyGenerator initialized');
     }
 
     initializeElements() {
@@ -1489,24 +1622,39 @@ class TweetReplyGenerator {
         this.tweetInput = document.getElementById('tweet-input');
         this.analyzeBtn = document.getElementById('analyze-btn');
         this.generateBtn = document.getElementById('generate-btn');
+        this.variantsBtn = document.getElementById('variants-btn');
+        this.quoteBtn = document.getElementById('quote-btn');
         this.copyBtn = document.getElementById('copy-btn');
         this.regenerateBtn = document.getElementById('regenerate-btn');
         
         this.analysisSection = document.getElementById('analysis-section');
         this.analysisResult = document.getElementById('analysis-result');
         this.outputSection = document.getElementById('output-section');
+        this.variantsSection = document.getElementById('variants-section');
+        this.quoteSection = document.getElementById('quote-section');
         this.generatedReply = document.getElementById('generated-reply');
+        this.contextInfo = document.getElementById('context-info');
         this.loading = document.getElementById('loading');
         
+        // Crypto settings
+        this.personaSelect = document.getElementById('persona-select');
+        this.engagementMode = document.getElementById('engagement-mode');
         this.replyLength = document.getElementById('reply-length');
         this.writingStyle = document.getElementById('writing-style');
         this.tone = document.getElementById('tone');
         this.includeEmoji = document.getElementById('include-emoji');
         
+        // Variant elements
+        this.safeVariant = document.getElementById('safe-variant');
+        this.boldVariant = document.getElementById('bold-variant');
+        this.alphaVariant = document.getElementById('alpha-variant');
+        this.generatedQuote = document.getElementById('generated-quote');
+        
         console.log('Elements found:', {
             tweetInput: !!this.tweetInput,
             generateBtn: !!this.generateBtn,
-            analyzeBtn: !!this.analyzeBtn
+            variantsBtn: !!this.variantsBtn,
+            quoteBtn: !!this.quoteBtn
         });
     }
 
@@ -1514,11 +1662,15 @@ class TweetReplyGenerator {
         console.log('Binding events...');
         if (this.analyzeBtn) {
             this.analyzeBtn.addEventListener('click', () => this.analyzeTweet());
-            console.log('Analyze button event bound');
         }
         if (this.generateBtn) {
             this.generateBtn.addEventListener('click', () => this.generateReply());
-            console.log('Generate button event bound');
+        }
+        if (this.variantsBtn) {
+            this.variantsBtn.addEventListener('click', () => this.generateVariants());
+        }
+        if (this.quoteBtn) {
+            this.quoteBtn.addEventListener('click', () => this.generateQuote());
         }
         if (this.copyBtn) {
             this.copyBtn.addEventListener('click', () => this.copyReply());
@@ -1526,18 +1678,77 @@ class TweetReplyGenerator {
         if (this.regenerateBtn) {
             this.regenerateBtn.addEventListener('click', () => this.generateReply());
         }
+        
+        // Copy variant buttons
+        document.querySelectorAll('.copy-variant').forEach(btn => {
+            btn.addEventListener('click', (e) => this.copyVariant(e.target.dataset.variant));
+        });
+        
+        // Quote tweet buttons
+        const copyQuoteBtn = document.getElementById('copy-quote-btn');
+        const regenerateQuoteBtn = document.getElementById('regenerate-quote-btn');
+        if (copyQuoteBtn) {
+            copyQuoteBtn.addEventListener('click', () => this.copyQuote());
+        }
+        if (regenerateQuoteBtn) {
+            regenerateQuoteBtn.addEventListener('click', () => this.generateQuote());
+        }
+        
+        // Save preferences on change
+        [this.personaSelect, this.engagementMode, this.replyLength, this.writingStyle, this.tone, this.includeEmoji].forEach(element => {
+            if (element) {
+                element.addEventListener('change', () => this.saveUserPreferences());
+            }
+        });
+    }
+
+    loadUserPreferences() {
+        try {
+            const saved = localStorage.getItem('cryptoReplyPreferences');
+            if (saved) {
+                const prefs = JSON.parse(saved);
+                if (this.personaSelect && prefs.persona) this.personaSelect.value = prefs.persona;
+                if (this.engagementMode && prefs.engagementMode) this.engagementMode.value = prefs.engagementMode;
+                if (this.replyLength && prefs.length) this.replyLength.value = prefs.length;
+                if (this.writingStyle && prefs.style) this.writingStyle.value = prefs.style;
+                if (this.tone && prefs.tone) this.tone.value = prefs.tone;
+                if (this.includeEmoji && prefs.emoji !== undefined) this.includeEmoji.checked = prefs.emoji;
+            }
+        } catch (error) {
+            console.error('Error loading preferences:', error);
+        }
+    }
+
+    saveUserPreferences() {
+        try {
+            const prefs = {
+                persona: this.personaSelect?.value,
+                engagementMode: this.engagementMode?.value,
+                length: this.replyLength?.value,
+                style: this.writingStyle?.value,
+                tone: this.tone?.value,
+                emoji: this.includeEmoji?.checked
+            };
+            localStorage.setItem('cryptoReplyPreferences', JSON.stringify(prefs));
+        } catch (error) {
+            console.error('Error saving preferences:', error);
+        }
     }
 
     showLoading() {
         this.loading.style.display = 'block';
         this.analyzeBtn.disabled = true;
         this.generateBtn.disabled = true;
+        this.variantsBtn.disabled = true;
+        this.quoteBtn.disabled = true;
     }
 
     hideLoading() {
         this.loading.style.display = 'none';
         this.analyzeBtn.disabled = false;
         this.generateBtn.disabled = false;
+        this.variantsBtn.disabled = false;
+        this.quoteBtn.disabled = false;
     }
 
     showError(message) {
@@ -1545,10 +1756,7 @@ class TweetReplyGenerator {
         errorDiv.className = 'error';
         errorDiv.textContent = message;
         
-        // Remove existing errors
         document.querySelectorAll('.error').forEach(el => el.remove());
-        
-        // Add new error
         this.loading.parentNode.insertBefore(errorDiv, this.loading);
         
         setTimeout(() => errorDiv.remove(), 5000);
@@ -1559,10 +1767,7 @@ class TweetReplyGenerator {
         successDiv.className = 'success';
         successDiv.textContent = message;
         
-        // Remove existing success messages
         document.querySelectorAll('.success').forEach(el => el.remove());
-        
-        // Add new success message
         this.loading.parentNode.insertBefore(successDiv, this.loading);
         
         setTimeout(() => successDiv.remove(), 3000);
@@ -1586,57 +1791,29 @@ class TweetReplyGenerator {
         return result;
     }
 
-    // Clean AI response from unwanted tags and artifacts
     cleanAIResponse(text) {
         if (!text) return '';
         
         let cleaned = text;
         
-        // Remove common AI artifacts and tags
         const artifactsToRemove = [
-            /<s>/g,
-            /<\/s>/g,
-            /\[s\]/g,
-            /\[\/s\]/g,
-            /\[BOT\]/g,
-            /\[\/BOT\]/g,
-            /\[B_INST\]/g,
-            /\[\/B_INST\]/g,
-            /\[INST\]/g,
-            /\[\/INST\]/g,
-            /\[SYS\]/g,
-            /\[\/SYS\]/g,
-            /<\|im_start\|>/g,
-            /<\|im_end\|>/g,
-            /<\|system\|>/g,
-            /<\|user\|>/g,
-            /<\|assistant\|>/g,
-            /\[SYSTEM\]/g,
-            /\[\/SYSTEM\]/g,
-            /\[USER\]/g,
-            /\[\/USER\]/g,
-            /\[ASSISTANT\]/g,
-            /\[\/ASSISTANT\]/g,
-            // Remove any remaining XML-like tags
-            /<[^>]*>/g,
-            // Remove square bracket tags with underscores and slashes
-            /\[[A-Z_\/]+\]/g,
-            // Remove any remaining square bracket patterns
-            /\[[^\]]*INST[^\]]*\]/g,
-            /\[[^\]]*BOT[^\]]*\]/g,
-            /\[[^\]]*SYS[^\]]*\]/g
+            /<s>/g, /<\/s>/g, /\[s\]/g, /\[\/s\]/g,
+            /\[BOT\]/g, /\[\/BOT\]/g, /\[B_INST\]/g, /\[\/B_INST\]/g,
+            /\[INST\]/g, /\[\/INST\]/g, /\[SYS\]/g, /\[\/SYS\]/g,
+            /<\|im_start\|>/g, /<\|im_end\|>/g, /<\|system\|>/g,
+            /<\|user\|>/g, /<\|assistant\|>/g, /\[SYSTEM\]/g,
+            /\[\/SYSTEM\]/g, /\[USER\]/g, /\[\/USER\]/g,
+            /\[ASSISTANT\]/g, /\[\/ASSISTANT\]/g, /<[^>]*>/g,
+            /\[[A-Z_\/]+\]/g, /\[[^\]]*INST[^\]]*\]/g,
+            /\[[^\]]*BOT[^\]]*\]/g, /\[[^\]]*SYS[^\]]*\]/g
         ];
         
-        // Apply all cleaning rules
         artifactsToRemove.forEach(pattern => {
             cleaned = cleaned.replace(pattern, '');
         });
         
-        // Clean up extra whitespace
-        cleaned = cleaned.trim();
-        cleaned = cleaned.replace(/\s+/g, ' ');
+        cleaned = cleaned.trim().replace(/\s+/g, ' ');
         
-        // Remove leading/trailing quotes if they wrap the entire response
         if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || 
             (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
             cleaned = cleaned.slice(1, -1).trim();
@@ -1686,22 +1863,35 @@ class TweetReplyGenerator {
             this.showLoading();
             
             const preferences = {
-                length: this.replyLength.value,
-                style: this.writingStyle.value,
-                tone: this.tone.value,
-                emoji: this.includeEmoji.checked
+                length: this.replyLength?.value || 'medium',
+                style: this.writingStyle?.value || 'casual',
+                tone: this.tone?.value || 'neutral',
+                emoji: this.includeEmoji?.checked || false
             };
+
+            const persona = this.personaSelect?.value || 'builder';
+            const engagementMode = this.engagementMode?.value || 'neutral';
 
             const result = await this.makeAPIRequest('generate-reply', { 
                 tweet, 
-                preferences 
+                preferences,
+                persona,
+                engagementMode
             });
             
             const cleanedReply = this.cleanAIResponse(result.reply);
             this.generatedReply.textContent = cleanedReply;
-            this.outputSection.style.display = 'block';
             
-            // Scroll to result
+            // Show context info if available
+            if (result.context && this.contextInfo) {
+                this.contextInfo.textContent = `Context: ${result.context.replace('_', ' ')}`;
+                this.contextInfo.style.display = 'block';
+            }
+            
+            this.outputSection.style.display = 'block';
+            this.variantsSection.style.display = 'none';
+            this.quoteSection.style.display = 'none';
+            
             this.outputSection.scrollIntoView({ 
                 behavior: 'smooth', 
                 block: 'start' 
@@ -1713,6 +1903,106 @@ class TweetReplyGenerator {
                 this.showError('Rate limit exceeded. Please wait a moment before trying again.');
             } else {
                 this.showError(error.message || 'Failed to generate reply. Please try again.');
+            }
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    async generateVariants() {
+        const tweet = this.tweetInput.value.trim();
+        
+        if (!tweet) {
+            this.showError('Please paste a tweet first');
+            return;
+        }
+
+        try {
+            this.showLoading();
+            
+            const preferences = {
+                length: this.replyLength?.value || 'medium',
+                style: this.writingStyle?.value || 'casual',
+                tone: this.tone?.value || 'neutral',
+                emoji: this.includeEmoji?.checked || false
+            };
+
+            const persona = this.personaSelect?.value || 'builder';
+            const engagementMode = this.engagementMode?.value || 'neutral';
+
+            const result = await this.makeAPIRequest('generate-reply', { 
+                tweet, 
+                preferences,
+                persona,
+                engagementMode,
+                generateVariants: true
+            });
+            
+            if (result.variants) {
+                this.safeVariant.textContent = this.cleanAIResponse(result.variants.safe);
+                this.boldVariant.textContent = this.cleanAIResponse(result.variants.bold);
+                this.alphaVariant.textContent = this.cleanAIResponse(result.variants.alpha);
+                
+                this.variantsSection.style.display = 'block';
+                this.outputSection.style.display = 'none';
+                this.quoteSection.style.display = 'none';
+                
+                this.variantsSection.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
+            
+        } catch (error) {
+            console.error('Variants generation error:', error);
+            if (error.message.includes('Rate limit')) {
+                this.showError('Rate limit exceeded. Please wait a moment before trying again.');
+            } else {
+                this.showError(error.message || 'Failed to generate variants. Please try again.');
+            }
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    async generateQuote() {
+        const tweet = this.tweetInput.value.trim();
+        
+        if (!tweet) {
+            this.showError('Please paste a tweet first');
+            return;
+        }
+
+        try {
+            this.showLoading();
+            
+            const persona = this.personaSelect?.value || 'builder';
+            const engagementMode = this.engagementMode?.value || 'neutral';
+
+            const result = await this.makeAPIRequest('generate-quote', { 
+                tweet,
+                persona,
+                engagementMode
+            });
+            
+            const cleanedQuote = this.cleanAIResponse(result.quote);
+            this.generatedQuote.textContent = cleanedQuote;
+            
+            this.quoteSection.style.display = 'block';
+            this.outputSection.style.display = 'none';
+            this.variantsSection.style.display = 'none';
+            
+            this.quoteSection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+            
+        } catch (error) {
+            console.error('Quote generation error:', error);
+            if (error.message.includes('Rate limit')) {
+                this.showError('Rate limit exceeded. Please wait a moment before trying again.');
+            } else {
+                this.showError(error.message || 'Failed to generate quote tweet. Please try again.');
             }
         } finally {
             this.hideLoading();
@@ -1733,107 +2023,81 @@ class TweetReplyGenerator {
             }, 2000);
             
         } catch (error) {
-            // Fallback for older browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = this.generatedReply.textContent;
-            document.body.appendChild(textArea);
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
-                this.showSuccess('Reply copied to clipboard!');
-            } catch (err) {
-                this.showError('Failed to copy to clipboard');
-            }
-            
-            document.body.removeChild(textArea);
+            this.fallbackCopy(this.generatedReply.textContent);
         }
+    }
+
+    async copyVariant(variant) {
+        const variantElement = document.getElementById(`${variant}-variant`);
+        if (!variantElement) return;
+        
+        try {
+            await navigator.clipboard.writeText(variantElement.textContent);
+            
+            const btn = document.querySelector(`[data-variant="${variant}"]`);
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied! ✓';
+            btn.style.background = '#28a745';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 2000);
+            
+        } catch (error) {
+            this.fallbackCopy(variantElement.textContent);
+        }
+    }
+
+    async copyQuote() {
+        try {
+            await navigator.clipboard.writeText(this.generatedQuote.textContent);
+            
+            const copyQuoteBtn = document.getElementById('copy-quote-btn');
+            const originalText = copyQuoteBtn.textContent;
+            copyQuoteBtn.textContent = 'Copied! ✓';
+            copyQuoteBtn.style.background = '#28a745';
+            
+            setTimeout(() => {
+                copyQuoteBtn.textContent = originalText;
+                copyQuoteBtn.style.background = '';
+            }, 2000);
+            
+        } catch (error) {
+            this.fallbackCopy(this.generatedQuote.textContent);
+        }
+    }
+
+    fallbackCopy(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            this.showSuccess('Copied to clipboard!');
+        } catch (err) {
+            this.showError('Failed to copy to clipboard');
+        }
+        
+        document.body.removeChild(textArea);
     }
 }
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    const generateBtn = document.getElementById('generate-btn');
-    const tweetInput = document.getElementById('tweet-input');
-    const loading = document.getElementById('loading');
-    const outputSection = document.getElementById('output-section');
-    const generatedReply = document.getElementById('generated-reply');
+    new CryptoTweetReplyGenerator();
     
-    generateBtn.addEventListener('click', async () => {
-        const tweet = tweetInput.value.trim();
-        
-        if (!tweet) {
-            alert('Please paste a tweet first');
-            return;
-        }
-        
-        // Show loading
-        loading.style.display = 'block';
-        generateBtn.disabled = true;
-        
-        try {
-            const preferences = {
-                length: document.getElementById('reply-length').value,
-                style: document.getElementById('writing-style').value,
-                tone: document.getElementById('tone').value,
-                emoji: document.getElementById('include-emoji').checked
-            };
-
-            const response = await fetch('/api/generate-reply', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ tweet, preferences })
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.error || 'Failed to generate reply');
-            }
-
-            // Clean and display result
-            let cleanedReply = result.reply || '';
-            cleanedReply = cleanedReply.replace(/^["']|["']$/g, '').trim();
-            
-            generatedReply.textContent = cleanedReply;
-            outputSection.style.display = 'block';
-            
-        } catch (error) {
-            alert('Error: ' + error.message);
-        } finally {
-            loading.style.display = 'none';
-            generateBtn.disabled = false;
-        }
-    });
-    
-    // Copy button
-    const copyBtn = document.getElementById('copy-btn');
-    if (copyBtn) {
-        copyBtn.addEventListener('click', async () => {
-            try {
-                await navigator.clipboard.writeText(generatedReply.textContent);
-                copyBtn.textContent = 'Copied!';
-                setTimeout(() => copyBtn.textContent = 'Copy Reply', 2000);
-            } catch (error) {
-                alert('Failed to copy to clipboard');
-            }
-        });
-    }
-    
-    // Regenerate button
-    const regenerateBtn = document.getElementById('regenerate-btn');
-    if (regenerateBtn) {
-        regenerateBtn.addEventListener('click', () => {
-            // Trigger the same generate function
-            generateBtn.click();
-        });
-    }
+    // Add rate limit info
+    const container = document.querySelector('.container');
+    const rateLimitInfo = document.createElement('div');
+    rateLimitInfo.className = 'rate-limit-info';
+    rateLimitInfo.textContent = '⚡ Free crypto engagement tool with rate limits: 10 requests per minute';
+    container.appendChild(rateLimitInfo);
 });
 
 async function downloadExtension() {
-    // Redirect to installation page
     window.location.href = '/install';
 }
     </script>
