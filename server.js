@@ -609,11 +609,13 @@ app.get('/api/health', (req, res) => {
     const healthStatus = {
         status: 'OK',
         timestamp: new Date().toISOString(),
-        version: '1.0.0',
+        version: '1.0.1', // Updated to force redeploy
         environment: process.env.NODE_ENV || 'development',
         uptime: process.uptime(),
         memory: process.memoryUsage(),
-        apiKey: process.env.OPENROUTER_API_KEY ? 'configured' : 'missing'
+        apiKey: process.env.OPENROUTER_API_KEY ? 'configured' : 'missing',
+        apiKeyLength: process.env.OPENROUTER_API_KEY ? process.env.OPENROUTER_API_KEY.length : 0,
+        apiKeyPrefix: process.env.OPENROUTER_API_KEY ? process.env.OPENROUTER_API_KEY.substring(0, 12) + '...' : 'none'
     };
     
     res.json(healthStatus);
