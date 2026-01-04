@@ -111,7 +111,7 @@ async function makeOpenRouterRequest(messages, maxTokens = 500) {
     
     try {
         const requestBody = {
-            model: 'google/gemini-2.0-flash-exp:free',
+            model: 'meta-llama/llama-3.3-70b-instruct:free',
             messages: messages,
             max_tokens: maxTokens,
             temperature: 0.7
@@ -440,7 +440,7 @@ USAGE:
 - Extension users can auto-fill directly on Twitter
 
 TECHNICAL:
-- Uses OpenRouter API with Mistral AI model
+- Uses OpenRouter API with Meta Llama AI model
 - Secure backend handles API calls
 - Rate limited for fair usage
 - No user data stored
@@ -689,9 +689,9 @@ Return only the reply text, no labels or prefixes.`
 
 app.get('/api/extension-version', (req, res) => {
     res.json({
-        version: '1.2.0', // Update this when you release new versions
+        version: '1.2.1', // Update this when you release new versions
         downloadUrl: `${process.env.SITE_URL || 'http://localhost:3000'}/install`,
-        releaseNotes: 'Enhanced rate limiting with user-friendly messages, proactive warnings, and request throttling with cooldown timers.',
+        releaseNotes: 'Switched to Meta Llama 3.3 70B model for improved response quality. Enhanced rate limiting with user-friendly messages.',
         required: false // Set to true for critical updates
     });
 });
