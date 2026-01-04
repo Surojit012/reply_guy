@@ -1805,15 +1805,26 @@ class CryptoTweetReplyGenerator {
             /\[\/SYSTEM\]/g, /\[USER\]/g, /\[\/USER\]/g,
             /\[ASSISTANT\]/g, /\[\/ASSISTANT\]/g, /<[^>]*>/g,
             /\[[A-Z_\/]+\]/g, /\[[^\]]*INST[^\]]*\]/g,
-            /\[[^\]]*BOT[^\]]*\]/g, /\[[^\]]*SYS[^\]]*\]/g
+            /\[[^\]]*BOT[^\]]*\]/g, /\[[^\]]*SYS[^\]]*\]/g,
+            // Remove variant labels and formatting
+            /\*\*SAFE:\*\*/g, /\*\*BOLD:\*\*/g, /\*\*ALPHA:\*\*/g,
+            /Safe:/g, /Bold:/g, /Alpha:/g,
+            /Safe Reply:/g, /Bold Reply:/g, /Alpha Reply:/g,
+            /\*\*Safe\*\*/g, /\*\*Bold\*\*/g, /\*\*Alpha\*\*/g,
+            // Remove line labels
+            /Line 1:/g, /Line 2:/g, /Hook:/g, /Supporting:/g,
+            // Remove extra asterisks and formatting
+            /\*\*\*+/g, /\*\*/g
         ];
         
         artifactsToRemove.forEach(pattern => {
             cleaned = cleaned.replace(pattern, '');
         });
         
-        cleaned = cleaned.trim().replace(/\s+/g, ' ');
+        // Clean up extra whitespace and newlines
+        cleaned = cleaned.trim().replace(/\s+/g, ' ').replace(/\n\s*\n/g, '\n');
         
+        // Remove leading/trailing quotes
         if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || 
             (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
             cleaned = cleaned.slice(1, -1).trim();

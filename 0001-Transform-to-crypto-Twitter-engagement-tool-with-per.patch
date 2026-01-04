@@ -1,0 +1,1750 @@
+From 93da40dc43394ecfbc3640a9f98124cdfb5332c0 Mon Sep 17 00:00:00 2001
+From: Surojit012 <surojitguha58648@gmail.com>
+Date: Mon, 5 Jan 2026 00:04:56 +0530
+Subject: [PATCH] Transform to crypto Twitter engagement tool with personas,
+ variants, and quote tweets
+
+- Add crypto context detection (partnership, technical, hot take, etc.)
+- Implement 6 crypto personas (Builder, Trader, Researcher, Degen, Founder, Community)
+- Add 3 engagement modes (Neutral, Engagement Max, Signal Only)
+- Create reply variants system (Safe, Bold, Alpha)
+- Add quote tweet generator with hooks and supporting lines
+- Implement session memory for user preferences
+- Update UI with crypto-native design and terminology
+- Enhance Chrome extension with all crypto features
+- Add comprehensive crypto context awareness to AI prompts
+- Update branding to 'Crypto Twitter Engagement Tool'
+- Maintain mobile-first responsive design
+- Add new API endpoints for quote generation and variants
+---
+ README.md               | 107 ++++++--
+ extension/manifest.json |   4 +-
+ extension/popup.css     |  67 +++++
+ extension/popup.html    |  72 ++++-
+ extension/popup.js      | 275 ++++++++++++++++---
+ public/index.html       | 566 +++++++++++++++++++++++++++++-----------
+ server.js               | 189 ++++++++++++--
+ 7 files changed, 1041 insertions(+), 239 deletions(-)
+
+diff --git a/README.md b/README.md
+index 0b0c911..39c1ac0 100644
+--- a/README.md
++++ b/README.md
+@@ -1,16 +1,29 @@
+-# Tweet Reply Generator
++# Reply Guy - Crypto Twitter Engagement Tool
+ 
+-A full-stack AI-powered web application that analyzes tweets and generates personalized replies. Built with secure backend API handling and rate limiting for public use.
++A context-aware crypto Twitter engagement tool that generates persona-based replies, variants, and quote tweets. Built with secure backend API and designed specifically for crypto Twitter interactions.
+ 
+-## Features
++## 🚀 Features
+ 
+-- **Tweet Analysis**: AI analyzes the original tweet's purpose, tone, and context
+-- **Customizable Replies**: Control length, writing style, tone, and emoji usage
+-- **Dark Theme**: Beautiful gradient design optimized for dark mode
+-- **Secure Backend**: API key stored safely on server, not exposed to users
+-- **Rate Limiting**: Built-in protection against abuse (10 requests/minute per IP)
+-- **Responsive Design**: Works on desktop and mobile devices
+-- **Production Ready**: Includes security headers, CORS, and error handling
++### Core Crypto Features
++- **Tweet Context Detection**: Automatically classifies tweets (announcement, technical thread, hot take, opinion, partnership/launch)
++- **Crypto Personas**: Builder, Trader, Researcher, Degen, Founder, Community personas
++- **Engagement Modes**: Engagement Max, Neutral, Signal-only modes
++- **Reply Variants**: Generate Safe, Bold, and Alpha variants for each tweet
++- **Quote Tweet Generator**: Create compelling quote tweets with hooks and supporting lines
++- **Session Memory**: Saves user preferences locally
++
++### Advanced Capabilities
++- **Thread-Aware Mode**: Detects and responds appropriately to tweet threads
++- **Crypto-Native Language**: Uses proper crypto terminology and context
++- **Context-Aware Responses**: Adjusts tone and structure based on tweet type
++- **Mobile-First Design**: Optimized for crypto Twitter's mobile-heavy usage
++
++### Technical Features
++- **Chrome Extension**: Direct Twitter integration with auto-fill and paste
++- **Secure Backend**: API key stored safely on server
++- **Rate Limiting**: 10 requests/minute protection
++- **Responsive Design**: Works perfectly on all devices
++- **Zero Chrome Store Cost**: Direct installation without store approval
+ 
+ ## Quick Start
+ 
+@@ -47,20 +60,44 @@ npm start
+ 
+ Visit `http://localhost:3000` to use the app!
+ 
+-## Usage
+-
+-1. **Paste Tweet**: Copy and paste the tweet you want to reply to
+-2. **Analyze (Optional)**: Click "Analyze Tweet" to understand the context
+-3. **Set Preferences**: Choose your reply length, style, tone, and emoji preference
+-4. **Generate**: Click "Generate Reply" to create your response
+-5. **Copy & Use**: Copy the generated reply to use on Twitter
+-
+-## Customization Options
+-
+-- **Length**: Short (1-2 sentences), Medium (2-3 sentences), Long (3-4 sentences)
+-- **Style**: Casual, Professional, Friendly, Witty, Supportive, Informative
+-- **Tone**: Neutral, Positive, Enthusiastic, Empathetic, Humorous, Thoughtful
+-- **Emojis**: Toggle emoji inclusion on/off
++## 🎯 Usage
++
++### Website (reply-guy-eta.vercel.app)
++1. **Paste Tweet**: Copy any crypto tweet you want to engage with
++2. **Choose Persona**: Select your crypto persona (Builder, Trader, etc.)
++3. **Set Engagement Mode**: Choose your engagement strategy
++4. **Generate Options**:
++   - **Single Reply**: Generate one optimized reply
++   - **3 Variants**: Get Safe, Bold, and Alpha versions
++   - **Quote Tweet**: Create a compelling quote tweet
++5. **Copy & Engage**: Use the generated content on Twitter
++
++### Chrome Extension
++1. **Install**: Download and install the extension directly
++2. **Auto-Fill**: Click to extract tweet text from Twitter
++3. **Generate**: Create replies without leaving Twitter
++4. **Paste**: Directly insert replies into Twitter's reply box
++
++## ⚙️ Crypto Engagement Settings
++
++### Personas
++- **🔨 Builder**: Technical focus, development-oriented responses
++- **📈 Trader**: Market-focused, price action commentary
++- **🔬 Researcher**: Data-driven, analytical insights
++- **🎲 Degen**: High-risk plays, meme-friendly, casual
++- **🚀 Founder**: Strategic thinking, ecosystem development
++- **🤝 Community**: Collaborative, educational, inclusive
++
++### Engagement Modes
++- **⚖️ Neutral**: Balanced, safe engagement
++- **🔥 Engagement Max**: Hooks, questions, conversation starters
++- **🎯 Signal Only**: Pure insights, minimal fluff
++
++### Customization Options
++- **Length**: Ultra-short to long responses
++- **Style**: Casual, Professional, Technical, Alpha, etc.
++- **Tone**: Neutral, Confident, Contrarian, Bullish, Analytical
++- **Emojis**: Toggle crypto-appropriate emojis
+ 
+ ## Technical Architecture
+ 
+@@ -77,10 +114,28 @@ Visit `http://localhost:3000` to use the app!
+ - **Accessibility**: Proper ARIA labels and keyboard navigation
+ 
+ ### API Endpoints
+-- `POST /api/analyze` - Analyze tweet content
+-- `POST /api/generate-reply` - Generate personalized replies
++- `POST /api/analyze` - Analyze tweet content and context
++- `POST /api/generate-reply` - Generate crypto-aware replies with persona/mode
++- `POST /api/generate-quote` - Generate quote tweets with hooks
++- `GET /api/extension-version` - Extension update checking
+ - `GET /api/health` - Health check endpoint
+ 
++## 🔧 Crypto Context Detection
++
++The AI automatically detects tweet types:
++- **Partnership/Launch**: Announcements, partnerships, product launches
++- **Technical Thread**: Deep dives, technical explanations, tutorials
++- **Hot Take**: Controversial opinions, debate starters
++- **Opinion**: Personal views, market commentary
++- **Announcement**: News, updates, breaking information
++- **General**: Standard crypto discussion
++
++## 🎨 Reply Variants Explained
++
++- **🛡️ Safe**: Conservative, broadly acceptable, low-risk responses
++- **🔥 Bold**: Confident, opinionated, conversation-starting replies
++- **⚡ Alpha**: High-conviction, contrarian, thought-leadership content
++
+ ## Deployment
+ 
+ ### Environment Variables
+diff --git a/extension/manifest.json b/extension/manifest.json
+index f086c87..43b1504 100644
+--- a/extension/manifest.json
++++ b/extension/manifest.json
+@@ -1,8 +1,8 @@
+ {
+   "manifest_version": 3,
+-  "name": "Reply Guy",
++  "name": "Reply Guy - Crypto Twitter Tool",
+   "version": "1.0.0",
+-  "description": "AI-powered tweet replies tailored to your style",
++  "description": "Context-aware crypto Twitter engagement tool with persona-based replies and variants",
+   "permissions": [
+     "activeTab",
+     "storage",
+diff --git a/extension/popup.css b/extension/popup.css
+index 98a5c7d..ef0805d 100644
+--- a/extension/popup.css
++++ b/extension/popup.css
+@@ -275,4 +275,71 @@ textarea {
+ 
+ ::-webkit-scrollbar-thumb:hover {
+     background: rgba(255, 107, 53, 0.8);
++}
++
++/* Crypto Features Styles */
++.context-info {
++    background: rgba(255, 107, 53, 0.1);
++    border: 1px solid rgba(255, 107, 53, 0.3);
++    border-radius: 6px;
++    padding: 8px;
++    margin-bottom: 10px;
++    font-size: 11px;
++    color: #ffcc02;
++}
++
++.variants-section, .quote-section {
++    background: rgba(0, 0, 0, 0.3);
++    backdrop-filter: blur(15px);
++    border-radius: 15px;
++    padding: 15px;
++    margin-bottom: 15px;
++    border: 2px solid rgba(255, 107, 53, 0.3);
++    box-shadow: 0 4px 20px rgba(255, 107, 53, 0.2);
++}
++
++.variants-container {
++    display: flex;
++    flex-direction: column;
++    gap: 12px;
++}
++
++.variant-item {
++    background: rgba(255, 255, 255, 0.05);
++    border-radius: 10px;
++    padding: 12px;
++    border: 1px solid rgba(255, 107, 53, 0.2);
++}
++
++.variant-item h4 {
++    color: #ff6b35;
++    margin-bottom: 8px;
++    font-size: 0.9rem;
++}
++
++.quote-box {
++    background: rgba(0, 0, 0, 0.2);
++    border-radius: 8px;
++    padding: 12px;
++    border-left: 3px solid #ffcc02;
++    margin: 10px 0;
++    white-space: pre-wrap;
++    word-wrap: break-word;
++    box-shadow: 0 2px 8px rgba(255, 204, 2, 0.2);
++    font-size: 12px;
++    max-height: 120px;
++    overflow-y: auto;
++}
++
++.btn-sm {
++    padding: 6px 10px;
++    font-size: 11px;
++    min-width: 50px;
++}
++
++.variants-section h3, .quote-section h3 {
++    color: #ff6b35;
++    margin-bottom: 12px;
++    font-size: 1rem;
++    text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+ }
+\ No newline at end of file
+diff --git a/extension/popup.html b/extension/popup.html
+index 63d1147..d195ffa 100644
+--- a/extension/popup.html
++++ b/extension/popup.html
+@@ -10,7 +10,7 @@
+     <div class="container">
+         <header>
+             <h1>🔥 Reply Guy</h1>
+-            <p>AI-powered replies tailored to your style</p>
++            <p>Context-aware Crypto Twitter engagement tool</p>
+         </header>
+ 
+         <main>
+@@ -27,8 +27,31 @@
+                 </div>
+ 
+                 <div class="preferences-section">
+-                    <h3>⚙️ Reply Preferences</h3>
++                    <h3>⚙️ Crypto Engagement Settings</h3>
+                     
++                    <div class="form-row">
++                        <div class="form-group">
++                            <label for="persona-select">Persona:</label>
++                            <select id="persona-select">
++                                <option value="builder">🔨 Builder</option>
++                                <option value="trader">📈 Trader</option>
++                                <option value="researcher">🔬 Researcher</option>
++                                <option value="degen">🎲 Degen</option>
++                                <option value="founder">🚀 Founder</option>
++                                <option value="community">🤝 Community</option>
++                            </select>
++                        </div>
++
++                        <div class="form-group">
++                            <label for="engagement-mode">Engagement Mode:</label>
++                            <select id="engagement-mode">
++                                <option value="neutral">⚖️ Neutral</option>
++                                <option value="engagement_max">🔥 Engagement Max</option>
++                                <option value="signal_only">🎯 Signal Only</option>
++                            </select>
++                        </div>
++                    </div>
++
+                     <div class="form-row">
+                         <div class="form-group">
+                             <label for="reply-length">Length:</label>
+@@ -47,8 +70,8 @@
+                                 <option value="professional">Professional</option>
+                                 <option value="friendly">Friendly</option>
+                                 <option value="witty">Witty</option>
+-                                <option value="supportive">Supportive</option>
+-                                <option value="informative">Informative</option>
++                                <option value="technical">Technical</option>
++                                <option value="alpha">Alpha</option>
+                             </select>
+                         </div>
+                     </div>
+@@ -59,10 +82,10 @@
+                             <select id="tone">
+                                 <option value="neutral" selected>Neutral</option>
+                                 <option value="positive">Positive</option>
+-                                <option value="enthusiastic">Enthusiastic</option>
+-                                <option value="empathetic">Empathetic</option>
+-                                <option value="humorous">Humorous</option>
+-                                <option value="thoughtful">Thoughtful</option>
++                                <option value="confident">Confident</option>
++                                <option value="contrarian">Contrarian</option>
++                                <option value="bullish">Bullish</option>
++                                <option value="analytical">Analytical</option>
+                             </select>
+                         </div>
+ 
+@@ -79,11 +102,14 @@
+                 <div class="button-group">
+                     <button id="analyze-btn" class="btn btn-secondary">Analyze</button>
+                     <button id="generate-btn" class="btn btn-primary">Generate Reply</button>
++                    <button id="variants-btn" class="btn btn-outline">3 Variants</button>
++                    <button id="quote-btn" class="btn btn-outline">Quote Tweet</button>
+                 </div>
+             </div>
+ 
+             <div class="output-section" id="output-section" style="display: none;">
+                 <h3>✨ Generated Reply</h3>
++                <div id="context-info" class="context-info" style="display: none;"></div>
+                 <div id="generated-reply" class="reply-box"></div>
+                 <div class="reply-actions">
+                     <button id="copy-btn" class="btn btn-outline">Copy</button>
+@@ -92,6 +118,36 @@
+                 </div>
+             </div>
+ 
++            <div class="variants-section" id="variants-section" style="display: none;">
++                <h3>🎯 Reply Variants</h3>
++                <div class="variants-container">
++                    <div class="variant-item">
++                        <h4>🛡️ Safe</h4>
++                        <div id="safe-variant" class="reply-box"></div>
++                        <button class="btn btn-sm btn-outline copy-variant" data-variant="safe">Copy</button>
++                    </div>
++                    <div class="variant-item">
++                        <h4>🔥 Bold</h4>
++                        <div id="bold-variant" class="reply-box"></div>
++                        <button class="btn btn-sm btn-outline copy-variant" data-variant="bold">Copy</button>
++                    </div>
++                    <div class="variant-item">
++                        <h4>⚡ Alpha</h4>
++                        <div id="alpha-variant" class="reply-box"></div>
++                        <button class="btn btn-sm btn-outline copy-variant" data-variant="alpha">Copy</button>
++                    </div>
++                </div>
++            </div>
++
++            <div class="quote-section" id="quote-section" style="display: none;">
++                <h3>💬 Quote Tweet</h3>
++                <div id="generated-quote" class="quote-box"></div>
++                <div class="reply-actions">
++                    <button id="copy-quote-btn" class="btn btn-outline">Copy Quote</button>
++                    <button id="regenerate-quote-btn" class="btn btn-secondary">Regenerate</button>
++                </div>
++            </div>
++
+             <div class="loading" id="loading" style="display: none;">
+                 <div class="spinner"></div>
+                 <p>Generating your perfect reply...</p>
+diff --git a/extension/popup.js b/extension/popup.js
+index 2624337..d6e0610 100644
+--- a/extension/popup.js
++++ b/extension/popup.js
+@@ -1,8 +1,7 @@
+-class ReplyGuyExtension {
++class CryptoReplyGuyExtension {
+     constructor() {
+-        // Clean server URL without any hidden characters
+         this.serverUrl = 'https://reply-guy-eta.vercel.app';
+-        console.log('Extension initialized with server URL:', this.serverUrl);
++        console.log('Crypto Extension initialized with server URL:', this.serverUrl);
+         this.initializeElements();
+         this.bindEvents();
+         this.loadSettings();
+@@ -12,6 +11,8 @@ class ReplyGuyExtension {
+         this.tweetInput = document.getElementById('tweet-input');
+         this.analyzeBtn = document.getElementById('analyze-btn');
+         this.generateBtn = document.getElementById('generate-btn');
++        this.variantsBtn = document.getElementById('variants-btn');
++        this.quoteBtn = document.getElementById('quote-btn');
+         this.copyBtn = document.getElementById('copy-btn');
+         this.pasteTwitterBtn = document.getElementById('paste-twitter-btn');
+         this.regenerateBtn = document.getElementById('regenerate-btn');
+@@ -20,14 +21,26 @@ class ReplyGuyExtension {
+         this.analysisSection = document.getElementById('analysis-section');
+         this.analysisResult = document.getElementById('analysis-result');
+         this.outputSection = document.getElementById('output-section');
++        this.variantsSection = document.getElementById('variants-section');
++        this.quoteSection = document.getElementById('quote-section');
+         this.generatedReply = document.getElementById('generated-reply');
++        this.contextInfo = document.getElementById('context-info');
+         this.loading = document.getElementById('loading');
+         
++        // Crypto settings
++        this.personaSelect = document.getElementById('persona-select');
++        this.engagementMode = document.getElementById('engagement-mode');
+         this.replyLength = document.getElementById('reply-length');
+         this.writingStyle = document.getElementById('writing-style');
+         this.tone = document.getElementById('tone');
+         this.includeEmoji = document.getElementById('include-emoji');
+         
++        // Variant elements
++        this.safeVariant = document.getElementById('safe-variant');
++        this.boldVariant = document.getElementById('bold-variant');
++        this.alphaVariant = document.getElementById('alpha-variant');
++        this.generatedQuote = document.getElementById('generated-quote');
++        
+         // Hide API key section since we're using backend
+         const apiSection = document.getElementById('api-section');
+         if (apiSection) {
+@@ -36,29 +49,66 @@ class ReplyGuyExtension {
+     }
+ 
+     bindEvents() {
+-        this.analyzeBtn.addEventListener('click', () => this.analyzeTweet());
+-        this.generateBtn.addEventListener('click', () => this.generateReply());
+-        this.copyBtn.addEventListener('click', () => this.copyReply());
+-        this.pasteTwitterBtn.addEventListener('click', () => this.pasteToTwitter());
+-        this.regenerateBtn.addEventListener('click', () => this.generateReply());
+-        this.autoFillBtn.addEventListener('click', () => this.autoFillFromTwitter());
++        if (this.analyzeBtn) {
++            this.analyzeBtn.addEventListener('click', () => this.analyzeTweet());
++        }
++        if (this.generateBtn) {
++            this.generateBtn.addEventListener('click', () => this.generateReply());
++        }
++        if (this.variantsBtn) {
++            this.variantsBtn.addEventListener('click', () => this.generateVariants());
++        }
++        if (this.quoteBtn) {
++            this.quoteBtn.addEventListener('click', () => this.generateQuote());
++        }
++        if (this.copyBtn) {
++            this.copyBtn.addEventListener('click', () => this.copyReply());
++        }
++        if (this.pasteTwitterBtn) {
++            this.pasteTwitterBtn.addEventListener('click', () => this.pasteToTwitter());
++        }
++        if (this.regenerateBtn) {
++            this.regenerateBtn.addEventListener('click', () => this.generateReply());
++        }
++        if (this.autoFillBtn) {
++            this.autoFillBtn.addEventListener('click', () => this.autoFillFromTwitter());
++        }
++        
++        // Copy variant buttons
++        document.querySelectorAll('.copy-variant').forEach(btn => {
++            btn.addEventListener('click', (e) => this.copyVariant(e.target.dataset.variant));
++        });
++        
++        // Quote tweet buttons
++        const copyQuoteBtn = document.getElementById('copy-quote-btn');
++        const regenerateQuoteBtn = document.getElementById('regenerate-quote-btn');
++        if (copyQuoteBtn) {
++            copyQuoteBtn.addEventListener('click', () => this.copyQuote());
++        }
++        if (regenerateQuoteBtn) {
++            regenerateQuoteBtn.addEventListener('click', () => this.generateQuote());
++        }
+         
+         // Save preferences when changed
+-        [this.replyLength, this.writingStyle, this.tone, this.includeEmoji].forEach(element => {
+-            element.addEventListener('change', () => this.saveSettings());
++        [this.personaSelect, this.engagementMode, this.replyLength, this.writingStyle, this.tone, this.includeEmoji].forEach(element => {
++            if (element) {
++                element.addEventListener('change', () => this.saveSettings());
++            }
+         });
+     }
+ 
+     async loadSettings() {
+         try {
+             const result = await chrome.storage.sync.get([
+-                'replyLength', 'writingStyle', 'tone', 'includeEmoji'
++                'persona', 'engagementMode', 'replyLength', 'writingStyle', 'tone', 'includeEmoji'
+             ]);
+             
+-            if (result.replyLength) this.replyLength.value = result.replyLength;
+-            if (result.writingStyle) this.writingStyle.value = result.writingStyle;
+-            if (result.tone) this.tone.value = result.tone;
+-            if (result.includeEmoji !== undefined) this.includeEmoji.checked = result.includeEmoji;
++            if (this.personaSelect && result.persona) this.personaSelect.value = result.persona;
++            if (this.engagementMode && result.engagementMode) this.engagementMode.value = result.engagementMode;
++            if (this.replyLength && result.replyLength) this.replyLength.value = result.replyLength;
++            if (this.writingStyle && result.writingStyle) this.writingStyle.value = result.writingStyle;
++            if (this.tone && result.tone) this.tone.value = result.tone;
++            if (this.includeEmoji && result.includeEmoji !== undefined) this.includeEmoji.checked = result.includeEmoji;
+             
+         } catch (error) {
+             console.error('Error loading settings:', error);
+@@ -68,10 +118,12 @@ class ReplyGuyExtension {
+     async saveSettings() {
+         try {
+             await chrome.storage.sync.set({
+-                replyLength: this.replyLength.value,
+-                writingStyle: this.writingStyle.value,
+-                tone: this.tone.value,
+-                includeEmoji: this.includeEmoji.checked
++                persona: this.personaSelect?.value,
++                engagementMode: this.engagementMode?.value,
++                replyLength: this.replyLength?.value,
++                writingStyle: this.writingStyle?.value,
++                tone: this.tone?.value,
++                includeEmoji: this.includeEmoji?.checked
+             });
+         } catch (error) {
+             console.error('Error saving settings:', error);
+@@ -80,14 +132,18 @@ class ReplyGuyExtension {
+ 
+     showLoading() {
+         this.loading.style.display = 'block';
+-        this.analyzeBtn.disabled = true;
+-        this.generateBtn.disabled = true;
++        if (this.analyzeBtn) this.analyzeBtn.disabled = true;
++        if (this.generateBtn) this.generateBtn.disabled = true;
++        if (this.variantsBtn) this.variantsBtn.disabled = true;
++        if (this.quoteBtn) this.quoteBtn.disabled = true;
+     }
+ 
+     hideLoading() {
+         this.loading.style.display = 'none';
+-        this.analyzeBtn.disabled = false;
+-        this.generateBtn.disabled = false;
++        if (this.analyzeBtn) this.analyzeBtn.disabled = false;
++        if (this.generateBtn) this.generateBtn.disabled = false;
++        if (this.variantsBtn) this.variantsBtn.disabled = false;
++        if (this.quoteBtn) this.quoteBtn.disabled = false;
+     }
+ 
+     showError(message) {
+@@ -237,20 +293,34 @@ class ReplyGuyExtension {
+             this.showLoading();
+             
+             const preferences = {
+-                length: this.replyLength.value,
+-                style: this.writingStyle.value,
+-                tone: this.tone.value,
+-                emoji: this.includeEmoji.checked
++                length: this.replyLength?.value || 'medium',
++                style: this.writingStyle?.value || 'casual',
++                tone: this.tone?.value || 'neutral',
++                emoji: this.includeEmoji?.checked || false
+             };
+ 
++            const persona = this.personaSelect?.value || 'builder';
++            const engagementMode = this.engagementMode?.value || 'neutral';
++
+             const result = await this.makeAPIRequest('generate-reply', { 
+                 tweet, 
+-                preferences 
++                preferences,
++                persona,
++                engagementMode
+             });
+             
+             const cleanedReply = this.cleanAIResponse(result.reply);
+             this.generatedReply.textContent = cleanedReply;
++            
++            // Show context info if available
++            if (result.context && this.contextInfo) {
++                this.contextInfo.textContent = `Context: ${result.context.replace('_', ' ')}`;
++                this.contextInfo.style.display = 'block';
++            }
++            
+             this.outputSection.style.display = 'block';
++            if (this.variantsSection) this.variantsSection.style.display = 'none';
++            if (this.quoteSection) this.quoteSection.style.display = 'none';
+             
+         } catch (error) {
+             console.error('Generation error:', error);
+@@ -264,6 +334,151 @@ class ReplyGuyExtension {
+         }
+     }
+ 
++    async generateVariants() {
++        const tweet = this.tweetInput.value.trim();
++        
++        if (!tweet) {
++            this.showError('Please paste a tweet first');
++            return;
++        }
++
++        try {
++            this.showLoading();
++            
++            const preferences = {
++                length: this.replyLength?.value || 'medium',
++                style: this.writingStyle?.value || 'casual',
++                tone: this.tone?.value || 'neutral',
++                emoji: this.includeEmoji?.checked || false
++            };
++
++            const persona = this.personaSelect?.value || 'builder';
++            const engagementMode = this.engagementMode?.value || 'neutral';
++
++            const result = await this.makeAPIRequest('generate-reply', { 
++                tweet, 
++                preferences,
++                persona,
++                engagementMode,
++                generateVariants: true
++            });
++            
++            if (result.variants && this.safeVariant && this.boldVariant && this.alphaVariant) {
++                this.safeVariant.textContent = this.cleanAIResponse(result.variants.safe);
++                this.boldVariant.textContent = this.cleanAIResponse(result.variants.bold);
++                this.alphaVariant.textContent = this.cleanAIResponse(result.variants.alpha);
++                
++                if (this.variantsSection) {
++                    this.variantsSection.style.display = 'block';
++                    this.outputSection.style.display = 'none';
++                    if (this.quoteSection) this.quoteSection.style.display = 'none';
++                }
++            }
++            
++        } catch (error) {
++            console.error('Variants generation error:', error);
++            if (error.message.includes('Rate limit')) {
++                this.showError('Rate limit exceeded. Please wait a moment before trying again.');
++            } else {
++                this.showError(error.message || 'Failed to generate variants. Please try again.');
++            }
++        } finally {
++            this.hideLoading();
++        }
++    }
++
++    async generateQuote() {
++        const tweet = this.tweetInput.value.trim();
++        
++        if (!tweet) {
++            this.showError('Please paste a tweet first');
++            return;
++        }
++
++        try {
++            this.showLoading();
++            
++            const persona = this.personaSelect?.value || 'builder';
++            const engagementMode = this.engagementMode?.value || 'neutral';
++
++            const result = await this.makeAPIRequest('generate-quote', { 
++                tweet,
++                persona,
++                engagementMode
++            });
++            
++            if (this.generatedQuote) {
++                const cleanedQuote = this.cleanAIResponse(result.quote);
++                this.generatedQuote.textContent = cleanedQuote;
++                
++                if (this.quoteSection) {
++                    this.quoteSection.style.display = 'block';
++                    this.outputSection.style.display = 'none';
++                    if (this.variantsSection) this.variantsSection.style.display = 'none';
++                }
++            }
++            
++        } catch (error) {
++            console.error('Quote generation error:', error);
++            if (error.message.includes('Rate limit')) {
++                this.showError('Rate limit exceeded. Please wait a moment before trying again.');
++            } else {
++                this.showError(error.message || 'Failed to generate quote tweet. Please try again.');
++            }
++        } finally {
++            this.hideLoading();
++        }
++    }
++
++    async copyVariant(variant) {
++        const variantElement = document.getElementById(`${variant}-variant`);
++        if (!variantElement) return;
++        
++        try {
++            await navigator.clipboard.writeText(variantElement.textContent);
++            this.showSuccess(`${variant} variant copied to clipboard!`);
++            
++            const btn = document.querySelector(`[data-variant="${variant}"]`);
++            if (btn) {
++                const originalText = btn.textContent;
++                btn.textContent = 'Copied! ✓';
++                btn.style.background = '#28a745';
++                
++                setTimeout(() => {
++                    btn.textContent = originalText;
++                    btn.style.background = '';
++                }, 2000);
++            }
++            
++        } catch (error) {
++            this.showError('Failed to copy variant to clipboard');
++        }
++    }
++
++    async copyQuote() {
++        if (!this.generatedQuote) return;
++        
++        try {
++            await navigator.clipboard.writeText(this.generatedQuote.textContent);
++            this.showSuccess('Quote tweet copied to clipboard!');
++            
++            const copyQuoteBtn = document.getElementById('copy-quote-btn');
++            if (copyQuoteBtn) {
++                const originalText = copyQuoteBtn.textContent;
++                copyQuoteBtn.textContent = 'Copied! ✓';
++                copyQuoteBtn.style.background = '#28a745';
++                
++                setTimeout(() => {
++                    copyQuoteBtn.textContent = originalText;
++                    copyQuoteBtn.style.background = '';
++                }, 2000);
++            }
++            
++        } catch (error) {
++            this.showError('Failed to copy quote to clipboard');
++        }
++    }
++
+     async copyReply() {
+         try {
+             await navigator.clipboard.writeText(this.generatedReply.textContent);
+@@ -452,5 +667,5 @@ function pasteReplyToTwitter(replyText) {
+ 
+ // Initialize the extension when DOM is loaded
+ document.addEventListener('DOMContentLoaded', () => {
+-    new ReplyGuyExtension();
++    new CryptoReplyGuyExtension();
+ });
+\ No newline at end of file
+diff --git a/public/index.html b/public/index.html
+index b04d665..5137619 100644
+--- a/public/index.html
++++ b/public/index.html
+@@ -845,6 +845,82 @@ textarea {
+     color: rgba(255, 255, 255, 0.8);
+ }
+ 
++/* Crypto Features Styles */
++.context-info {
++    background: rgba(255, 107, 53, 0.1);
++    border: 1px solid rgba(255, 107, 53, 0.3);
++    border-radius: 8px;
++    padding: 12px;
++    margin-bottom: 15px;
++    font-size: 0.9rem;
++    color: #ffcc02;
++}
++
++.variants-section {
++    background: rgba(0, 0, 0, 0.3);
++    backdrop-filter: blur(15px);
++    border-radius: 20px;
++    padding: 30px;
++    margin-bottom: 30px;
++    border: 2px solid rgba(255, 107, 53, 0.3);
++    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.2), 0 0 50px rgba(255, 204, 2, 0.1);
++}
++
++.variants-container {
++    display: grid;
++    grid-template-columns: 1fr;
++    gap: 20px;
++}
++
++.variant-item {
++    background: rgba(255, 255, 255, 0.05);
++    border-radius: 15px;
++    padding: 20px;
++    border: 1px solid rgba(255, 107, 53, 0.2);
++}
++
++.variant-item h4 {
++    color: #ff6b35;
++    margin-bottom: 10px;
++    font-size: 1.1rem;
++}
++
++.quote-section {
++    background: rgba(0, 0, 0, 0.3);
++    backdrop-filter: blur(15px);
++    border-radius: 20px;
++    padding: 30px;
++    margin-bottom: 30px;
++    border: 2px solid rgba(255, 204, 2, 0.3);
++    box-shadow: 0 8px 32px rgba(255, 204, 2, 0.2), 0 0 50px rgba(255, 107, 53, 0.1);
++}
++
++.quote-box {
++    background: rgba(0, 0, 0, 0.2);
++    border-radius: 12px;
++    padding: 20px;
++    border-left: 4px solid #ffcc02;
++    margin: 15px 0;
++    white-space: pre-wrap;
++    word-wrap: break-word;
++    box-shadow: 0 4px 15px rgba(255, 204, 2, 0.2);
++}
++
++.btn-sm {
++    padding: 8px 16px;
++    font-size: 14px;
++}
++
++@media (max-width: 768px) {
++    .variants-container {
++        grid-template-columns: 1fr;
++    }
++    
++    .variant-item {
++        padding: 15px;
++    }
++}
++
+ /* Floating Chatbot Styles */
+ .chatbot-container {
+     position: fixed;
+@@ -1158,7 +1234,7 @@ textarea {
+     <div class="container">
+         <header>
+             <h1>🔥 Reply Guy</h1>
+-            <p>AI-powered replies tailored to your style</p>
++            <p>Context-aware Crypto Twitter engagement tool</p>
+             <div class="creator-badge">
+                 <span class="badge-text">Created by</span>
+                 <a href="https://x.com/surojitpvt" target="_blank" class="creator-twitter">
+@@ -1181,8 +1257,31 @@ textarea {
+                 </div>
+ 
+                 <div class="preferences-section">
+-                    <h3>⚙️ Reply Preferences</h3>
++                    <h3>⚙️ Crypto Engagement Settings</h3>
+                     
++                    <div class="form-row">
++                        <div class="form-group">
++                            <label for="persona-select">Persona:</label>
++                            <select id="persona-select">
++                                <option value="builder">🔨 Builder</option>
++                                <option value="trader">📈 Trader</option>
++                                <option value="researcher">🔬 Researcher</option>
++                                <option value="degen">🎲 Degen</option>
++                                <option value="founder">🚀 Founder</option>
++                                <option value="community">🤝 Community</option>
++                            </select>
++                        </div>
++
++                        <div class="form-group">
++                            <label for="engagement-mode">Engagement Mode:</label>
++                            <select id="engagement-mode">
++                                <option value="neutral">⚖️ Neutral</option>
++                                <option value="engagement_max">🔥 Engagement Max</option>
++                                <option value="signal_only">🎯 Signal Only</option>
++                            </select>
++                        </div>
++                    </div>
++
+                     <div class="form-row">
+                         <div class="form-group">
+                             <label for="reply-length">Reply Length:</label>
+@@ -1201,8 +1300,8 @@ textarea {
+                                 <option value="professional">Professional</option>
+                                 <option value="friendly">Friendly</option>
+                                 <option value="witty">Witty</option>
+-                                <option value="supportive">Supportive</option>
+-                                <option value="informative">Informative</option>
++                                <option value="technical">Technical</option>
++                                <option value="alpha">Alpha</option>
+                             </select>
+                         </div>
+                     </div>
+@@ -1213,10 +1312,10 @@ textarea {
+                             <select id="tone">
+                                 <option value="neutral" selected>Neutral</option>
+                                 <option value="positive">Positive</option>
+-                                <option value="enthusiastic">Enthusiastic</option>
+-                                <option value="empathetic">Empathetic</option>
+-                                <option value="humorous">Humorous</option>
+-                                <option value="thoughtful">Thoughtful</option>
++                                <option value="confident">Confident</option>
++                                <option value="contrarian">Contrarian</option>
++                                <option value="bullish">Bullish</option>
++                                <option value="analytical">Analytical</option>
+                             </select>
+                         </div>
+ 
+@@ -1231,13 +1330,16 @@ textarea {
+                 </div>
+ 
+                 <div class="button-group">
+-                    <button id="analyze-btn" class="btn btn-secondary">Analyze Tweet</button>
++                    <button id="analyze-btn" class="btn btn-secondary">Analyze Context</button>
+                     <button id="generate-btn" class="btn btn-primary">Generate Reply</button>
++                    <button id="variants-btn" class="btn btn-outline">3 Variants</button>
++                    <button id="quote-btn" class="btn btn-outline">Quote Tweet</button>
+                 </div>
+             </div>
+ 
+             <div class="output-section" id="output-section" style="display: none;">
+                 <h3>✨ Generated Reply</h3>
++                <div id="context-info" class="context-info" style="display: none;"></div>
+                 <div id="generated-reply" class="reply-box"></div>
+                 <div class="reply-actions">
+                     <button id="copy-btn" class="btn btn-outline">Copy Reply</button>
+@@ -1245,6 +1347,36 @@ textarea {
+                 </div>
+             </div>
+ 
++            <div class="variants-section" id="variants-section" style="display: none;">
++                <h3>🎯 Reply Variants</h3>
++                <div class="variants-container">
++                    <div class="variant-item">
++                        <h4>🛡️ Safe</h4>
++                        <div id="safe-variant" class="reply-box"></div>
++                        <button class="btn btn-sm btn-outline copy-variant" data-variant="safe">Copy</button>
++                    </div>
++                    <div class="variant-item">
++                        <h4>🔥 Bold</h4>
++                        <div id="bold-variant" class="reply-box"></div>
++                        <button class="btn btn-sm btn-outline copy-variant" data-variant="bold">Copy</button>
++                    </div>
++                    <div class="variant-item">
++                        <h4>⚡ Alpha</h4>
++                        <div id="alpha-variant" class="reply-box"></div>
++                        <button class="btn btn-sm btn-outline copy-variant" data-variant="alpha">Copy</button>
++                    </div>
++                </div>
++            </div>
++
++            <div class="quote-section" id="quote-section" style="display: none;">
++                <h3>💬 Quote Tweet</h3>
++                <div id="generated-quote" class="quote-box"></div>
++                <div class="reply-actions">
++                    <button id="copy-quote-btn" class="btn btn-outline">Copy Quote</button>
++                    <button id="regenerate-quote-btn" class="btn btn-secondary">Regenerate</button>
++                </div>
++            </div>
++
+             <div class="loading" id="loading" style="display: none;">
+                 <div class="spinner"></div>
+                 <p>Generating your perfect reply...</p>
+@@ -1476,12 +1608,13 @@ textarea {
+     </div>
+ 
+     <script>
+-class TweetReplyGenerator {
++class CryptoTweetReplyGenerator {
+     constructor() {
+-        console.log('TweetReplyGenerator constructor called');
++        console.log('CryptoTweetReplyGenerator constructor called');
+         this.initializeElements();
+         this.bindEvents();
+-        console.log('TweetReplyGenerator initialized');
++        this.loadUserPreferences();
++        console.log('CryptoTweetReplyGenerator initialized');
+     }
+ 
+     initializeElements() {
+@@ -1489,24 +1622,39 @@ class TweetReplyGenerator {
+         this.tweetInput = document.getElementById('tweet-input');
+         this.analyzeBtn = document.getElementById('analyze-btn');
+         this.generateBtn = document.getElementById('generate-btn');
++        this.variantsBtn = document.getElementById('variants-btn');
++        this.quoteBtn = document.getElementById('quote-btn');
+         this.copyBtn = document.getElementById('copy-btn');
+         this.regenerateBtn = document.getElementById('regenerate-btn');
+         
+         this.analysisSection = document.getElementById('analysis-section');
+         this.analysisResult = document.getElementById('analysis-result');
+         this.outputSection = document.getElementById('output-section');
++        this.variantsSection = document.getElementById('variants-section');
++        this.quoteSection = document.getElementById('quote-section');
+         this.generatedReply = document.getElementById('generated-reply');
++        this.contextInfo = document.getElementById('context-info');
+         this.loading = document.getElementById('loading');
+         
++        // Crypto settings
++        this.personaSelect = document.getElementById('persona-select');
++        this.engagementMode = document.getElementById('engagement-mode');
+         this.replyLength = document.getElementById('reply-length');
+         this.writingStyle = document.getElementById('writing-style');
+         this.tone = document.getElementById('tone');
+         this.includeEmoji = document.getElementById('include-emoji');
+         
++        // Variant elements
++        this.safeVariant = document.getElementById('safe-variant');
++        this.boldVariant = document.getElementById('bold-variant');
++        this.alphaVariant = document.getElementById('alpha-variant');
++        this.generatedQuote = document.getElementById('generated-quote');
++        
+         console.log('Elements found:', {
+             tweetInput: !!this.tweetInput,
+             generateBtn: !!this.generateBtn,
+-            analyzeBtn: !!this.analyzeBtn
++            variantsBtn: !!this.variantsBtn,
++            quoteBtn: !!this.quoteBtn
+         });
+     }
+ 
+@@ -1514,11 +1662,15 @@ class TweetReplyGenerator {
+         console.log('Binding events...');
+         if (this.analyzeBtn) {
+             this.analyzeBtn.addEventListener('click', () => this.analyzeTweet());
+-            console.log('Analyze button event bound');
+         }
+         if (this.generateBtn) {
+             this.generateBtn.addEventListener('click', () => this.generateReply());
+-            console.log('Generate button event bound');
++        }
++        if (this.variantsBtn) {
++            this.variantsBtn.addEventListener('click', () => this.generateVariants());
++        }
++        if (this.quoteBtn) {
++            this.quoteBtn.addEventListener('click', () => this.generateQuote());
+         }
+         if (this.copyBtn) {
+             this.copyBtn.addEventListener('click', () => this.copyReply());
+@@ -1526,18 +1678,77 @@ class TweetReplyGenerator {
+         if (this.regenerateBtn) {
+             this.regenerateBtn.addEventListener('click', () => this.generateReply());
+         }
++        
++        // Copy variant buttons
++        document.querySelectorAll('.copy-variant').forEach(btn => {
++            btn.addEventListener('click', (e) => this.copyVariant(e.target.dataset.variant));
++        });
++        
++        // Quote tweet buttons
++        const copyQuoteBtn = document.getElementById('copy-quote-btn');
++        const regenerateQuoteBtn = document.getElementById('regenerate-quote-btn');
++        if (copyQuoteBtn) {
++            copyQuoteBtn.addEventListener('click', () => this.copyQuote());
++        }
++        if (regenerateQuoteBtn) {
++            regenerateQuoteBtn.addEventListener('click', () => this.generateQuote());
++        }
++        
++        // Save preferences on change
++        [this.personaSelect, this.engagementMode, this.replyLength, this.writingStyle, this.tone, this.includeEmoji].forEach(element => {
++            if (element) {
++                element.addEventListener('change', () => this.saveUserPreferences());
++            }
++        });
++    }
++
++    loadUserPreferences() {
++        try {
++            const saved = localStorage.getItem('cryptoReplyPreferences');
++            if (saved) {
++                const prefs = JSON.parse(saved);
++                if (this.personaSelect && prefs.persona) this.personaSelect.value = prefs.persona;
++                if (this.engagementMode && prefs.engagementMode) this.engagementMode.value = prefs.engagementMode;
++                if (this.replyLength && prefs.length) this.replyLength.value = prefs.length;
++                if (this.writingStyle && prefs.style) this.writingStyle.value = prefs.style;
++                if (this.tone && prefs.tone) this.tone.value = prefs.tone;
++                if (this.includeEmoji && prefs.emoji !== undefined) this.includeEmoji.checked = prefs.emoji;
++            }
++        } catch (error) {
++            console.error('Error loading preferences:', error);
++        }
++    }
++
++    saveUserPreferences() {
++        try {
++            const prefs = {
++                persona: this.personaSelect?.value,
++                engagementMode: this.engagementMode?.value,
++                length: this.replyLength?.value,
++                style: this.writingStyle?.value,
++                tone: this.tone?.value,
++                emoji: this.includeEmoji?.checked
++            };
++            localStorage.setItem('cryptoReplyPreferences', JSON.stringify(prefs));
++        } catch (error) {
++            console.error('Error saving preferences:', error);
++        }
+     }
+ 
+     showLoading() {
+         this.loading.style.display = 'block';
+         this.analyzeBtn.disabled = true;
+         this.generateBtn.disabled = true;
++        this.variantsBtn.disabled = true;
++        this.quoteBtn.disabled = true;
+     }
+ 
+     hideLoading() {
+         this.loading.style.display = 'none';
+         this.analyzeBtn.disabled = false;
+         this.generateBtn.disabled = false;
++        this.variantsBtn.disabled = false;
++        this.quoteBtn.disabled = false;
+     }
+ 
+     showError(message) {
+@@ -1545,10 +1756,7 @@ class TweetReplyGenerator {
+         errorDiv.className = 'error';
+         errorDiv.textContent = message;
+         
+-        // Remove existing errors
+         document.querySelectorAll('.error').forEach(el => el.remove());
+-        
+-        // Add new error
+         this.loading.parentNode.insertBefore(errorDiv, this.loading);
+         
+         setTimeout(() => errorDiv.remove(), 5000);
+@@ -1559,10 +1767,7 @@ class TweetReplyGenerator {
+         successDiv.className = 'success';
+         successDiv.textContent = message;
+         
+-        // Remove existing success messages
+         document.querySelectorAll('.success').forEach(el => el.remove());
+-        
+-        // Add new success message
+         this.loading.parentNode.insertBefore(successDiv, this.loading);
+         
+         setTimeout(() => successDiv.remove(), 3000);
+@@ -1586,57 +1791,29 @@ class TweetReplyGenerator {
+         return result;
+     }
+ 
+-    // Clean AI response from unwanted tags and artifacts
+     cleanAIResponse(text) {
+         if (!text) return '';
+         
+         let cleaned = text;
+         
+-        // Remove common AI artifacts and tags
+         const artifactsToRemove = [
+-            /<s>/g,
+-            /<\/s>/g,
+-            /\[s\]/g,
+-            /\[\/s\]/g,
+-            /\[BOT\]/g,
+-            /\[\/BOT\]/g,
+-            /\[B_INST\]/g,
+-            /\[\/B_INST\]/g,
+-            /\[INST\]/g,
+-            /\[\/INST\]/g,
+-            /\[SYS\]/g,
+-            /\[\/SYS\]/g,
+-            /<\|im_start\|>/g,
+-            /<\|im_end\|>/g,
+-            /<\|system\|>/g,
+-            /<\|user\|>/g,
+-            /<\|assistant\|>/g,
+-            /\[SYSTEM\]/g,
+-            /\[\/SYSTEM\]/g,
+-            /\[USER\]/g,
+-            /\[\/USER\]/g,
+-            /\[ASSISTANT\]/g,
+-            /\[\/ASSISTANT\]/g,
+-            // Remove any remaining XML-like tags
+-            /<[^>]*>/g,
+-            // Remove square bracket tags with underscores and slashes
+-            /\[[A-Z_\/]+\]/g,
+-            // Remove any remaining square bracket patterns
+-            /\[[^\]]*INST[^\]]*\]/g,
+-            /\[[^\]]*BOT[^\]]*\]/g,
+-            /\[[^\]]*SYS[^\]]*\]/g
++            /<s>/g, /<\/s>/g, /\[s\]/g, /\[\/s\]/g,
++            /\[BOT\]/g, /\[\/BOT\]/g, /\[B_INST\]/g, /\[\/B_INST\]/g,
++            /\[INST\]/g, /\[\/INST\]/g, /\[SYS\]/g, /\[\/SYS\]/g,
++            /<\|im_start\|>/g, /<\|im_end\|>/g, /<\|system\|>/g,
++            /<\|user\|>/g, /<\|assistant\|>/g, /\[SYSTEM\]/g,
++            /\[\/SYSTEM\]/g, /\[USER\]/g, /\[\/USER\]/g,
++            /\[ASSISTANT\]/g, /\[\/ASSISTANT\]/g, /<[^>]*>/g,
++            /\[[A-Z_\/]+\]/g, /\[[^\]]*INST[^\]]*\]/g,
++            /\[[^\]]*BOT[^\]]*\]/g, /\[[^\]]*SYS[^\]]*\]/g
+         ];
+         
+-        // Apply all cleaning rules
+         artifactsToRemove.forEach(pattern => {
+             cleaned = cleaned.replace(pattern, '');
+         });
+         
+-        // Clean up extra whitespace
+-        cleaned = cleaned.trim();
+-        cleaned = cleaned.replace(/\s+/g, ' ');
++        cleaned = cleaned.trim().replace(/\s+/g, ' ');
+         
+-        // Remove leading/trailing quotes if they wrap the entire response
+         if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || 
+             (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
+             cleaned = cleaned.slice(1, -1).trim();
+@@ -1686,22 +1863,35 @@ class TweetReplyGenerator {
+             this.showLoading();
+             
+             const preferences = {
+-                length: this.replyLength.value,
+-                style: this.writingStyle.value,
+-                tone: this.tone.value,
+-                emoji: this.includeEmoji.checked
++                length: this.replyLength?.value || 'medium',
++                style: this.writingStyle?.value || 'casual',
++                tone: this.tone?.value || 'neutral',
++                emoji: this.includeEmoji?.checked || false
+             };
+ 
++            const persona = this.personaSelect?.value || 'builder';
++            const engagementMode = this.engagementMode?.value || 'neutral';
++
+             const result = await this.makeAPIRequest('generate-reply', { 
+                 tweet, 
+-                preferences 
++                preferences,
++                persona,
++                engagementMode
+             });
+             
+             const cleanedReply = this.cleanAIResponse(result.reply);
+             this.generatedReply.textContent = cleanedReply;
++            
++            // Show context info if available
++            if (result.context && this.contextInfo) {
++                this.contextInfo.textContent = `Context: ${result.context.replace('_', ' ')}`;
++                this.contextInfo.style.display = 'block';
++            }
++            
+             this.outputSection.style.display = 'block';
++            this.variantsSection.style.display = 'none';
++            this.quoteSection.style.display = 'none';
+             
+-            // Scroll to result
+             this.outputSection.scrollIntoView({ 
+                 behavior: 'smooth', 
+                 block: 'start' 
+@@ -1719,6 +1909,106 @@ class TweetReplyGenerator {
+         }
+     }
+ 
++    async generateVariants() {
++        const tweet = this.tweetInput.value.trim();
++        
++        if (!tweet) {
++            this.showError('Please paste a tweet first');
++            return;
++        }
++
++        try {
++            this.showLoading();
++            
++            const preferences = {
++                length: this.replyLength?.value || 'medium',
++                style: this.writingStyle?.value || 'casual',
++                tone: this.tone?.value || 'neutral',
++                emoji: this.includeEmoji?.checked || false
++            };
++
++            const persona = this.personaSelect?.value || 'builder';
++            const engagementMode = this.engagementMode?.value || 'neutral';
++
++            const result = await this.makeAPIRequest('generate-reply', { 
++                tweet, 
++                preferences,
++                persona,
++                engagementMode,
++                generateVariants: true
++            });
++            
++            if (result.variants) {
++                this.safeVariant.textContent = this.cleanAIResponse(result.variants.safe);
++                this.boldVariant.textContent = this.cleanAIResponse(result.variants.bold);
++                this.alphaVariant.textContent = this.cleanAIResponse(result.variants.alpha);
++                
++                this.variantsSection.style.display = 'block';
++                this.outputSection.style.display = 'none';
++                this.quoteSection.style.display = 'none';
++                
++                this.variantsSection.scrollIntoView({ 
++                    behavior: 'smooth', 
++                    block: 'start' 
++                });
++            }
++            
++        } catch (error) {
++            console.error('Variants generation error:', error);
++            if (error.message.includes('Rate limit')) {
++                this.showError('Rate limit exceeded. Please wait a moment before trying again.');
++            } else {
++                this.showError(error.message || 'Failed to generate variants. Please try again.');
++            }
++        } finally {
++            this.hideLoading();
++        }
++    }
++
++    async generateQuote() {
++        const tweet = this.tweetInput.value.trim();
++        
++        if (!tweet) {
++            this.showError('Please paste a tweet first');
++            return;
++        }
++
++        try {
++            this.showLoading();
++            
++            const persona = this.personaSelect?.value || 'builder';
++            const engagementMode = this.engagementMode?.value || 'neutral';
++
++            const result = await this.makeAPIRequest('generate-quote', { 
++                tweet,
++                persona,
++                engagementMode
++            });
++            
++            const cleanedQuote = this.cleanAIResponse(result.quote);
++            this.generatedQuote.textContent = cleanedQuote;
++            
++            this.quoteSection.style.display = 'block';
++            this.outputSection.style.display = 'none';
++            this.variantsSection.style.display = 'none';
++            
++            this.quoteSection.scrollIntoView({ 
++                behavior: 'smooth', 
++                block: 'start' 
++            });
++            
++        } catch (error) {
++            console.error('Quote generation error:', error);
++            if (error.message.includes('Rate limit')) {
++                this.showError('Rate limit exceeded. Please wait a moment before trying again.');
++            } else {
++                this.showError(error.message || 'Failed to generate quote tweet. Please try again.');
++            }
++        } finally {
++            this.hideLoading();
++        }
++    }
++
+     async copyReply() {
+         try {
+             await navigator.clipboard.writeText(this.generatedReply.textContent);
+@@ -1733,107 +2023,81 @@ class TweetReplyGenerator {
+             }, 2000);
+             
+         } catch (error) {
+-            // Fallback for older browsers
+-            const textArea = document.createElement('textarea');
+-            textArea.value = this.generatedReply.textContent;
+-            document.body.appendChild(textArea);
+-            textArea.select();
+-            
+-            try {
+-                document.execCommand('copy');
+-                this.showSuccess('Reply copied to clipboard!');
+-            } catch (err) {
+-                this.showError('Failed to copy to clipboard');
+-            }
+-            
+-            document.body.removeChild(textArea);
++            this.fallbackCopy(this.generatedReply.textContent);
+         }
+     }
+-}
+ 
+-// Initialize the app when DOM is loaded
+-document.addEventListener('DOMContentLoaded', () => {
+-    const generateBtn = document.getElementById('generate-btn');
+-    const tweetInput = document.getElementById('tweet-input');
+-    const loading = document.getElementById('loading');
+-    const outputSection = document.getElementById('output-section');
+-    const generatedReply = document.getElementById('generated-reply');
+-    
+-    generateBtn.addEventListener('click', async () => {
+-        const tweet = tweetInput.value.trim();
+-        
+-        if (!tweet) {
+-            alert('Please paste a tweet first');
+-            return;
+-        }
+-        
+-        // Show loading
+-        loading.style.display = 'block';
+-        generateBtn.disabled = true;
++    async copyVariant(variant) {
++        const variantElement = document.getElementById(`${variant}-variant`);
++        if (!variantElement) return;
+         
+         try {
+-            const preferences = {
+-                length: document.getElementById('reply-length').value,
+-                style: document.getElementById('writing-style').value,
+-                tone: document.getElementById('tone').value,
+-                emoji: document.getElementById('include-emoji').checked
+-            };
+-
+-            const response = await fetch('/api/generate-reply', {
+-                method: 'POST',
+-                headers: {
+-                    'Content-Type': 'application/json',
+-                },
+-                body: JSON.stringify({ tweet, preferences })
+-            });
+-
+-            const result = await response.json();
+-
+-            if (!response.ok) {
+-                throw new Error(result.error || 'Failed to generate reply');
+-            }
++            await navigator.clipboard.writeText(variantElement.textContent);
++            
++            const btn = document.querySelector(`[data-variant="${variant}"]`);
++            const originalText = btn.textContent;
++            btn.textContent = 'Copied! ✓';
++            btn.style.background = '#28a745';
++            
++            setTimeout(() => {
++                btn.textContent = originalText;
++                btn.style.background = '';
++            }, 2000);
++            
++        } catch (error) {
++            this.fallbackCopy(variantElement.textContent);
++        }
++    }
+ 
+-            // Clean and display result
+-            let cleanedReply = result.reply || '';
+-            cleanedReply = cleanedReply.replace(/^["']|["']$/g, '').trim();
++    async copyQuote() {
++        try {
++            await navigator.clipboard.writeText(this.generatedQuote.textContent);
++            
++            const copyQuoteBtn = document.getElementById('copy-quote-btn');
++            const originalText = copyQuoteBtn.textContent;
++            copyQuoteBtn.textContent = 'Copied! ✓';
++            copyQuoteBtn.style.background = '#28a745';
+             
+-            generatedReply.textContent = cleanedReply;
+-            outputSection.style.display = 'block';
++            setTimeout(() => {
++                copyQuoteBtn.textContent = originalText;
++                copyQuoteBtn.style.background = '';
++            }, 2000);
+             
+         } catch (error) {
+-            alert('Error: ' + error.message);
+-        } finally {
+-            loading.style.display = 'none';
+-            generateBtn.disabled = false;
++            this.fallbackCopy(this.generatedQuote.textContent);
+         }
+-    });
+-    
+-    // Copy button
+-    const copyBtn = document.getElementById('copy-btn');
+-    if (copyBtn) {
+-        copyBtn.addEventListener('click', async () => {
+-            try {
+-                await navigator.clipboard.writeText(generatedReply.textContent);
+-                copyBtn.textContent = 'Copied!';
+-                setTimeout(() => copyBtn.textContent = 'Copy Reply', 2000);
+-            } catch (error) {
+-                alert('Failed to copy to clipboard');
+-            }
+-        });
+     }
+-    
+-    // Regenerate button
+-    const regenerateBtn = document.getElementById('regenerate-btn');
+-    if (regenerateBtn) {
+-        regenerateBtn.addEventListener('click', () => {
+-            // Trigger the same generate function
+-            generateBtn.click();
+-        });
++
++    fallbackCopy(text) {
++        const textArea = document.createElement('textarea');
++        textArea.value = text;
++        document.body.appendChild(textArea);
++        textArea.select();
++        
++        try {
++            document.execCommand('copy');
++            this.showSuccess('Copied to clipboard!');
++        } catch (err) {
++            this.showError('Failed to copy to clipboard');
++        }
++        
++        document.body.removeChild(textArea);
+     }
++}
++
++// Initialize the app when DOM is loaded
++document.addEventListener('DOMContentLoaded', () => {
++    new CryptoTweetReplyGenerator();
++    
++    // Add rate limit info
++    const container = document.querySelector('.container');
++    const rateLimitInfo = document.createElement('div');
++    rateLimitInfo.className = 'rate-limit-info';
++    rateLimitInfo.textContent = '⚡ Free crypto engagement tool with rate limits: 10 requests per minute';
++    container.appendChild(rateLimitInfo);
+ });
+ 
+ async function downloadExtension() {
+-    // Redirect to installation page
+     window.location.href = '/install';
+ }
+     </script>
+diff --git a/server.js b/server.js
+index 513daef..380c176 100644
+--- a/server.js
++++ b/server.js
+@@ -170,10 +170,10 @@ Tweet: "${tweet}"`
+     }
+ });
+ 
+-// Reply generation endpoint
++// Reply generation endpoint with crypto context awareness
+ app.post('/api/generate-reply', strictLimiter, async (req, res) => {
+     try {
+-        const { tweet, preferences } = req.body;
++        const { tweet, preferences, persona, engagementMode, generateVariants } = req.body;
+ 
+         if (!tweet || tweet.trim().length === 0) {
+             return res.status(400).json({ error: 'Tweet content is required' });
+@@ -183,37 +183,51 @@ app.post('/api/generate-reply', strictLimiter, async (req, res) => {
+             return res.status(400).json({ error: 'Reply preferences are required' });
+         }
+ 
+-        const lengthGuide = {
+-            'ultra-short': 'under 10 words, extremely concise',
+-            short: '1-2 sentences, concise and direct',
+-            medium: '2-3 sentences, balanced detail',
+-            long: '3-4 sentences, comprehensive response'
+-        };
+-
++        // Detect tweet context
++        const tweetContext = detectTweetContext(tweet);
++        
++        // Build persona-specific prompt
++        const personaPrompt = buildPersonaPrompt(persona || 'builder');
++        const engagementPrompt = buildEngagementPrompt(engagementMode || 'neutral');
++        
+         const messages = [
+             {
+                 role: 'system',
+-                content: `You are an expert at writing engaging Twitter replies. Create replies that are authentic, relevant, and match the requested style perfectly. Always stay respectful and constructive.`
++                content: `You are a crypto Twitter expert generating contextually aware replies. ${personaPrompt} ${engagementPrompt}
++
++Tweet Context: ${tweetContext}
++
++Reply Guidelines:
++- Match the detected context and adjust tone accordingly
++- Use crypto-native language and terminology
++- Be authentic and add genuine value
++- Keep replies concise and engaging
++- Avoid generic responses`
+             },
+             {
+                 role: 'user',
+-                content: `Generate a Twitter reply to this tweet with these specifications:
+-
+-Original Tweet: "${tweet}"
++                content: `Generate a ${preferences.style} reply to this crypto tweet:
+ 
+-Reply Requirements:
+-- Length: ${lengthGuide[preferences.length] || lengthGuide.medium}
+-- Writing Style: ${preferences.style || 'casual'}
+-- Tone: ${preferences.tone || 'neutral'}
+-- Include Emojis: ${preferences.emoji ? 'Yes' : 'No'}
++"${tweet}"
+ 
+-Make the reply engaging, relevant, and natural. Don't mention that you're following specifications - just write a great reply.`
++Requirements:
++- Length: ${preferences.length}
++- Tone: ${preferences.tone}
++- Include emojis: ${preferences.emoji ? 'Yes' : 'No'}
++- Context: ${tweetContext}
++- Persona: ${persona || 'builder'}
++- Engagement Mode: ${engagementMode || 'neutral'}`
+             }
+         ];
+ 
+-        const reply = await makeOpenRouterRequest(messages, 280);
+-        
+-        res.json({ reply });
++        if (generateVariants) {
++            // Generate 3 variants: Safe, Bold, Alpha
++            const variants = await generateReplyVariants(messages, tweet, preferences, persona, engagementMode);
++            res.json({ variants });
++        } else {
++            const reply = await makeOpenRouterRequest(messages, 280);
++            res.json({ reply, context: tweetContext });
++        }
+ 
+     } catch (error) {
+         console.error('Generation error:', error);
+@@ -294,6 +308,137 @@ Keep answers concise, helpful, and friendly. If asked about something not relate
+         });
+     }
+ });
++// Quote tweet generation endpoint
++app.post('/api/generate-quote', strictLimiter, async (req, res) => {
++    try {
++        const { tweet, persona, engagementMode } = req.body;
++
++        if (!tweet || tweet.trim().length === 0) {
++            return res.status(400).json({ error: 'Tweet content is required' });
++        }
++
++        const tweetContext = detectTweetContext(tweet);
++        const personaPrompt = buildPersonaPrompt(persona || 'builder');
++        
++        const messages = [
++            {
++                role: 'system',
++                content: `You are a crypto Twitter expert generating quote tweets. ${personaPrompt}
++
++Generate a quote tweet with:
++1. One strong, quotable line (hook/insight)
++2. One supporting line (context/value-add)
++
++Keep it concise, impactful, and crypto-native.`
++            },
++            {
++                role: 'user',
++                content: `Generate a quote tweet for this crypto tweet:
++
++"${tweet}"
++
++Context: ${tweetContext}
++Persona: ${persona || 'builder'}
++Mode: ${engagementMode || 'neutral'}
++
++Format:
++Line 1: [Strong hook/insight]
++Line 2: [Supporting context]`
++            }
++        ];
++
++        const quote = await makeOpenRouterRequest(messages, 200);
++        res.json({ quote, context: tweetContext });
++
++    } catch (error) {
++        console.error('Quote generation error:', error);
++        res.status(500).json({ 
++            error: 'Failed to generate quote tweet. Please try again.' 
++        });
++    }
++});
++
++// Helper functions for crypto context detection
++function detectTweetContext(tweet) {
++    const text = tweet.toLowerCase();
++    
++    // Partnership/Launch indicators
++    if (text.includes('partnership') || text.includes('launch') || text.includes('announcing') || 
++        text.includes('excited to') || text.includes('proud to') || text.includes('introducing')) {
++        return 'partnership_launch';
++    }
++    
++    // Technical thread indicators
++    if (text.includes('thread') || text.includes('1/') || text.includes('🧵') ||
++        text.includes('technical') || text.includes('deep dive') || text.includes('breakdown')) {
++        return 'technical_thread';
++    }
++    
++    // Hot take indicators
++    if (text.includes('unpopular opinion') || text.includes('hot take') || text.includes('controversial') ||
++        text.includes('change my mind') || text.includes('fight me') || text.includes('🔥')) {
++        return 'hot_take';
++    }
++    
++    // Opinion indicators
++    if (text.includes('i think') || text.includes('imo') || text.includes('in my opinion') ||
++        text.includes('believe') || text.includes('feel like') || text.includes('personally')) {
++        return 'opinion';
++    }
++    
++    // Announcement indicators
++    if (text.includes('announcement') || text.includes('news') || text.includes('update') ||
++        text.includes('breaking') || text.includes('just dropped') || text.includes('live now')) {
++        return 'announcement';
++    }
++    
++    return 'general';
++}
++
++function buildPersonaPrompt(persona) {
++    const personas = {
++        builder: "You're a crypto builder focused on technology, development, and practical solutions. Use technical terms confidently but accessibly.",
++        trader: "You're an active crypto trader focused on markets, price action, and trading opportunities. Use market terminology and be direct about risk/reward.",
++        researcher: "You're a crypto researcher focused on fundamentals, analysis, and deep insights. Provide thoughtful, data-driven perspectives.",
++        degen: "You're a crypto degen focused on high-risk plays, memes, and community vibes. Use casual language, memes, and show appetite for risk.",
++        founder: "You're a crypto founder focused on building, scaling, and ecosystem development. Think strategically about growth and adoption.",
++        community: "You're a community-focused crypto enthusiast. Emphasize collaboration, education, and bringing people together."
++    };
++    
++    return personas[persona] || personas.builder;
++}
++
++function buildEngagementPrompt(mode) {
++    const modes = {
++        engagement_max: "Maximize engagement with hooks, questions, and light CTAs. Be bold and conversation-starting.",
++        neutral: "Maintain balanced, safe engagement. Be helpful without being pushy.",
++        signal_only: "Focus purely on insights and value. Be concise and signal-heavy with minimal fluff."
++    };
++    
++    return modes[mode] || modes.neutral;
++}
++
++async function generateReplyVariants(baseMessages, tweet, preferences, persona, engagementMode) {
++    const variants = {};
++    
++    // Safe variant
++    const safeMessages = [...baseMessages];
++    safeMessages[0].content += "\n\nGenerate a SAFE variant: Conservative, low-risk, broadly acceptable.";
++    variants.safe = await makeOpenRouterRequest(safeMessages, 200);
++    
++    // Bold variant  
++    const boldMessages = [...baseMessages];
++    boldMessages[0].content += "\n\nGenerate a BOLD variant: Confident, opinionated, conversation-starting.";
++    variants.bold = await makeOpenRouterRequest(boldMessages, 200);
++    
++    // Alpha variant
++    const alphaMessages = [...baseMessages];
++    alphaMessages[0].content += "\n\nGenerate an ALPHA variant: High-conviction, contrarian, thought-leadership.";
++    variants.alpha = await makeOpenRouterRequest(alphaMessages, 200);
++    
++    return variants;
++}
++
+ app.get('/api/extension-version', (req, res) => {
+     res.json({
+         version: '1.0.0', // Update this when you release new versions
+-- 
+2.39.5 (Apple Git-154)
+

@@ -231,7 +231,28 @@ class CryptoReplyGuyExtension {
             // Remove any remaining square bracket patterns
             /\[[^\]]*INST[^\]]*\]/g,
             /\[[^\]]*BOT[^\]]*\]/g,
-            /\[[^\]]*SYS[^\]]*\]/g
+            /\[[^\]]*SYS[^\]]*\]/g,
+            // Remove variant labels and formatting
+            /\*\*SAFE:\*\*/g,
+            /\*\*BOLD:\*\*/g,
+            /\*\*ALPHA:\*\*/g,
+            /Safe:/g,
+            /Bold:/g,
+            /Alpha:/g,
+            /Safe Reply:/g,
+            /Bold Reply:/g,
+            /Alpha Reply:/g,
+            /\*\*Safe\*\*/g,
+            /\*\*Bold\*\*/g,
+            /\*\*Alpha\*\*/g,
+            // Remove line labels
+            /Line 1:/g,
+            /Line 2:/g,
+            /Hook:/g,
+            /Supporting:/g,
+            // Remove extra asterisks and formatting
+            /\*\*\*+/g,
+            /\*\*/g
         ];
         
         // Apply all cleaning rules
@@ -239,9 +260,10 @@ class CryptoReplyGuyExtension {
             cleaned = cleaned.replace(pattern, '');
         });
         
-        // Clean up extra whitespace
+        // Clean up extra whitespace and newlines
         cleaned = cleaned.trim();
         cleaned = cleaned.replace(/\s+/g, ' ');
+        cleaned = cleaned.replace(/\n\s*\n/g, '\n');
         
         // Remove leading/trailing quotes if they wrap the entire response
         if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || 

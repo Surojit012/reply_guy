@@ -193,30 +193,31 @@ app.post('/api/generate-reply', strictLimiter, async (req, res) => {
         const messages = [
             {
                 role: 'system',
-                content: `You are a crypto Twitter expert generating contextually aware replies. ${personaPrompt} ${engagementPrompt}
+                content: `You are a crypto Twitter expert with deep knowledge of DeFi, Web3, blockchain technology, and crypto culture. 
 
-Tweet Context: ${tweetContext}
+${personaPrompt} 
+${engagementPrompt}
 
-Reply Guidelines:
-- Match the detected context and adjust tone accordingly
-- Use crypto-native language and terminology
-- Be authentic and add genuine value
-- Keep replies concise and engaging
-- Avoid generic responses`
+Tweet Context Detected: ${tweetContext}
+
+Generate a crypto-native reply that:
+- Uses appropriate crypto terminology naturally
+- Matches the ${tweetContext.replace('_', ' ')} context
+- Reflects ${persona} expertise and perspective
+- Follows ${engagementMode} engagement strategy
+- Sounds authentic and adds genuine value
+- Avoids generic responses
+
+Style: ${preferences.style}
+Tone: ${preferences.tone}  
+Length: ${preferences.length}
+Include emojis: ${preferences.emoji ? 'Yes, use relevant crypto/tech emojis' : 'No emojis'}
+
+CRITICAL: Return ONLY the reply text. No labels, no prefixes, no explanations. Just the clean, natural reply.`
             },
             {
                 role: 'user',
-                content: `Generate a ${preferences.style} reply to this crypto tweet:
-
-"${tweet}"
-
-Requirements:
-- Length: ${preferences.length}
-- Tone: ${preferences.tone}
-- Include emojis: ${preferences.emoji ? 'Yes' : 'No'}
-- Context: ${tweetContext}
-- Persona: ${persona || 'builder'}
-- Engagement Mode: ${engagementMode || 'neutral'}`
+                content: `Reply to this crypto tweet: "${tweet}"`
             }
         ];
 
@@ -323,27 +324,26 @@ app.post('/api/generate-quote', strictLimiter, async (req, res) => {
         const messages = [
             {
                 role: 'system',
-                content: `You are a crypto Twitter expert generating quote tweets. ${personaPrompt}
+                content: `You are a crypto Twitter expert creating quote tweets. ${personaPrompt}
 
-Generate a quote tweet with:
-1. One strong, quotable line (hook/insight)
-2. One supporting line (context/value-add)
+Generate a compelling quote tweet with:
+1. A strong, quotable hook (main insight/reaction)
+2. A supporting line that adds context or value
 
-Keep it concise, impactful, and crypto-native.`
+Context: ${tweetContext}
+Engagement: ${engagementMode}
+
+Make it crypto-native, authentic, and engaging. Use appropriate crypto terminology.
+
+CRITICAL: Return in this exact format:
+[Hook line]
+[Supporting line]
+
+No labels, no "Line 1:" or "Line 2:" prefixes. Just the two lines.`
             },
             {
                 role: 'user',
-                content: `Generate a quote tweet for this crypto tweet:
-
-"${tweet}"
-
-Context: ${tweetContext}
-Persona: ${persona || 'builder'}
-Mode: ${engagementMode || 'neutral'}
-
-Format:
-Line 1: [Strong hook/insight]
-Line 2: [Supporting context]`
+                content: `Create a quote tweet for: "${tweet}"`
             }
         ];
 
@@ -397,12 +397,12 @@ function detectTweetContext(tweet) {
 
 function buildPersonaPrompt(persona) {
     const personas = {
-        builder: "You're a crypto builder focused on technology, development, and practical solutions. Use technical terms confidently but accessibly.",
-        trader: "You're an active crypto trader focused on markets, price action, and trading opportunities. Use market terminology and be direct about risk/reward.",
-        researcher: "You're a crypto researcher focused on fundamentals, analysis, and deep insights. Provide thoughtful, data-driven perspectives.",
-        degen: "You're a crypto degen focused on high-risk plays, memes, and community vibes. Use casual language, memes, and show appetite for risk.",
-        founder: "You're a crypto founder focused on building, scaling, and ecosystem development. Think strategically about growth and adoption.",
-        community: "You're a community-focused crypto enthusiast. Emphasize collaboration, education, and bringing people together."
+        builder: "You're a crypto builder/developer. Focus on: technical implementation, code quality, developer experience, building in public, shipping products. Use terms like 'shipping', 'building', 'devs', 'tech stack', 'open source'.",
+        trader: "You're an active crypto trader. Focus on: price action, market structure, trading setups, risk management, market psychology. Use terms like 'PA', 'levels', 'invalidation', 'R:R', 'confluence', 'degen plays'.",
+        researcher: "You're a crypto researcher/analyst. Focus on: fundamentals, tokenomics, protocol analysis, data-driven insights, due diligence. Use terms like 'fundamentals', 'tokenomics', 'TVL', 'metrics', 'alpha research'.",
+        degen: "You're a crypto degen. Focus on: high-risk plays, meme coins, aping, FOMO, community vibes, quick flips. Use terms like 'aping', 'moon mission', 'diamond hands', 'wagmi', 'send it', casual/meme language.",
+        founder: "You're a crypto founder/entrepreneur. Focus on: building ecosystems, scaling, partnerships, vision, adoption, business strategy. Use terms like 'ecosystem', 'scaling', 'adoption', 'partnerships', 'vision'.",
+        community: "You're a crypto community builder. Focus on: education, onboarding, collaboration, inclusivity, helping newcomers. Use terms like 'fren', 'community', 'together', 'learning', 'welcome to crypto'."
     };
     
     return personas[persona] || personas.builder;
@@ -410,9 +410,9 @@ function buildPersonaPrompt(persona) {
 
 function buildEngagementPrompt(mode) {
     const modes = {
-        engagement_max: "Maximize engagement with hooks, questions, and light CTAs. Be bold and conversation-starting.",
-        neutral: "Maintain balanced, safe engagement. Be helpful without being pushy.",
-        signal_only: "Focus purely on insights and value. Be concise and signal-heavy with minimal fluff."
+        engagement_max: "ENGAGEMENT STRATEGY: Create hooks and conversation starters. Ask thought-provoking questions, use engaging language, include calls-to-action. Make people want to reply and discuss.",
+        neutral: "ENGAGEMENT STRATEGY: Provide balanced, helpful responses. Be informative and valuable without being pushy or controversial. Focus on adding genuine insight.",
+        signal_only: "ENGAGEMENT STRATEGY: Pure signal, minimal noise. Be concise and insight-heavy. Focus on valuable information, data, or unique perspectives. No fluff or engagement tactics."
     };
     
     return modes[mode] || modes.neutral;
@@ -422,19 +422,64 @@ async function generateReplyVariants(baseMessages, tweet, preferences, persona, 
     const variants = {};
     
     // Safe variant
-    const safeMessages = [...baseMessages];
-    safeMessages[0].content += "\n\nGenerate a SAFE variant: Conservative, low-risk, broadly acceptable.";
-    variants.safe = await makeOpenRouterRequest(safeMessages, 200);
+    const safeMessages = [
+        {
+            role: 'system',
+            content: `You are a crypto Twitter expert. Generate a SAFE reply variant that is:
+- Conservative and broadly acceptable
+- Professional but friendly
+- Adds value without being controversial
+- Uses ${persona} perspective
+- Engagement mode: ${engagementMode}
+
+CRITICAL: Return ONLY the reply text, no labels, no markers, no "Safe:" prefix. Just the clean reply.`
+        },
+        {
+            role: 'user',
+            content: `Generate a safe crypto reply to: "${tweet}"`
+        }
+    ];
+    variants.safe = await makeOpenRouterRequest(safeMessages, 150);
     
     // Bold variant  
-    const boldMessages = [...baseMessages];
-    boldMessages[0].content += "\n\nGenerate a BOLD variant: Confident, opinionated, conversation-starting.";
-    variants.bold = await makeOpenRouterRequest(boldMessages, 200);
+    const boldMessages = [
+        {
+            role: 'system',
+            content: `You are a crypto Twitter expert. Generate a BOLD reply variant that is:
+- Confident and opinionated
+- Conversation-starting
+- Takes a clear stance
+- Uses ${persona} perspective
+- Engagement mode: ${engagementMode}
+
+CRITICAL: Return ONLY the reply text, no labels, no markers, no "Bold:" prefix. Just the clean reply.`
+        },
+        {
+            role: 'user',
+            content: `Generate a bold crypto reply to: "${tweet}"`
+        }
+    ];
+    variants.bold = await makeOpenRouterRequest(boldMessages, 150);
     
     // Alpha variant
-    const alphaMessages = [...baseMessages];
-    alphaMessages[0].content += "\n\nGenerate an ALPHA variant: High-conviction, contrarian, thought-leadership.";
-    variants.alpha = await makeOpenRouterRequest(alphaMessages, 200);
+    const alphaMessages = [
+        {
+            role: 'system',
+            content: `You are a crypto Twitter expert. Generate an ALPHA reply variant that is:
+- High-conviction and contrarian
+- Thought-leadership style
+- Challenges conventional thinking
+- Uses ${persona} perspective
+- Engagement mode: ${engagementMode}
+
+CRITICAL: Return ONLY the reply text, no labels, no markers, no "Alpha:" prefix. Just the clean reply.`
+        },
+        {
+            role: 'user',
+            content: `Generate an alpha crypto reply to: "${tweet}"`
+        }
+    ];
+    variants.alpha = await makeOpenRouterRequest(alphaMessages, 150);
     
     return variants;
 }
