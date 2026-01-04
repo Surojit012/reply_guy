@@ -203,26 +203,24 @@ class CryptoReplyGuyExtension {
             const healthData = await healthResponse.json();
             console.log('Health check:', healthData);
             
-            // Test simple analyze endpoint
-            const testTweet = 'Hello world test tweet';
-            console.log('Testing analyze endpoint with:', testTweet);
-            
-            const analyzeResponse = await fetch(`${this.serverUrl}/api/analyze`, {
+            // Test OpenRouter API directly
+            console.log('Testing OpenRouter API...');
+            const testResponse = await fetch(`${this.serverUrl}/api/test-openrouter`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ tweet: testTweet })
+                body: JSON.stringify({})
             });
             
-            console.log('Analyze response status:', analyzeResponse.status);
-            const analyzeData = await analyzeResponse.json();
-            console.log('Analyze response:', analyzeData);
+            console.log('Test OpenRouter response status:', testResponse.status);
+            const testData = await testResponse.json();
+            console.log('Test OpenRouter response:', testData);
             
-            if (analyzeResponse.ok) {
-                this.showSuccess('Connection test successful!');
+            if (testResponse.ok && testData.success) {
+                this.showSuccess(`Connection test successful! Result: ${testData.result}`);
             } else {
-                this.showError(`Connection test failed: ${analyzeData.error}`);
+                this.showError(`OpenRouter test failed: ${testData.error || 'Unknown error'}`);
             }
             
         } catch (error) {

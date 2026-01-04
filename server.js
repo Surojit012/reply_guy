@@ -99,49 +99,118 @@ app.get('/reply-guy-extension.crx', (req, res) => {
     res.download(filePath, 'reply-guy-extension.crx');
 });
 
-// AI request handler
+// AI request handler with better error handling
 async function makeOpenRouterRequest(messages, maxTokens = 500) {
     console.log('Making OpenRouter request with messages:', messages);
     console.log('API Key configured:', !!process.env.OPENROUTER_API_KEY);
+    console.log('API Key length:', process.env.OPENROUTER_API_KEY ? process.env.OPENROUTER_API_KEY.length : 0);
+    
+    if (!process.env.OPENROUTER_API_KEY) {
+        throw new Error('OpenRouter API key is not configured');
+    }
     
     try {
+        const requestBody = {
+            model: 'meta-llama/llama-3.2-3b-instruct:free',
+            messages: messages,
+            max_tokens: maxTokens,
+            temperature: 0.7
+        };
+        
+        console.log('Request body:', JSON.stringify(requestBody, null, 2));
+        
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
                 'Content-Type': 'application/json',
-                'HTTP-Referer': process.env.SITE_URL || 'http://localhost:3000',
+                'HTTP-Referer': process.env.SITE_URL || 'https://reply-guy-eta.vercel.app',
                 'X-Title': 'Tweet Reply Generator'
             },
-            body: JSON.stringify({
-                model: 'mistralai/mistral-7b-instruct:free',
-                messages: messages,
-                max_tokens: maxTokens,
-                temperature: 0.7
-            })
+            body: JSON.stringify(requestBody)
         });
 
         console.log('OpenRouter response status:', response.status);
-        console.log('OpenRouter response ok:', response.ok);
+        console.log('OpenRouter response headers:', Object.fromEntries(response.headers.entries()));
+
+        const responseText = await response.text();
+        console.log('OpenRouter raw response:', responseText);
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
+            let errorData;
+            try {
+                errorData = JSON.parse(responseText);
+            } catch (e) {
+                errorData = { error: { message: responseText } };
+            }
+            
             console.error('OpenRouter API Error:', {
                 status: response.status,
                 statusText: response.statusText,
-                error: errorData
+                error: errorData,
+                headers: Object.fromEntries(response.headers.entries())
             });
+            
             throw new Error(errorData.error?.message || `API request failed: ${response.status} - ${response.statusText}`);
         }
 
-        const data = await response.json();
-        console.log('OpenRouter response data:', data);
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            console.error('Failed to parse OpenRouter response as JSON:', responseText);
+            throw new Error('Invalid JSON response from OpenRouter API');
+        }
+        
+        console.log('OpenRouter parsed response:', data);
+        
+        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+            console.error('Unexpected response structure:', data);
+            throw new Error('Unexpected response structure from OpenRouter API');
+        }
+        
         return data.choices[0].message.content;
     } catch (error) {
         console.error('OpenRouter request error:', error);
         throw error;
     }
 }
+
+// Test endpoint for debugging API issues
+app.post('/api/test-openrouter', strictLimiter, async (req, res) => {
+    try {
+        console.log('Test OpenRouter endpoint called');
+        
+        const messages = [
+            {
+                role: 'system',
+                content: 'You are a helpful assistant.'
+            },
+            {
+                role: 'user',
+                content: 'Say "Hello, this is a test!" in exactly those words.'
+            }
+        ];
+
+        console.log('Testing OpenRouter API...');
+        const result = await makeOpenRouterRequest(messages, 50);
+        console.log('Test result:', result);
+        
+        res.json({ 
+            success: true, 
+            result: result,
+            message: 'OpenRouter API test successful'
+        });
+
+    } catch (error) {
+        console.error('Test OpenRouter error:', error);
+        res.status(500).json({ 
+            success: false,
+            error: error.message,
+            message: 'OpenRouter API test failed'
+        });
+    }
+});
 
 // Tweet analysis endpoint
 app.post('/api/analyze', strictLimiter, async (req, res) => {
@@ -528,9 +597,9 @@ Return only the reply text, no labels or prefixes.`
 
 app.get('/api/extension-version', (req, res) => {
     res.json({
-        version: '1.1.3', // Update this when you release new versions
+        version: '1.1.4', // Update this when you release new versions
         downloadUrl: `${process.env.SITE_URL || 'http://localhost:3000'}/install`,
-        releaseNotes: 'Added connection test button and comprehensive debugging. Click "Test Connection" in extension to diagnose API issues.',
+        releaseNotes: 'Enhanced error handling and debugging. Switched to Llama 3.2 3B model. Added OpenRouter API test endpoint.',
         required: false // Set to true for critical updates
     });
 });
