@@ -13,7 +13,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #1a0033 0%, #330066 25%, #ff6b35 50%, #f7931e 75%, #ffcc02 100%);
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
     background-size: 400% 400%;
     animation: gradientShift 8s ease infinite;
     color: #ffffff;
@@ -75,14 +75,14 @@ header {
 
 header h1 {
     font-size: 2.5rem;
-    background: linear-gradient(45deg, #ff6b35 0%, #f7931e 25%, #ffcc02 50%, #ff6b35 75%, #f7931e 100%);
+    background: linear-gradient(45deg, #64b5f6 0%, #42a5f5 25%, #2196f3 50%, #1e88e5 75%, #1976d2 100%);
     background-size: 200% 200%;
     animation: gradientText 3s ease infinite;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: 10px;
-    text-shadow: 0 0 30px rgba(255, 107, 53, 0.5);
+    text-shadow: 0 0 30px rgba(33, 150, 243, 0.5);
 }
 
 @keyframes gradientText {
@@ -92,9 +92,9 @@ header h1 {
 }
 
 header p {
-    color: #ffcc02;
+    color: #64b5f6;
     font-size: 1.1rem;
-    text-shadow: 0 0 10px rgba(255, 204, 2, 0.3);
+    text-shadow: 0 0 10px rgba(100, 181, 246, 0.3);
 }
 
 .creator-badge {
@@ -145,8 +145,8 @@ header p {
     border-radius: 20px;
     padding: 30px;
     margin-bottom: 30px;
-    border: 2px solid rgba(255, 107, 53, 0.3);
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.2), 0 0 50px rgba(255, 204, 2, 0.1);
+    border: 2px solid rgba(33, 150, 243, 0.3);
+    box-shadow: 0 8px 32px rgba(33, 150, 243, 0.2), 0 0 50px rgba(100, 181, 246, 0.1);
 }
 
 .form-group {
@@ -180,8 +180,8 @@ input, textarea, select {
 
 input:focus, textarea:focus, select:focus {
     outline: none;
-    border-color: #ff6b35;
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.3);
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
     background: rgba(255, 255, 255, 0.15);
 }
 
@@ -242,15 +242,15 @@ textarea {
 }
 
 .btn-primary {
-    background: linear-gradient(45deg, #ff6b35 0%, #f7931e 50%, #ffcc02 100%);
+    background: linear-gradient(45deg, #2196f3 0%, #1976d2 50%, #1565c0 100%);
     color: white;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
 }
 
 .btn-primary:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.6);
+    box-shadow: 0 8px 25px rgba(33, 150, 243, 0.6);
 }
 
 .btn-secondary {
@@ -891,19 +891,61 @@ textarea {
     border-radius: 20px;
     padding: 30px;
     margin-bottom: 30px;
-    border: 2px solid rgba(255, 204, 2, 0.3);
-    box-shadow: 0 8px 32px rgba(255, 204, 2, 0.2), 0 0 50px rgba(255, 107, 53, 0.1);
+    border: 2px solid rgba(100, 181, 246, 0.3);
+    box-shadow: 0 8px 32px rgba(100, 181, 246, 0.2), 0 0 50px rgba(33, 150, 243, 0.1);
+}
+
+.quote-preview {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid rgba(100, 181, 246, 0.2);
+    margin: 15px 0;
+}
+
+.quote-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(100, 181, 246, 0.2);
+}
+
+.quote-icon {
+    font-size: 1.2rem;
+}
+
+.quote-label {
+    color: #64b5f6;
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
 .quote-box {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 12px;
     padding: 20px;
-    border-left: 4px solid #ffcc02;
+    border-left: 4px solid #64b5f6;
     margin: 15px 0;
     white-space: pre-wrap;
     word-wrap: break-word;
-    box-shadow: 0 4px 15px rgba(255, 204, 2, 0.2);
+    box-shadow: 0 4px 15px rgba(100, 181, 246, 0.2);
+    min-height: 60px;
+    font-size: 1.1rem;
+    line-height: 1.5;
+}
+
+.quote-footer {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(100, 181, 246, 0.2);
+}
+
+.quote-tip {
+    color: rgba(100, 181, 246, 0.8);
+    font-size: 0.85rem;
+    font-style: italic;
 }
 
 .btn-sm {
@@ -1316,6 +1358,7 @@ textarea {
                                 <option value="contrarian">Contrarian</option>
                                 <option value="bullish">Bullish</option>
                                 <option value="analytical">Analytical</option>
+                                <option value="humorous">Humorous</option>
                             </select>
                         </div>
 
@@ -1369,10 +1412,19 @@ textarea {
             </div>
 
             <div class="quote-section" id="quote-section" style="display: none;">
-                <h3>💬 Quote Tweet</h3>
-                <div id="generated-quote" class="quote-box"></div>
+                <h3>💬 Quote Tweet Generator</h3>
+                <div class="quote-preview">
+                    <div class="quote-header">
+                        <span class="quote-icon">🔗</span>
+                        <span class="quote-label">Your Quote Tweet</span>
+                    </div>
+                    <div id="generated-quote" class="quote-box"></div>
+                    <div class="quote-footer">
+                        <span class="quote-tip">💡 Perfect for adding your perspective to the conversation</span>
+                    </div>
+                </div>
                 <div class="reply-actions">
-                    <button id="copy-quote-btn" class="btn btn-outline">Copy Quote</button>
+                    <button id="copy-quote-btn" class="btn btn-outline">Copy Quote Tweet</button>
                     <button id="regenerate-quote-btn" class="btn btn-secondary">Regenerate</button>
                 </div>
             </div>
@@ -1990,15 +2042,23 @@ class CryptoTweetReplyGenerator {
             
             const persona = this.personaSelect?.value || 'builder';
             const engagementMode = this.engagementMode?.value || 'neutral';
+            const preferences = {
+                length: this.replyLength?.value || 'medium',
+                style: this.writingStyle?.value || 'casual',
+                tone: this.tone?.value || 'neutral',
+                emoji: this.includeEmoji?.checked || false
+            };
 
             const result = await this.makeAPIRequest('generate-quote', { 
                 tweet,
                 persona,
-                engagementMode
+                engagementMode,
+                preferences
             });
             
             const cleanedQuote = this.cleanAIResponse(result.quote);
-            this.generatedQuote.textContent = cleanedQuote;
+            const finalQuote = this.enforceUserPreferences(cleanedQuote, preferences);
+            this.generatedQuote.textContent = finalQuote;
             
             this.quoteSection.style.display = 'block';
             this.outputSection.style.display = 'none';

@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #1a0033 0%, #330066 25%, #ff6b35 50%, #f7931e 75%, #ffcc02 100%);
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
     background-size: 400% 400%;
     animation: gradientShift 8s ease infinite;
     color: #ffffff;
@@ -33,14 +33,14 @@ header {
 
 header h1 {
     font-size: 1.8rem;
-    background: linear-gradient(45deg, #ff6b35 0%, #f7931e 25%, #ffcc02 50%, #ff6b35 75%, #f7931e 100%);
+    background: linear-gradient(45deg, #64b5f6 0%, #42a5f5 25%, #2196f3 50%, #1e88e5 75%, #1976d2 100%);
     background-size: 200% 200%;
     animation: gradientText 3s ease infinite;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: 5px;
-    text-shadow: 0 0 30px rgba(255, 107, 53, 0.5);
+    text-shadow: 0 0 30px rgba(33, 150, 243, 0.5);
 }
 
 @keyframes gradientText {
@@ -50,9 +50,9 @@ header h1 {
 }
 
 header p {
-    color: #ffcc02;
+    color: #64b5f6;
     font-size: 0.9rem;
-    text-shadow: 0 0 10px rgba(255, 204, 2, 0.3);
+    text-shadow: 0 0 10px rgba(100, 181, 246, 0.3);
 }
 
 .input-section, .output-section {

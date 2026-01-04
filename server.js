@@ -314,7 +314,7 @@ Keep answers concise, helpful, and friendly. If asked about something not relate
 // Quote tweet generation endpoint
 app.post('/api/generate-quote', strictLimiter, async (req, res) => {
     try {
-        const { tweet, persona, engagementMode } = req.body;
+        const { tweet, persona, engagementMode, preferences } = req.body;
 
         if (!tweet || tweet.trim().length === 0) {
             return res.status(400).json({ error: 'Tweet content is required' });
@@ -322,6 +322,8 @@ app.post('/api/generate-quote', strictLimiter, async (req, res) => {
 
         const tweetContext = detectTweetContext(tweet);
         const personaPrompt = buildPersonaPrompt(persona || 'builder');
+        
+        const emojiInstruction = preferences?.emoji ? 'Include relevant emojis' : 'NO EMOJIS - do not use any emojis at all';
         
         const messages = [
             {
@@ -334,6 +336,7 @@ Generate a compelling quote tweet with:
 
 Context: ${tweetContext}
 Engagement: ${engagementMode}
+EMOJIS: ${emojiInstruction}
 
 Make it crypto-native, authentic, and engaging. Use appropriate crypto terminology.
 
@@ -350,7 +353,10 @@ No labels, no "Line 1:" or "Line 2:" prefixes. Just the two lines.`
         ];
 
         const quote = await makeOpenRouterRequest(messages, 200);
-        res.json({ quote, context: tweetContext });
+        const cleanedQuote = cleanAIResponse(quote);
+        const finalQuote = enforceUserPreferences(cleanedQuote, preferences || { emoji: false });
+        
+        res.json({ quote: finalQuote, context: tweetContext });
 
     } catch (error) {
         console.error('Quote generation error:', error);
