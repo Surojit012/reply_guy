@@ -99,7 +99,7 @@ app.get('/reply-guy-extension.crx', (req, res) => {
     res.download(filePath, 'reply-guy-extension.crx');
 });
 
-// AI request handler with better error handling
+// AI request handler with comprehensive rate limit handling
 async function makeOpenRouterRequest(messages, maxTokens = 500) {
     console.log('Making OpenRouter request with messages:', messages);
     console.log('API Key configured:', !!process.env.OPENROUTER_API_KEY);
@@ -144,6 +144,25 @@ async function makeOpenRouterRequest(messages, maxTokens = 500) {
                 errorData = { error: { message: responseText } };
             }
             
+            // Handle rate limiting specifically
+            if (response.status === 429) {
+                const rateLimitInfo = {
+                    status: 429,
+                    type: 'rate_limit',
+                    message: errorData.error?.message || 'Rate limit exceeded',
+                    resetTime: response.headers.get('x-ratelimit-reset'),
+                    remaining: parseInt(response.headers.get('x-ratelimit-remaining')) || 0,
+                    limit: parseInt(response.headers.get('x-ratelimit-limit')) || 50,
+                    retryAfter: response.headers.get('retry-after')
+                };
+                
+                console.log('Rate limit info:', rateLimitInfo);
+                
+                const error = new Error('Rate limit exceeded');
+                error.rateLimitInfo = rateLimitInfo;
+                throw error;
+            }
+            
             console.error('OpenRouter API Error:', {
                 status: response.status,
                 statusText: response.statusText,
@@ -169,7 +188,15 @@ async function makeOpenRouterRequest(messages, maxTokens = 500) {
             throw new Error('Unexpected response structure from OpenRouter API');
         }
         
-        return data.choices[0].message.content;
+        // Return both content and rate limit info for successful requests
+        return {
+            content: data.choices[0].message.content,
+            rateLimitInfo: {
+                remaining: parseInt(response.headers.get('x-ratelimit-remaining')) || null,
+                limit: parseInt(response.headers.get('x-ratelimit-limit')) || null,
+                resetTime: response.headers.get('x-ratelimit-reset') || null
+            }
+        };
     } catch (error) {
         console.error('OpenRouter request error:', error);
         throw error;
@@ -198,12 +225,24 @@ app.post('/api/test-openrouter', strictLimiter, async (req, res) => {
         
         res.json({ 
             success: true, 
-            result: result,
+            result: result.content,
+            rateLimitInfo: result.rateLimitInfo,
             message: 'OpenRouter API test successful'
         });
 
     } catch (error) {
         console.error('Test OpenRouter error:', error);
+        
+        // Handle rate limit errors specifically
+        if (error.rateLimitInfo) {
+            return res.status(429).json({
+                success: false,
+                error: 'Rate limit exceeded',
+                rateLimitInfo: error.rateLimitInfo,
+                message: 'OpenRouter API rate limit reached'
+            });
+        }
+        
         res.status(500).json({ 
             success: false,
             error: error.message,
@@ -244,13 +283,25 @@ Tweet: "${tweet}"`
         ];
 
         console.log('Calling OpenRouter API...');
-        const analysis = await makeOpenRouterRequest(messages, 300);
-        console.log('Analysis result:', analysis);
+        const result = await makeOpenRouterRequest(messages, 300);
+        console.log('Analysis result:', result);
         
-        res.json({ analysis });
+        res.json({ 
+            analysis: result.content,
+            rateLimitInfo: result.rateLimitInfo
+        });
 
     } catch (error) {
         console.error('Analysis error:', error);
+        
+        // Handle rate limit errors specifically
+        if (error.rateLimitInfo) {
+            return res.status(429).json({
+                error: 'Rate limit exceeded',
+                rateLimitInfo: error.rateLimitInfo
+            });
+        }
+        
         res.status(500).json({ 
             error: 'Failed to analyze tweet. Please try again.' 
         });
@@ -307,20 +358,36 @@ CRITICAL RULES:
             
             // Clean and enforce preferences for each variant
             const cleanedVariants = {
-                safe: enforceUserPreferences(cleanAIResponse(variants.safe), preferences),
-                bold: enforceUserPreferences(cleanAIResponse(variants.bold), preferences),
-                alpha: enforceUserPreferences(cleanAIResponse(variants.alpha), preferences)
+                safe: enforceUserPreferences(cleanAIResponse(variants.safe.content), preferences),
+                bold: enforceUserPreferences(cleanAIResponse(variants.bold.content), preferences),
+                alpha: enforceUserPreferences(cleanAIResponse(variants.alpha.content), preferences)
             };
             
-            res.json({ variants: cleanedVariants });
+            res.json({ 
+                variants: cleanedVariants,
+                rateLimitInfo: variants.safe.rateLimitInfo // Use rate limit info from first request
+            });
         } else {
-            const reply = await makeOpenRouterRequest(messages, 280);
-            const cleanedReply = enforceUserPreferences(cleanAIResponse(reply), preferences);
-            res.json({ reply: cleanedReply, context: tweetContext });
+            const result = await makeOpenRouterRequest(messages, 280);
+            const cleanedReply = enforceUserPreferences(cleanAIResponse(result.content), preferences);
+            res.json({ 
+                reply: cleanedReply, 
+                context: tweetContext,
+                rateLimitInfo: result.rateLimitInfo
+            });
         }
 
     } catch (error) {
         console.error('Generation error:', error);
+        
+        // Handle rate limit errors specifically
+        if (error.rateLimitInfo) {
+            return res.status(429).json({
+                error: 'Rate limit exceeded',
+                rateLimitInfo: error.rateLimitInfo
+            });
+        }
+        
         res.status(500).json({ 
             error: 'Failed to generate reply. Please try again.' 
         });
@@ -387,12 +454,24 @@ Keep answers concise, helpful, and friendly. If asked about something not relate
             }
         ];
 
-        const response = await makeOpenRouterRequest(messages, 200);
+        const result = await makeOpenRouterRequest(messages, 200);
         
-        res.json({ response });
+        res.json({ 
+            response: result.content,
+            rateLimitInfo: result.rateLimitInfo
+        });
 
     } catch (error) {
         console.error('Chatbot error:', error);
+        
+        // Handle rate limit errors specifically
+        if (error.rateLimitInfo) {
+            return res.status(429).json({
+                error: 'Rate limit exceeded',
+                rateLimitInfo: error.rateLimitInfo
+            });
+        }
+        
         res.status(500).json({ 
             error: 'Sorry, I\'m having trouble right now. Please try again in a moment.' 
         });
@@ -443,19 +522,32 @@ No labels, no "Line 1:" or "Line 2:" prefixes. Just the two lines.`
         ];
 
         console.log('Making OpenRouter request for quote...');
-        const quote = await makeOpenRouterRequest(messages, 200);
-        console.log('Raw quote response:', quote);
+        const result = await makeOpenRouterRequest(messages, 200);
+        console.log('Raw quote response:', result);
         
-        const cleanedQuote = cleanAIResponse(quote);
+        const cleanedQuote = cleanAIResponse(result.content);
         console.log('Cleaned quote:', cleanedQuote);
         
         const finalQuote = enforceUserPreferences(cleanedQuote, preferences || { emoji: false });
         console.log('Final quote:', finalQuote);
         
-        res.json({ quote: finalQuote, context: tweetContext });
+        res.json({ 
+            quote: finalQuote, 
+            context: tweetContext,
+            rateLimitInfo: result.rateLimitInfo
+        });
 
     } catch (error) {
         console.error('Quote generation error:', error);
+        
+        // Handle rate limit errors specifically
+        if (error.rateLimitInfo) {
+            return res.status(429).json({
+                error: 'Rate limit exceeded',
+                rateLimitInfo: error.rateLimitInfo
+            });
+        }
+        
         res.status(500).json({ 
             error: 'Failed to generate quote tweet. Please try again.' 
         });
@@ -597,9 +689,9 @@ Return only the reply text, no labels or prefixes.`
 
 app.get('/api/extension-version', (req, res) => {
     res.json({
-        version: '1.1.4', // Update this when you release new versions
+        version: '1.2.0', // Update this when you release new versions
         downloadUrl: `${process.env.SITE_URL || 'http://localhost:3000'}/install`,
-        releaseNotes: 'Enhanced error handling and debugging. Switched to Llama 3.2 3B model. Added OpenRouter API test endpoint.',
+        releaseNotes: 'Enhanced rate limiting with user-friendly messages, proactive warnings, and request throttling with cooldown timers.',
         required: false // Set to true for critical updates
     });
 });

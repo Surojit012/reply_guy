@@ -1,6 +1,8 @@
 class CryptoReplyGuyExtension {
     constructor() {
         this.serverUrl = 'https://reply-guy-eta.vercel.app';
+        this.lastRequestTime = 0;
+        this.cooldownDuration = 3000; // 3 seconds cooldown
         console.log('Crypto Extension initialized with server URL:', this.serverUrl);
         this.initializeElements();
         this.bindEvents();
@@ -173,6 +175,50 @@ class CryptoReplyGuyExtension {
         if (this.quoteBtn) this.quoteBtn.disabled = false;
     }
 
+    startCooldown() {
+        const now = Date.now();
+        this.lastRequestTime = now;
+        
+        // Disable buttons during cooldown
+        if (this.generateBtn) this.generateBtn.disabled = true;
+        if (this.variantsBtn) this.variantsBtn.disabled = true;
+        if (this.quoteBtn) this.quoteBtn.disabled = true;
+        if (this.analyzeBtn) this.analyzeBtn.disabled = true;
+        
+        // Show countdown on generate button
+        let remainingTime = Math.ceil(this.cooldownDuration / 1000);
+        const originalText = this.generateBtn ? this.generateBtn.textContent : 'Generate Reply';
+        
+        const updateCountdown = () => {
+            if (remainingTime > 0 && this.generateBtn) {
+                this.generateBtn.textContent = `Wait ${remainingTime}s...`;
+                remainingTime--;
+                setTimeout(updateCountdown, 1000);
+            } else {
+                if (this.generateBtn) this.generateBtn.textContent = originalText;
+                if (this.generateBtn) this.generateBtn.disabled = false;
+                if (this.variantsBtn) this.variantsBtn.disabled = false;
+                if (this.quoteBtn) this.quoteBtn.disabled = false;
+                if (this.analyzeBtn) this.analyzeBtn.disabled = false;
+            }
+        };
+        
+        updateCountdown();
+    }
+
+    checkCooldown() {
+        const now = Date.now();
+        const timeSinceLastRequest = now - this.lastRequestTime;
+        
+        if (timeSinceLastRequest < this.cooldownDuration) {
+            const remainingCooldown = Math.ceil((this.cooldownDuration - timeSinceLastRequest) / 1000);
+            this.showError(`Please wait ${remainingCooldown} seconds before making another request.`);
+            return false;
+        }
+        
+        return true;
+    }
+
     showError(message) {
         const errorDiv = document.createElement('div');
         errorDiv.className = 'error';
@@ -193,6 +239,43 @@ class CryptoReplyGuyExtension {
         this.loading.parentNode.insertBefore(successDiv, this.loading);
         
         setTimeout(() => successDiv.remove(), 3000);
+    }
+
+    updateRateLimitDisplay(rateLimitInfo) {
+        if (!rateLimitInfo) return;
+        
+        const remaining = rateLimitInfo.remaining || 0;
+        const limit = rateLimitInfo.limit || 50;
+        const used = limit - remaining;
+        
+        // Find or create rate limit display
+        let rateLimitDisplay = document.getElementById('rate-limit-display');
+        if (!rateLimitDisplay) {
+            rateLimitDisplay = document.createElement('div');
+            rateLimitDisplay.id = 'rate-limit-display';
+            rateLimitDisplay.className = 'rate-limit-info';
+            
+            // Insert after the button group
+            const buttonGroup = document.querySelector('.button-group');
+            if (buttonGroup) {
+                buttonGroup.parentNode.insertBefore(rateLimitDisplay, buttonGroup.nextSibling);
+            }
+        }
+        
+        // Update display text with warning if running low
+        if (remaining <= 10 && remaining > 0) {
+            rateLimitDisplay.className = 'rate-limit-info warning';
+            rateLimitDisplay.innerHTML = `⚠️ Requests remaining: ${remaining}/${limit}`;
+        } else if (remaining === 0) {
+            rateLimitDisplay.className = 'rate-limit-info error';
+            const resetTime = rateLimitInfo.resetTime ? new Date(parseInt(rateLimitInfo.resetTime) * 1000).toLocaleTimeString() : 'soon';
+            rateLimitDisplay.innerHTML = `🚫 Daily limit reached. Resets at ${resetTime}`;
+        } else {
+            rateLimitDisplay.className = 'rate-limit-info';
+            rateLimitDisplay.innerHTML = `✅ Requests remaining: ${remaining}/${limit}`;
+        }
+        
+        rateLimitDisplay.style.display = 'block';
     }
 
     async testConnection() {
@@ -249,9 +332,29 @@ class CryptoReplyGuyExtension {
             const result = await response.json();
             console.log('Response data:', result);
 
+            // Handle rate limit responses specifically
+            if (response.status === 429) {
+                const rateLimitInfo = result.rateLimitInfo;
+                if (rateLimitInfo) {
+                    const resetTime = rateLimitInfo.resetTime ? new Date(parseInt(rateLimitInfo.resetTime) * 1000) : null;
+                    const resetTimeStr = resetTime ? resetTime.toLocaleTimeString() : 'soon';
+                    const remaining = rateLimitInfo.remaining || 0;
+                    const limit = rateLimitInfo.limit || 50;
+                    
+                    throw new Error(`Daily limit reached (${limit - remaining}/${limit} requests used). Resets at ${resetTimeStr}. Add credits to OpenRouter for 1000 requests/day.`);
+                } else {
+                    throw new Error('Rate limit exceeded. Please wait before making another request.');
+                }
+            }
+
             if (!response.ok) {
                 console.error('API Error Response:', result);
                 throw new Error(result.error || `Request failed: ${response.status}`);
+            }
+
+            // Update rate limit display if available
+            if (result.rateLimitInfo) {
+                this.updateRateLimitDisplay(result.rateLimitInfo);
             }
 
             return result;
@@ -378,6 +481,10 @@ class CryptoReplyGuyExtension {
             return;
         }
 
+        if (!this.checkCooldown()) {
+            return;
+        }
+
         try {
             this.showLoading();
             
@@ -387,10 +494,12 @@ class CryptoReplyGuyExtension {
             this.analysisResult.textContent = cleanedAnalysis;
             this.analysisSection.style.display = 'block';
             
+            this.startCooldown();
+            
         } catch (error) {
             console.error('Analysis error:', error);
-            if (error.message.includes('Rate limit')) {
-                this.showError('Rate limit exceeded. Please wait a moment before trying again.');
+            if (error.message.includes('Rate limit') || error.message.includes('Daily limit')) {
+                this.showError(error.message);
             } else {
                 this.showError(error.message || 'Failed to analyze tweet. Please try again.');
             }
@@ -406,6 +515,10 @@ class CryptoReplyGuyExtension {
         
         if (!tweet) {
             this.showError('Please paste a tweet first');
+            return;
+        }
+
+        if (!this.checkCooldown()) {
             return;
         }
 
@@ -451,10 +564,12 @@ class CryptoReplyGuyExtension {
             if (this.variantsSection) this.variantsSection.style.display = 'none';
             if (this.quoteSection) this.quoteSection.style.display = 'none';
             
+            this.startCooldown();
+            
         } catch (error) {
             console.error('Generation error:', error);
-            if (error.message.includes('Rate limit')) {
-                this.showError('Rate limit exceeded. Please wait a moment before trying again.');
+            if (error.message.includes('Rate limit') || error.message.includes('Daily limit')) {
+                this.showError(error.message);
             } else {
                 this.showError(error.message || 'Failed to generate reply. Please try again.');
             }
