@@ -97,8 +97,8 @@ input, textarea, select {
 
 input:focus, textarea:focus, select:focus {
     outline: none;
-    border-color: #ff6b35;
-    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.3);
+    border-color: #2196f3;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
     background: rgba(255, 255, 255, 0.15);
 }
 
@@ -108,10 +108,10 @@ textarea {
 }
 
 .preferences-section h3, .analysis-section h3, .output-section h3 {
-    color: #ff6b35;
+    color: #64b5f6;
     margin-bottom: 12px;
     font-size: 1rem;
-    text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+    text-shadow: 0 0 10px rgba(100, 181, 246, 0.3);
 }
 
 .checkbox-group {
@@ -169,10 +169,10 @@ textarea {
 }
 
 .btn-primary {
-    background: linear-gradient(45deg, #ff6b35 0%, #f7931e 50%, #ffcc02 100%);
+    background: linear-gradient(45deg, #2196f3 0%, #1976d2 50%, #1565c0 100%);
     color: white;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.4);
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -193,22 +193,22 @@ textarea {
 
 .btn-outline {
     background: transparent;
-    color: #ff6b35;
-    border: 2px solid #ff6b35;
+    color: #2196f3;
+    border: 2px solid #2196f3;
 }
 
 .btn-outline:hover:not(:disabled) {
-    background: #ff6b35;
+    background: #2196f3;
     color: white;
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.4);
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
 }
 
 .analysis-box, .reply-box {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     padding: 12px;
-    border-left: 3px solid #ff6b35;
+    border-left: 3px solid #64b5f6;
     margin: 10px 0;
     white-space: pre-wrap;
     word-wrap: break-word;
@@ -226,8 +226,8 @@ textarea {
 .spinner {
     width: 30px;
     height: 30px;
-    border: 3px solid rgba(255, 107, 53, 0.3);
-    border-top: 3px solid #ff6b35;
+    border: 3px solid rgba(33, 150, 243, 0.3);
+    border-top: 3px solid #2196f3;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 15px;
@@ -294,8 +294,8 @@ textarea {
     border-radius: 15px;
     padding: 15px;
     margin-bottom: 15px;
-    border: 2px solid rgba(255, 107, 53, 0.3);
-    box-shadow: 0 4px 20px rgba(255, 107, 53, 0.2);
+    border: 2px solid rgba(100, 181, 246, 0.3);
+    box-shadow: 0 4px 20px rgba(100, 181, 246, 0.2);
 }
 
 .variants-container {
@@ -312,7 +312,7 @@ textarea {
 }
 
 .variant-item h4 {
-    color: #ff6b35;
+    color: #64b5f6;
     margin-bottom: 8px;
     font-size: 0.9rem;
 }
@@ -321,14 +321,16 @@ textarea {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     padding: 12px;
-    border-left: 3px solid #ffcc02;
+    border-left: 3px solid #64b5f6;
     margin: 10px 0;
     white-space: pre-wrap;
     word-wrap: break-word;
-    box-shadow: 0 2px 8px rgba(255, 204, 2, 0.2);
-    font-size: 12px;
-    max-height: 120px;
+    box-shadow: 0 2px 8px rgba(100, 181, 246, 0.2);
+    font-size: 11px;
+    max-height: 100px;
     overflow-y: auto;
+    min-height: 40px;
+    line-height: 1.4;
 }
 
 .btn-sm {
@@ -338,8 +340,47 @@ textarea {
 }
 
 .variants-section h3, .quote-section h3 {
-    color: #ff6b35;
+    color: #64b5f6;
     margin-bottom: 12px;
     font-size: 1rem;
-    text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+    text-shadow: 0 0 10px rgba(100, 181, 246, 0.3);
+}
+/* Polished Quote Tweet Styles */
+.quote-preview {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid rgba(100, 181, 246, 0.2);
+    margin: 10px 0;
+}
+
+.quote-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(100, 181, 246, 0.2);
+}
+
+.quote-icon {
+    font-size: 1rem;
+}
+
+.quote-label {
+    color: #64b5f6;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.quote-footer {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(100, 181, 246, 0.2);
+}
+
+.quote-tip {
+    color: rgba(100, 181, 246, 0.8);
+    font-size: 0.75rem;
+    font-style: italic;
 }
