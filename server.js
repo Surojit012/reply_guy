@@ -101,44 +101,60 @@ app.get('/reply-guy-extension.crx', (req, res) => {
 
 // AI request handler
 async function makeOpenRouterRequest(messages, maxTokens = 500) {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': process.env.SITE_URL || 'http://localhost:3000',
-            'X-Title': 'Tweet Reply Generator'
-        },
-        body: JSON.stringify({
-            model: 'mistralai/mistral-7b-instruct:free',
-            messages: messages,
-            max_tokens: maxTokens,
-            temperature: 0.7
-        })
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('OpenRouter API Error:', {
-            status: response.status,
-            statusText: response.statusText,
-            error: errorData
+    console.log('Making OpenRouter request with messages:', messages);
+    console.log('API Key configured:', !!process.env.OPENROUTER_API_KEY);
+    
+    try {
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                'Content-Type': 'application/json',
+                'HTTP-Referer': process.env.SITE_URL || 'http://localhost:3000',
+                'X-Title': 'Tweet Reply Generator'
+            },
+            body: JSON.stringify({
+                model: 'mistralai/mistral-7b-instruct:free',
+                messages: messages,
+                max_tokens: maxTokens,
+                temperature: 0.7
+            })
         });
-        throw new Error(errorData.error?.message || `API request failed: ${response.status} - ${response.statusText}`);
-    }
 
-    const data = await response.json();
-    return data.choices[0].message.content;
+        console.log('OpenRouter response status:', response.status);
+        console.log('OpenRouter response ok:', response.ok);
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error('OpenRouter API Error:', {
+                status: response.status,
+                statusText: response.statusText,
+                error: errorData
+            });
+            throw new Error(errorData.error?.message || `API request failed: ${response.status} - ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('OpenRouter response data:', data);
+        return data.choices[0].message.content;
+    } catch (error) {
+        console.error('OpenRouter request error:', error);
+        throw error;
+    }
 }
 
 // Tweet analysis endpoint
 app.post('/api/analyze', strictLimiter, async (req, res) => {
     try {
+        console.log('Analyze endpoint called with:', req.body);
         const { tweet } = req.body;
 
         if (!tweet || tweet.trim().length === 0) {
+            console.log('No tweet provided');
             return res.status(400).json({ error: 'Tweet content is required' });
         }
+
+        console.log('Processing tweet:', tweet);
 
         const messages = [
             {
@@ -158,7 +174,9 @@ Tweet: "${tweet}"`
             }
         ];
 
+        console.log('Calling OpenRouter API...');
         const analysis = await makeOpenRouterRequest(messages, 300);
+        console.log('Analysis result:', analysis);
         
         res.json({ analysis });
 
@@ -510,9 +528,9 @@ Return only the reply text, no labels or prefixes.`
 
 app.get('/api/extension-version', (req, res) => {
     res.json({
-        version: '1.1.0', // Update this when you release new versions
+        version: '1.1.3', // Update this when you release new versions
         downloadUrl: `${process.env.SITE_URL || 'http://localhost:3000'}/install`,
-        releaseNotes: 'New crypto features: personas, variants, quote tweets, and dark blue theme.',
+        releaseNotes: 'Added connection test button and comprehensive debugging. Click "Test Connection" in extension to diagnose API issues.',
         required: false // Set to true for critical updates
     });
 });

@@ -5,9 +5,11 @@ class CryptoReplyGuyExtension {
         this.initializeElements();
         this.bindEvents();
         this.loadSettings();
+        console.log('Extension fully initialized');
     }
 
     initializeElements() {
+        console.log('Initializing elements...');
         this.tweetInput = document.getElementById('tweet-input');
         this.analyzeBtn = document.getElementById('analyze-btn');
         this.generateBtn = document.getElementById('generate-btn');
@@ -17,6 +19,7 @@ class CryptoReplyGuyExtension {
         this.pasteTwitterBtn = document.getElementById('paste-twitter-btn');
         this.regenerateBtn = document.getElementById('regenerate-btn');
         this.autoFillBtn = document.getElementById('auto-fill-btn');
+        this.testConnectionBtn = document.getElementById('test-connection-btn');
         
         this.analysisSection = document.getElementById('analysis-section');
         this.analysisResult = document.getElementById('analysis-result');
@@ -41,6 +44,21 @@ class CryptoReplyGuyExtension {
         this.alphaVariant = document.getElementById('alpha-variant');
         this.generatedQuote = document.getElementById('generated-quote');
         
+        console.log('Elements found:', {
+            tweetInput: !!this.tweetInput,
+            generateBtn: !!this.generateBtn,
+            variantsBtn: !!this.variantsBtn,
+            quoteBtn: !!this.quoteBtn,
+            outputSection: !!this.outputSection,
+            generatedReply: !!this.generatedReply,
+            personaSelect: !!this.personaSelect,
+            engagementMode: !!this.engagementMode,
+            replyLength: !!this.replyLength,
+            writingStyle: !!this.writingStyle,
+            tone: !!this.tone,
+            includeEmoji: !!this.includeEmoji
+        });
+        
         // Hide API key section since we're using backend
         const apiSection = document.getElementById('api-section');
         if (apiSection) {
@@ -49,17 +67,22 @@ class CryptoReplyGuyExtension {
     }
 
     bindEvents() {
+        console.log('Binding events...');
         if (this.analyzeBtn) {
             this.analyzeBtn.addEventListener('click', () => this.analyzeTweet());
+            console.log('Analyze button event bound');
         }
         if (this.generateBtn) {
             this.generateBtn.addEventListener('click', () => this.generateReply());
+            console.log('Generate button event bound');
         }
         if (this.variantsBtn) {
             this.variantsBtn.addEventListener('click', () => this.generateVariants());
+            console.log('Variants button event bound');
         }
         if (this.quoteBtn) {
             this.quoteBtn.addEventListener('click', () => this.generateQuote());
+            console.log('Quote button event bound');
         }
         if (this.copyBtn) {
             this.copyBtn.addEventListener('click', () => this.copyReply());
@@ -72,6 +95,10 @@ class CryptoReplyGuyExtension {
         }
         if (this.autoFillBtn) {
             this.autoFillBtn.addEventListener('click', () => this.autoFillFromTwitter());
+        }
+        if (this.testConnectionBtn) {
+            this.testConnectionBtn.addEventListener('click', () => this.testConnection());
+            console.log('Test connection button event bound');
         }
         
         // Copy variant buttons
@@ -168,8 +195,46 @@ class CryptoReplyGuyExtension {
         setTimeout(() => successDiv.remove(), 3000);
     }
 
+    async testConnection() {
+        console.log('Testing connection to server...');
+        try {
+            // Test health endpoint first
+            const healthResponse = await fetch(`${this.serverUrl}/api/health`);
+            const healthData = await healthResponse.json();
+            console.log('Health check:', healthData);
+            
+            // Test simple analyze endpoint
+            const testTweet = 'Hello world test tweet';
+            console.log('Testing analyze endpoint with:', testTweet);
+            
+            const analyzeResponse = await fetch(`${this.serverUrl}/api/analyze`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ tweet: testTweet })
+            });
+            
+            console.log('Analyze response status:', analyzeResponse.status);
+            const analyzeData = await analyzeResponse.json();
+            console.log('Analyze response:', analyzeData);
+            
+            if (analyzeResponse.ok) {
+                this.showSuccess('Connection test successful!');
+            } else {
+                this.showError(`Connection test failed: ${analyzeData.error}`);
+            }
+            
+        } catch (error) {
+            console.error('Connection test error:', error);
+            this.showError(`Connection test error: ${error.message}`);
+        }
+    }
+
     async makeAPIRequest(endpoint, data) {
         const fullUrl = `${this.serverUrl}/api/${endpoint}`;
+        console.log('Making API request to:', fullUrl);
+        console.log('Request data:', data);
         
         try {
             const response = await fetch(fullUrl, {
@@ -180,15 +245,21 @@ class CryptoReplyGuyExtension {
                 body: JSON.stringify(data)
             });
 
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
             const result = await response.json();
+            console.log('Response data:', result);
 
             if (!response.ok) {
+                console.error('API Error Response:', result);
                 throw new Error(result.error || `Request failed: ${response.status}`);
             }
 
             return result;
         } catch (error) {
             console.error('API Request Error:', error.message);
+            console.error('Full error:', error);
             throw error;
         }
     }
@@ -331,7 +402,9 @@ class CryptoReplyGuyExtension {
     }
 
     async generateReply() {
+        console.log('generateReply called');
         const tweet = this.tweetInput.value.trim();
+        console.log('Tweet input:', tweet);
         
         if (!tweet) {
             this.showError('Please paste a tweet first');
@@ -351,6 +424,8 @@ class CryptoReplyGuyExtension {
             const persona = this.personaSelect?.value || 'builder';
             const engagementMode = this.engagementMode?.value || 'neutral';
 
+            console.log('Request parameters:', { tweet, preferences, persona, engagementMode });
+
             const result = await this.makeAPIRequest('generate-reply', { 
                 tweet, 
                 preferences,
@@ -358,8 +433,15 @@ class CryptoReplyGuyExtension {
                 engagementMode
             });
             
+            console.log('API result:', result);
+            
             const cleanedReply = this.cleanAIResponse(result.reply);
-            this.generatedReply.textContent = cleanedReply;
+            console.log('Cleaned reply:', cleanedReply);
+            
+            const finalReply = this.enforceUserPreferences(cleanedReply, preferences);
+            console.log('Final reply:', finalReply);
+            
+            this.generatedReply.textContent = finalReply;
             
             // Show context info if available
             if (result.context && this.contextInfo) {
@@ -413,9 +495,9 @@ class CryptoReplyGuyExtension {
             });
             
             if (result.variants && this.safeVariant && this.boldVariant && this.alphaVariant) {
-                this.safeVariant.textContent = this.cleanAIResponse(result.variants.safe);
-                this.boldVariant.textContent = this.cleanAIResponse(result.variants.bold);
-                this.alphaVariant.textContent = this.cleanAIResponse(result.variants.alpha);
+                this.safeVariant.textContent = this.enforceUserPreferences(this.cleanAIResponse(result.variants.safe), preferences);
+                this.boldVariant.textContent = this.enforceUserPreferences(this.cleanAIResponse(result.variants.bold), preferences);
+                this.alphaVariant.textContent = this.enforceUserPreferences(this.cleanAIResponse(result.variants.alpha), preferences);
                 
                 if (this.variantsSection) {
                     this.variantsSection.style.display = 'block';
@@ -465,7 +547,7 @@ class CryptoReplyGuyExtension {
             
             if (this.generatedQuote) {
                 const cleanedQuote = this.cleanAIResponse(result.quote);
-                const finalQuote = this.enforceUserPreferences ? this.enforceUserPreferences(cleanedQuote, preferences) : cleanedQuote;
+                const finalQuote = this.enforceUserPreferences(cleanedQuote, preferences);
                 this.generatedQuote.textContent = finalQuote;
                 
                 if (this.quoteSection) {
