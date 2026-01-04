@@ -314,6 +314,7 @@ Keep answers concise, helpful, and friendly. If asked about something not relate
 // Quote tweet generation endpoint
 app.post('/api/generate-quote', strictLimiter, async (req, res) => {
     try {
+        console.log('Quote generation request:', req.body);
         const { tweet, persona, engagementMode, preferences } = req.body;
 
         if (!tweet || tweet.trim().length === 0) {
@@ -324,6 +325,8 @@ app.post('/api/generate-quote', strictLimiter, async (req, res) => {
         const personaPrompt = buildPersonaPrompt(persona || 'builder');
         
         const emojiInstruction = preferences?.emoji ? 'Include relevant emojis' : 'NO EMOJIS - do not use any emojis at all';
+        
+        console.log('Quote generation params:', { tweetContext, persona, engagementMode, emojiInstruction });
         
         const messages = [
             {
@@ -352,9 +355,15 @@ No labels, no "Line 1:" or "Line 2:" prefixes. Just the two lines.`
             }
         ];
 
+        console.log('Making OpenRouter request for quote...');
         const quote = await makeOpenRouterRequest(messages, 200);
+        console.log('Raw quote response:', quote);
+        
         const cleanedQuote = cleanAIResponse(quote);
+        console.log('Cleaned quote:', cleanedQuote);
+        
         const finalQuote = enforceUserPreferences(cleanedQuote, preferences || { emoji: false });
+        console.log('Final quote:', finalQuote);
         
         res.json({ quote: finalQuote, context: tweetContext });
 

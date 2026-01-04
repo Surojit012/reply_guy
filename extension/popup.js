@@ -274,6 +274,33 @@ class CryptoReplyGuyExtension {
         return cleaned;
     }
 
+    // Enforce user preferences on the response
+    enforceUserPreferences(text, preferences) {
+        if (!text) return '';
+        
+        let result = text;
+        
+        // Enforce emoji preference
+        if (!preferences.emoji) {
+            // Remove all emojis if user doesn't want them
+            result = result.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+        }
+        
+        // Enforce length preference
+        if (preferences.length === 'ultra-short') {
+            const words = result.split(' ');
+            if (words.length > 10) {
+                result = words.slice(0, 10).join(' ');
+                // Add ellipsis if we cut it off
+                if (!result.endsWith('.') && !result.endsWith('!') && !result.endsWith('?')) {
+                    result += '...';
+                }
+            }
+        }
+        
+        return result.trim();
+    }
+
     async analyzeTweet() {
         const tweet = this.tweetInput.value.trim();
         
@@ -422,16 +449,24 @@ class CryptoReplyGuyExtension {
             
             const persona = this.personaSelect?.value || 'builder';
             const engagementMode = this.engagementMode?.value || 'neutral';
+            const preferences = {
+                length: this.replyLength?.value || 'medium',
+                style: this.writingStyle?.value || 'casual',
+                tone: this.tone?.value || 'neutral',
+                emoji: this.includeEmoji?.checked || false
+            };
 
             const result = await this.makeAPIRequest('generate-quote', { 
                 tweet,
                 persona,
-                engagementMode
+                engagementMode,
+                preferences
             });
             
             if (this.generatedQuote) {
                 const cleanedQuote = this.cleanAIResponse(result.quote);
-                this.generatedQuote.textContent = cleanedQuote;
+                const finalQuote = this.enforceUserPreferences ? this.enforceUserPreferences(cleanedQuote, preferences) : cleanedQuote;
+                this.generatedQuote.textContent = finalQuote;
                 
                 if (this.quoteSection) {
                     this.quoteSection.style.display = 'block';
