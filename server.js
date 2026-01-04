@@ -510,9 +510,9 @@ Return only the reply text, no labels or prefixes.`
 
 app.get('/api/extension-version', (req, res) => {
     res.json({
-        version: '1.0.0', // Update this when you release new versions
+        version: '1.1.0', // Update this when you release new versions
         downloadUrl: `${process.env.SITE_URL || 'http://localhost:3000'}/install`,
-        releaseNotes: 'Latest version with improved AI responses and bug fixes.',
+        releaseNotes: 'New crypto features: personas, variants, quote tweets, and dark blue theme.',
         required: false // Set to true for critical updates
     });
 });
