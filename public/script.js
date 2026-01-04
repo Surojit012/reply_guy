@@ -155,11 +155,6 @@ class TweetReplyGenerator {
             return;
         }
 
-        if (tweet.length > 2000) {
-            this.showError('Tweet content is too long (max 2000 characters)');
-            return;
-        }
-
         try {
             this.showLoading();
             
@@ -186,11 +181,6 @@ class TweetReplyGenerator {
         
         if (!tweet) {
             this.showError('Please paste a tweet first');
-            return;
-        }
-
-        if (tweet.length > 2000) {
-            this.showError('Tweet content is too long (max 2000 characters)');
             return;
         }
 

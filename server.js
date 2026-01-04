@@ -14,7 +14,7 @@ app.use(helmet({
 }));
 
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '50mb' }));
 app.use(express.static('public'));
 
 // Rate limiting
@@ -140,10 +140,6 @@ app.post('/api/analyze', strictLimiter, async (req, res) => {
             return res.status(400).json({ error: 'Tweet content is required' });
         }
 
-        if (tweet.length > 2000) {
-            return res.status(400).json({ error: 'Tweet content is too long' });
-        }
-
         const messages = [
             {
                 role: 'system',
@@ -185,10 +181,6 @@ app.post('/api/generate-reply', strictLimiter, async (req, res) => {
 
         if (!preferences) {
             return res.status(400).json({ error: 'Reply preferences are required' });
-        }
-
-        if (tweet.length > 2000) {
-            return res.status(400).json({ error: 'Tweet content is too long' });
         }
 
         const lengthGuide = {
