@@ -1674,7 +1674,7 @@ textarea {
                         <h4>How it works:</h4>
                         <ol>
                             <li>Download and install the extension</li>
-                            <li>Visit Twitter/X and click the 🔥 button on any tweet</li>
+                            <li>Visit Twitter/X and click the extension button on any tweet</li>
                             <li>Open Reply Guy extension to generate your reply</li>
                             <li>Paste directly to Twitter or copy to clipboard</li>
                         </ol>
@@ -1731,9 +1731,9 @@ textarea {
 
                 <details class="faq-item">
                     <summary class="faq-question">
-                        <span class="faq-icon">⚙️</span>
+                        <i data-lucide="settings" class="faq-icon"></i>
                         <span class="faq-text">What customization options are available?</span>
-                        <span class="faq-arrow">▼</span>
+                        <i data-lucide="chevron-down" class="faq-arrow"></i>
                     </summary>
                     <div class="faq-answer">
                         <p>Reply Guy offers extensive customization:</p>
@@ -1749,9 +1749,9 @@ textarea {
 
                 <details class="faq-item">
                     <summary class="faq-question">
-                        <span class="faq-icon">💰</span>
+                        <i data-lucide="dollar-sign" class="faq-icon"></i>
                         <span class="faq-text">Is Reply Guy really free?</span>
-                        <span class="faq-arrow">▼</span>
+                        <i data-lucide="chevron-down" class="faq-arrow"></i>
                     </summary>
                     <div class="faq-answer">
                         <p>Yes! Reply Guy is completely free to use with unlimited requests:</p>
@@ -1767,9 +1767,9 @@ textarea {
 
                 <details class="faq-item">
                     <summary class="faq-question">
-                        <span class="faq-icon">🤖</span>
+                        <i data-lucide="bot" class="faq-icon"></i>
                         <span class="faq-text">How does the AI work?</span>
-                        <span class="faq-arrow">▼</span>
+                        <i data-lucide="chevron-down" class="faq-arrow"></i>
                     </summary>
                     <div class="faq-answer">
                         <p>Reply Guy uses advanced AI technology:</p>
@@ -1785,9 +1785,9 @@ textarea {
 
                 <details class="faq-item">
                     <summary class="faq-question">
-                        <span class="faq-icon">🔒</span>
+                        <i data-lucide="shield-check" class="faq-icon"></i>
                         <span class="faq-text">Is my data safe and private?</span>
-                        <span class="faq-arrow">▼</span>
+                        <i data-lucide="chevron-down" class="faq-arrow"></i>
                     </summary>
                     <div class="faq-answer">
                         <p>Your privacy is our priority:</p>
@@ -1803,9 +1803,9 @@ textarea {
 
                 <details class="faq-item">
                     <summary class="faq-question">
-                        <span class="faq-icon">❌</span>
+                        <i data-lucide="alert-triangle" class="faq-icon"></i>
                         <span class="faq-text">What if I get an error or the service isn't working?</span>
-                        <span class="faq-arrow">▼</span>
+                        <i data-lucide="chevron-down" class="faq-arrow"></i>
                     </summary>
                     <div class="faq-answer">
                         <p>Common issues and solutions:</p>
@@ -1821,9 +1821,9 @@ textarea {
 
                 <details class="faq-item">
                     <summary class="faq-question">
-                        <span class="faq-icon">🌟</span>
+                        <i data-lucide="briefcase" class="faq-icon"></i>
                         <span class="faq-text">Can I use Reply Guy for business or professional accounts?</span>
-                        <span class="faq-arrow">▼</span>
+                        <i data-lucide="chevron-down" class="faq-arrow"></i>
                     </summary>
                     <div class="faq-answer">
                         <p>Absolutely! Reply Guy is perfect for:</p>
@@ -2069,7 +2069,7 @@ class CryptoTweetReplyGenerator {
         } else if (remaining <= 10) {
             const warningDiv = document.createElement('div');
             warningDiv.className = 'rate-limit-info warning';
-            warningDiv.innerHTML = `⚠️ ${remaining} requests remaining today`;
+            warningDiv.innerHTML = `<i data-lucide="alert-triangle"></i> ${remaining} requests remaining today`;
             
             document.querySelectorAll('.warning').forEach(el => el.remove());
             this.loading.parentNode.insertBefore(warningDiv, this.loading);

@@ -687,16 +687,15 @@ Return only the reply text, no labels or prefixes.`
 
 app.get('/api/extension-version', (req, res) => {
     res.json({
-        version: '1.4.0',
+        version: '1.5.0',
         downloadUrl: `${process.env.SITE_URL || 'http://localhost:3000'}/install`,
         releaseNotes: 'Unlimited usage enabled! Replaced emojis with modern icons. Switched to Fireworks AI for better performance.',
-        updateDate: '2025-01-07T12:00:00Z', // Update this with each release
-        updateTime: 'January 7, 2025 at 12:00 PM UTC',
+        updateDate: '2026-01-07T22:32:59.013Z', // Update this with each release
+        updateTime: 'January 8, 2026 at 04:02 AM GMT+5:30',
         changes: [
-            'Removed all rate limiting - now unlimited usage',
-            'Replaced emojis with modern Lucide icons',
-            'Switched to Fireworks AI for better performance',
-            'Enhanced UI with professional icon library'
+            'Completed emoji-to-icon conversion',
+            'Professional icon library implementation',
+            'Enhanced UI consistency'
         ],
         required: false,
         isLatest: true
