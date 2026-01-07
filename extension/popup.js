@@ -286,9 +286,9 @@ class CryptoReplyGuyExtension {
             const healthData = await healthResponse.json();
             console.log('Health check:', healthData);
             
-            // Test OpenRouter API directly
-            console.log('Testing OpenRouter API...');
-            const testResponse = await fetch(`${this.serverUrl}/api/test-openrouter`, {
+            // Test Fireworks API directly
+            console.log('Testing Fireworks API...');
+            const testResponse = await fetch(`${this.serverUrl}/api/test-fireworks`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -296,14 +296,14 @@ class CryptoReplyGuyExtension {
                 body: JSON.stringify({})
             });
             
-            console.log('Test OpenRouter response status:', testResponse.status);
+            console.log('Test Fireworks response status:', testResponse.status);
             const testData = await testResponse.json();
-            console.log('Test OpenRouter response:', testData);
+            console.log('Test Fireworks response:', testData);
             
             if (testResponse.ok && testData.success) {
                 this.showSuccess(`Connection test successful! Result: ${testData.result}`);
             } else {
-                this.showError(`OpenRouter test failed: ${testData.error || 'Unknown error'}`);
+                this.showError(`Fireworks test failed: ${testData.error || 'Unknown error'}`);
             }
             
         } catch (error) {
@@ -341,7 +341,7 @@ class CryptoReplyGuyExtension {
                     const remaining = rateLimitInfo.remaining || 0;
                     const limit = rateLimitInfo.limit || 50;
                     
-                    throw new Error(`Daily limit reached (${limit - remaining}/${limit} requests used). Resets at ${resetTimeStr}. Add credits to OpenRouter for 1000 requests/day.`);
+                    throw new Error(`Daily limit reached (${limit - remaining}/${limit} requests used). Resets at ${resetTimeStr}. Add credits to Fireworks AI for higher limits.`);
                 } else {
                     throw new Error('Rate limit exceeded. Please wait before making another request.');
                 }

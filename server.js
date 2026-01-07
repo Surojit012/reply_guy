@@ -100,18 +100,18 @@ app.get('/reply-guy-extension.crx', (req, res) => {
 });
 
 // AI request handler with comprehensive rate limit handling
-async function makeOpenRouterRequest(messages, maxTokens = 500) {
-    console.log('Making OpenRouter request with messages:', messages);
-    console.log('API Key configured:', !!process.env.OPENROUTER_API_KEY);
-    console.log('API Key length:', process.env.OPENROUTER_API_KEY ? process.env.OPENROUTER_API_KEY.length : 0);
+async function makeFireworksRequest(messages, maxTokens = 500) {
+    console.log('Making Fireworks AI request with messages:', messages);
+    console.log('API Key configured:', !!process.env.FIREWORKS_API_KEY);
+    console.log('API Key length:', process.env.FIREWORKS_API_KEY ? process.env.FIREWORKS_API_KEY.length : 0);
     
-    if (!process.env.OPENROUTER_API_KEY) {
-        throw new Error('OpenRouter API key is not configured');
+    if (!process.env.FIREWORKS_API_KEY) {
+        throw new Error('Fireworks API key is not configured');
     }
     
     try {
         const requestBody = {
-            model: 'meta-llama/llama-3.3-70b-instruct:free',
+            model: 'accounts/fireworks/models/llama-v3p3-70b-instruct',
             messages: messages,
             max_tokens: maxTokens,
             temperature: 0.7
@@ -119,22 +119,20 @@ async function makeOpenRouterRequest(messages, maxTokens = 500) {
         
         console.log('Request body:', JSON.stringify(requestBody, null, 2));
         
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        const response = await fetch('https://api.fireworks.ai/inference/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': process.env.SITE_URL || 'https://reply-guy-eta.vercel.app',
-                'X-Title': 'Tweet Reply Generator'
+                'Authorization': `Bearer ${process.env.FIREWORKS_API_KEY}`,
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(requestBody)
         });
 
-        console.log('OpenRouter response status:', response.status);
-        console.log('OpenRouter response headers:', Object.fromEntries(response.headers.entries()));
+        console.log('Fireworks response status:', response.status);
+        console.log('Fireworks response headers:', Object.fromEntries(response.headers.entries()));
 
         const responseText = await response.text();
-        console.log('OpenRouter raw response:', responseText);
+        console.log('Fireworks raw response:', responseText);
 
         if (!response.ok) {
             let errorData;
@@ -163,7 +161,7 @@ async function makeOpenRouterRequest(messages, maxTokens = 500) {
                 throw error;
             }
             
-            console.error('OpenRouter API Error:', {
+            console.error('Fireworks API Error:', {
                 status: response.status,
                 statusText: response.statusText,
                 error: errorData,
@@ -177,15 +175,15 @@ async function makeOpenRouterRequest(messages, maxTokens = 500) {
         try {
             data = JSON.parse(responseText);
         } catch (e) {
-            console.error('Failed to parse OpenRouter response as JSON:', responseText);
-            throw new Error('Invalid JSON response from OpenRouter API');
+            console.error('Failed to parse Fireworks response as JSON:', responseText);
+            throw new Error('Invalid JSON response from Fireworks API');
         }
         
-        console.log('OpenRouter parsed response:', data);
+        console.log('Fireworks parsed response:', data);
         
         if (!data.choices || !data.choices[0] || !data.choices[0].message) {
             console.error('Unexpected response structure:', data);
-            throw new Error('Unexpected response structure from OpenRouter API');
+            throw new Error('Unexpected response structure from Fireworks API');
         }
         
         // Return both content and rate limit info for successful requests
@@ -198,15 +196,15 @@ async function makeOpenRouterRequest(messages, maxTokens = 500) {
             }
         };
     } catch (error) {
-        console.error('OpenRouter request error:', error);
+        console.error('Fireworks request error:', error);
         throw error;
     }
 }
 
 // Test endpoint for debugging API issues
-app.post('/api/test-openrouter', strictLimiter, async (req, res) => {
+app.post('/api/test-fireworks', strictLimiter, async (req, res) => {
     try {
-        console.log('Test OpenRouter endpoint called');
+        console.log('Test Fireworks endpoint called');
         
         const messages = [
             {
@@ -219,19 +217,19 @@ app.post('/api/test-openrouter', strictLimiter, async (req, res) => {
             }
         ];
 
-        console.log('Testing OpenRouter API...');
-        const result = await makeOpenRouterRequest(messages, 50);
+        console.log('Testing Fireworks API...');
+        const result = await makeFireworksRequest(messages, 50);
         console.log('Test result:', result);
         
         res.json({ 
             success: true, 
             result: result.content,
             rateLimitInfo: result.rateLimitInfo,
-            message: 'OpenRouter API test successful'
+            message: 'Fireworks API test successful'
         });
 
     } catch (error) {
-        console.error('Test OpenRouter error:', error);
+        console.error('Test Fireworks error:', error);
         
         // Handle rate limit errors specifically
         if (error.rateLimitInfo) {
@@ -239,14 +237,14 @@ app.post('/api/test-openrouter', strictLimiter, async (req, res) => {
                 success: false,
                 error: 'Rate limit exceeded',
                 rateLimitInfo: error.rateLimitInfo,
-                message: 'OpenRouter API rate limit reached'
+                message: 'Fireworks API rate limit reached'
             });
         }
         
         res.status(500).json({ 
             success: false,
             error: error.message,
-            message: 'OpenRouter API test failed'
+            message: 'Fireworks API test failed'
         });
     }
 });
@@ -282,8 +280,8 @@ Tweet: "${tweet}"`
             }
         ];
 
-        console.log('Calling OpenRouter API...');
-        const result = await makeOpenRouterRequest(messages, 300);
+        console.log('Calling Fireworks API...');
+        const result = await makeFireworksRequest(messages, 300);
         console.log('Analysis result:', result);
         
         res.json({ 
@@ -368,7 +366,7 @@ CRITICAL RULES:
                 rateLimitInfo: variants.safe.rateLimitInfo // Use rate limit info from first request
             });
         } else {
-            const result = await makeOpenRouterRequest(messages, 280);
+            const result = await makeFireworksRequest(messages, 280);
             const cleanedReply = enforceUserPreferences(cleanAIResponse(result.content), preferences);
             res.json({ 
                 reply: cleanedReply, 
@@ -440,7 +438,7 @@ USAGE:
 - Extension users can auto-fill directly on Twitter
 
 TECHNICAL:
-- Uses OpenRouter API with Meta Llama AI model
+- Uses Fireworks AI API with Meta Llama model
 - Secure backend handles API calls
 - Rate limited for fair usage
 - No user data stored
@@ -454,7 +452,7 @@ Keep answers concise, helpful, and friendly. If asked about something not relate
             }
         ];
 
-        const result = await makeOpenRouterRequest(messages, 200);
+        const result = await makeFireworksRequest(messages, 200);
         
         res.json({ 
             response: result.content,
@@ -521,8 +519,8 @@ No labels, no "Line 1:" or "Line 2:" prefixes. Just the two lines.`
             }
         ];
 
-        console.log('Making OpenRouter request for quote...');
-        const result = await makeOpenRouterRequest(messages, 200);
+        console.log('Making Fireworks request for quote...');
+        const result = await makeFireworksRequest(messages, 200);
         console.log('Raw quote response:', result);
         
         const cleanedQuote = cleanAIResponse(result.content);
@@ -642,7 +640,7 @@ Return only the reply text, no labels or prefixes.`
             content: `Safe reply to: "${tweet}"`
         }
     ];
-    variants.safe = await makeOpenRouterRequest(safeMessages, 100);
+    variants.safe = await makeFireworksRequest(safeMessages, 100);
     
     // Bold variant  
     const boldMessages = [
@@ -662,7 +660,7 @@ Return only the reply text, no labels or prefixes.`
             content: `Bold reply to: "${tweet}"`
         }
     ];
-    variants.bold = await makeOpenRouterRequest(boldMessages, 100);
+    variants.bold = await makeFireworksRequest(boldMessages, 100);
     
     // Alpha variant
     const alphaMessages = [
@@ -682,16 +680,16 @@ Return only the reply text, no labels or prefixes.`
             content: `Alpha reply to: "${tweet}"`
         }
     ];
-    variants.alpha = await makeOpenRouterRequest(alphaMessages, 100);
+    variants.alpha = await makeFireworksRequest(alphaMessages, 100);
     
     return variants;
 }
 
 app.get('/api/extension-version', (req, res) => {
     res.json({
-        version: '1.2.1', // Update this when you release new versions
+        version: '1.3.0', // Update this when you release new versions
         downloadUrl: `${process.env.SITE_URL || 'http://localhost:3000'}/install`,
-        releaseNotes: 'Switched to Meta Llama 3.3 70B model for improved response quality. Enhanced rate limiting with user-friendly messages.',
+        releaseNotes: 'Switched to Fireworks AI with Llama v3.3 70B model for improved performance and reliability.',
         required: false // Set to true for critical updates
     });
 });
@@ -705,9 +703,9 @@ app.get('/api/health', (req, res) => {
         environment: process.env.NODE_ENV || 'development',
         uptime: process.uptime(),
         memory: process.memoryUsage(),
-        apiKey: process.env.OPENROUTER_API_KEY ? 'configured' : 'missing',
-        apiKeyLength: process.env.OPENROUTER_API_KEY ? process.env.OPENROUTER_API_KEY.length : 0,
-        apiKeyPrefix: process.env.OPENROUTER_API_KEY ? process.env.OPENROUTER_API_KEY.substring(0, 12) + '...' : 'none'
+        apiKey: process.env.FIREWORKS_API_KEY ? 'configured' : 'missing',
+        apiKeyLength: process.env.FIREWORKS_API_KEY ? process.env.FIREWORKS_API_KEY.length : 0,
+        apiKeyPrefix: process.env.FIREWORKS_API_KEY ? process.env.FIREWORKS_API_KEY.substring(0, 12) + '...' : 'none'
     };
     
     res.json(healthStatus);
@@ -753,7 +751,7 @@ app.use((req, res) => {
 
 // Validate environment variables on startup
 function validateEnvironment() {
-    const required = ['OPENROUTER_API_KEY'];
+    const required = ['FIREWORKS_API_KEY'];
     const missing = required.filter(key => !process.env[key]);
     
     if (missing.length > 0) {
@@ -775,7 +773,7 @@ app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📱 Open http://localhost:${PORT} to view the app`);
     console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`⚡ API Key: ${process.env.OPENROUTER_API_KEY ? 'configured' : 'missing'}`);
+    console.log(`⚡ API Key: ${process.env.FIREWORKS_API_KEY ? 'configured' : 'missing'}`);
 });
 
 // Enforce user preferences on the response

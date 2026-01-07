@@ -1,20 +1,18 @@
 require('dotenv').config();
 
-async function testOpenRouterAPI() {
-    console.log('Testing OpenRouter API...');
-    console.log('API Key:', process.env.OPENROUTER_API_KEY ? 'Found' : 'Missing');
+async function testFireworksAPI() {
+    console.log('Testing Fireworks AI API...');
+    console.log('API Key:', process.env.FIREWORKS_API_KEY ? 'Found' : 'Missing');
     
     try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        const response = await fetch('https://api.fireworks.ai/inference/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': 'http://localhost:3000',
-                'X-Title': 'Tweet Reply Generator Test'
+                'Authorization': `Bearer ${process.env.FIREWORKS_API_KEY}`,
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'meta-llama/llama-3.3-70b-instruct:free',
+                model: 'accounts/fireworks/models/llama-v3p3-70b-instruct',
                 messages: [
                     {
                         role: 'user',
@@ -43,4 +41,4 @@ async function testOpenRouterAPI() {
     }
 }
 
-testOpenRouterAPI();
+testFireworksAPI();
