@@ -242,40 +242,27 @@ class CryptoReplyGuyExtension {
     }
 
     updateRateLimitDisplay(rateLimitInfo) {
-        if (!rateLimitInfo) return;
-        
-        const remaining = rateLimitInfo.remaining || 0;
-        const limit = rateLimitInfo.limit || 50;
-        const used = limit - remaining;
-        
-        // Find or create rate limit display
+        // Rate limiting disabled - show unlimited status
         let rateLimitDisplay = document.getElementById('rate-limit-display');
         if (!rateLimitDisplay) {
             rateLimitDisplay = document.createElement('div');
             rateLimitDisplay.id = 'rate-limit-display';
             rateLimitDisplay.className = 'rate-limit-info';
             
-            // Insert after the button group
             const buttonGroup = document.querySelector('.button-group');
             if (buttonGroup) {
                 buttonGroup.parentNode.insertBefore(rateLimitDisplay, buttonGroup.nextSibling);
             }
         }
         
-        // Update display text with warning if running low
-        if (remaining <= 10 && remaining > 0) {
-            rateLimitDisplay.className = 'rate-limit-info warning';
-            rateLimitDisplay.innerHTML = `⚠️ Requests remaining: ${remaining}/${limit}`;
-        } else if (remaining === 0) {
-            rateLimitDisplay.className = 'rate-limit-info error';
-            const resetTime = rateLimitInfo.resetTime ? new Date(parseInt(rateLimitInfo.resetTime) * 1000).toLocaleTimeString() : 'soon';
-            rateLimitDisplay.innerHTML = `🚫 Daily limit reached. Resets at ${resetTime}`;
-        } else {
-            rateLimitDisplay.className = 'rate-limit-info';
-            rateLimitDisplay.innerHTML = `✅ Requests remaining: ${remaining}/${limit}`;
-        }
-        
+        rateLimitDisplay.className = 'rate-limit-info';
+        rateLimitDisplay.innerHTML = '<i data-lucide="infinity"></i> Unlimited requests available';
         rateLimitDisplay.style.display = 'block';
+        
+        // Re-initialize icons for dynamically added content
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     }
 
     async testConnection() {
@@ -341,7 +328,7 @@ class CryptoReplyGuyExtension {
                     const remaining = rateLimitInfo.remaining || 0;
                     const limit = rateLimitInfo.limit || 50;
                     
-                    throw new Error(`Daily limit reached (${limit - remaining}/${limit} requests used). Resets at ${resetTimeStr}. Add credits to Fireworks AI for higher limits.`);
+                    throw new Error(`Request limit reached. Please wait a moment before trying again.`);
                 } else {
                     throw new Error('Rate limit exceeded. Please wait before making another request.');
                 }
@@ -920,4 +907,9 @@ function pasteReplyToTwitter(replyText) {
 // Initialize the extension when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new CryptoReplyGuyExtension();
+    
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 });

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reply Guy</title>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
 * {
     margin: 0;
@@ -360,6 +362,172 @@ textarea {
 @keyframes pulse-warning {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
+}
+
+/* Update Notice Bar Styles */
+.update-notice-bar {
+    background: linear-gradient(45deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
+    color: white;
+    padding: 15px 20px;
+    margin: 20px 0;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.update-notice-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.update-notice-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.update-notice-icon {
+    font-size: 1.5rem;
+    animation: pulse 2s infinite;
+}
+
+.update-notice-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.update-notice-version {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.update-notice-content {
+    margin-bottom: 15px;
+}
+
+.update-notice-time {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.update-changes {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+}
+
+.update-changes li {
+    padding: 4px 0;
+    padding-left: 20px;
+    position: relative;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.update-changes li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #10b981;
+    font-weight: bold;
+}
+
+.update-notice-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.update-notice-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.update-notice-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.update-notice-btn.primary {
+    background: rgba(255, 255, 255, 0.9);
+    color: #4f46e5;
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
+.update-notice-btn.primary:hover {
+    background: white;
+    color: #4338ca;
+}
+
+.update-notice-dismiss {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.update-notice-dismiss:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+    .update-notice-bar {
+        padding: 12px 15px;
+        margin: 15px 0;
+    }
+    
+    .update-notice-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .update-notice-actions {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+    
+    .update-notice-btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 .extension-section {
@@ -1293,12 +1461,12 @@ textarea {
 <body>
     <div class="container">
         <header>
-            <h1>🔥 Reply Guy</h1>
+            <h1><i data-lucide="flame"></i> Reply Guy</h1>
             <p>Context-aware Crypto Twitter engagement tool</p>
             <div class="creator-badge">
                 <span class="badge-text">Created by</span>
                 <a href="https://x.com/surojitpvt" target="_blank" class="creator-twitter">
-                    <span class="twitter-icon-small">🐦</span>
+                    <i data-lucide="twitter" class="twitter-icon-small"></i>
                     <span class="creator-name">@surojitpvt</span>
                 </a>
             </div>
@@ -1312,32 +1480,32 @@ textarea {
                 </div>
 
                 <div class="analysis-section" id="analysis-section" style="display: none;">
-                    <h3>📊 Tweet Analysis</h3>
+                    <h3><i data-lucide="bar-chart-3"></i> Tweet Analysis</h3>
                     <div id="analysis-result" class="analysis-box"></div>
                 </div>
 
                 <div class="preferences-section">
-                    <h3>⚙️ Crypto Engagement Settings</h3>
+                    <h3><i data-lucide="settings"></i> Crypto Engagement Settings</h3>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label for="persona-select">Persona:</label>
                             <select id="persona-select">
-                                <option value="builder">🔨 Builder</option>
-                                <option value="trader">📈 Trader</option>
-                                <option value="researcher">🔬 Researcher</option>
-                                <option value="degen">🎲 Degen</option>
-                                <option value="founder">🚀 Founder</option>
-                                <option value="community">🤝 Community</option>
+                                <option value="builder"><i data-lucide="hammer"></i> Builder</option>
+                                <option value="trader"><i data-lucide="trending-up"></i> Trader</option>
+                                <option value="researcher"><i data-lucide="microscope"></i> Researcher</option>
+                                <option value="degen"><i data-lucide="dice-6"></i> Degen</option>
+                                <option value="founder"><i data-lucide="rocket"></i> Founder</option>
+                                <option value="community"><i data-lucide="users"></i> Community</option>
                             </select>
                         </div>
 
                         <div class="form-group">
                             <label for="engagement-mode">Engagement Mode:</label>
                             <select id="engagement-mode">
-                                <option value="neutral">⚖️ Neutral</option>
-                                <option value="engagement_max">🔥 Engagement Max</option>
-                                <option value="signal_only">🎯 Signal Only</option>
+                                <option value="neutral"><i data-lucide="balance-scale"></i> Neutral</option>
+                                <option value="engagement_max"><i data-lucide="flame"></i> Engagement Max</option>
+                                <option value="signal_only"><i data-lucide="target"></i> Signal Only</option>
                             </select>
                         </div>
                     </div>
@@ -1396,10 +1564,17 @@ textarea {
                     <button id="variants-btn" class="btn btn-outline">3 Variants</button>
                     <button id="quote-btn" class="btn btn-outline">Quote Tweet</button>
                 </div>
+
+                <!-- Development: Test update notice button (remove in production) -->
+                <div style="margin-top: 10px; text-align: center;">
+                    <button onclick="showUpdateNotice()" class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px;">
+                        Test Update Notice
+                    </button>
+                </div>
             </div>
 
             <div class="output-section" id="output-section" style="display: none;">
-                <h3>✨ Generated Reply</h3>
+                <h3><i data-lucide="sparkles"></i> Generated Reply</h3>
                 <div id="context-info" class="context-info" style="display: none;"></div>
                 <div id="generated-reply" class="reply-box"></div>
                 <div class="reply-actions">
@@ -1409,20 +1584,20 @@ textarea {
             </div>
 
             <div class="variants-section" id="variants-section" style="display: none;">
-                <h3>🎯 Reply Variants</h3>
+                <h3><i data-lucide="target"></i> Reply Variants</h3>
                 <div class="variants-container">
                     <div class="variant-item">
-                        <h4>🛡️ Safe</h4>
+                        <h4><i data-lucide="shield"></i> Safe</h4>
                         <div id="safe-variant" class="reply-box"></div>
                         <button class="btn btn-sm btn-outline copy-variant" data-variant="safe">Copy</button>
                     </div>
                     <div class="variant-item">
-                        <h4>🔥 Bold</h4>
+                        <h4><i data-lucide="flame"></i> Bold</h4>
                         <div id="bold-variant" class="reply-box"></div>
                         <button class="btn btn-sm btn-outline copy-variant" data-variant="bold">Copy</button>
                     </div>
                     <div class="variant-item">
-                        <h4>⚡ Alpha</h4>
+                        <h4><i data-lucide="zap"></i> Alpha</h4>
                         <div id="alpha-variant" class="reply-box"></div>
                         <button class="btn btn-sm btn-outline copy-variant" data-variant="alpha">Copy</button>
                     </div>
@@ -1430,15 +1605,15 @@ textarea {
             </div>
 
             <div class="quote-section" id="quote-section" style="display: none;">
-                <h3>💬 Quote Tweet Generator</h3>
+                <h3><i data-lucide="message-circle"></i> Quote Tweet Generator</h3>
                 <div class="quote-preview">
                     <div class="quote-header">
-                        <span class="quote-icon">🔗</span>
+                        <i data-lucide="link" class="quote-icon"></i>
                         <span class="quote-label">Your Quote Tweet</span>
                     </div>
                     <div id="generated-quote" class="quote-box"></div>
                     <div class="quote-footer">
-                        <span class="quote-tip">💡 Perfect for adding your perspective to the conversation</span>
+                        <span class="quote-tip"><i data-lucide="lightbulb"></i> Perfect for adding your perspective to the conversation</span>
                     </div>
                 </div>
                 <div class="reply-actions">
@@ -1455,13 +1630,13 @@ textarea {
             <!-- Extension Download Section -->
             <div class="extension-section">
                 <div class="extension-header">
-                    <h2>🚀 Get the Chrome Extension</h2>
+                    <h2><i data-lucide="rocket"></i> Get the Chrome Extension</h2>
                     <p>Take Reply Guy with you everywhere on Twitter!</p>
                 </div>
                 
                 <div class="extension-features">
                     <div class="feature">
-                        <div class="feature-icon">⚡</div>
+                        <div class="feature-icon"><i data-lucide="zap"></i></div>
                         <div class="feature-text">
                             <h4>One-Click Access</h4>
                             <p>Generate replies directly from Twitter without switching tabs</p>
@@ -1469,7 +1644,7 @@ textarea {
                     </div>
                     
                     <div class="feature">
-                        <div class="feature-icon">🎯</div>
+                        <div class="feature-icon"><i data-lucide="target"></i></div>
                         <div class="feature-text">
                             <h4>Auto-Fill Tweets</h4>
                             <p>Automatically extract tweet text with a single click</p>
@@ -1477,7 +1652,7 @@ textarea {
                     </div>
                     
                     <div class="feature">
-                        <div class="feature-icon">📝</div>
+                        <div class="feature-icon"><i data-lucide="edit-3"></i></div>
                         <div class="feature-text">
                             <h4>Paste to Twitter</h4>
                             <p>Insert generated replies directly into Twitter's reply box</p>
@@ -1485,7 +1660,7 @@ textarea {
                     </div>
                     
                     <div class="feature">
-                        <div class="feature-icon">💾</div>
+                        <div class="feature-icon"><i data-lucide="save"></i></div>
                         <div class="feature-text">
                             <h4>Save Settings</h4>
                             <p>Your preferences and API key are saved securely</p>
@@ -1495,7 +1670,7 @@ textarea {
                 
                 <div class="extension-download">
                     <a href="/install" id="download-extension-btn" class="btn btn-extension">
-                        <span class="download-icon">🚀</span>
+                        <i data-lucide="rocket" class="download-icon"></i>
                         Install Chrome Extension
                     </a>
                     <p class="download-note">Free • No Chrome Web Store needed • Install directly</p>
@@ -1518,16 +1693,16 @@ textarea {
         <!-- FAQ Section -->
         <section class="faq-section">
             <div class="faq-header">
-                <h2>❓ Frequently Asked Questions</h2>
+                <h2><i data-lucide="help-circle"></i> Frequently Asked Questions</h2>
                 <p>Everything you need to know about Reply Guy</p>
             </div>
 
             <div class="faq-container">
                 <details class="faq-item">
                     <summary class="faq-question">
-                        <span class="faq-icon">🚀</span>
+                        <i data-lucide="rocket" class="faq-icon"></i>
                         <span class="faq-text">How do I get started with Reply Guy?</span>
-                        <span class="faq-arrow">▼</span>
+                        <i data-lucide="chevron-down" class="faq-arrow"></i>
                     </summary>
                     <div class="faq-answer">
                         <p>Getting started is simple:</p>
@@ -1543,9 +1718,9 @@ textarea {
 
                 <details class="faq-item">
                     <summary class="faq-question">
-                        <span class="faq-icon">🔧</span>
+                        <i data-lucide="wrench" class="faq-icon"></i>
                         <span class="faq-text">How do I install the Chrome extension?</span>
-                        <span class="faq-arrow">▼</span>
+                        <i data-lucide="chevron-down" class="faq-arrow"></i>
                     </summary>
                     <div class="faq-answer">
                         <p>Installing the extension is easy:</p>
@@ -1586,14 +1761,14 @@ textarea {
                         <span class="faq-arrow">▼</span>
                     </summary>
                     <div class="faq-answer">
-                        <p>Yes! Reply Guy is completely free to use with some fair usage limits:</p>
+                        <p>Yes! Reply Guy is completely free to use with unlimited requests:</p>
                         <ul>
-                            <li>10 AI requests per minute per user</li>
-                            <li>50 total requests per 15 minutes per user</li>
+                            <li>Unlimited AI requests per day</li>
+                            <li>No rate limiting restrictions</li>
                             <li>No account registration required</li>
                             <li>No hidden fees or premium tiers</li>
                         </ul>
-                        <p>These limits ensure the service stays fast and available for everyone.</p>
+                        <p>Enjoy unlimited crypto Twitter engagement!</p>
                     </div>
                 </details>
 
@@ -1686,6 +1861,7 @@ class CryptoTweetReplyGenerator {
         this.initializeElements();
         this.bindEvents();
         this.loadUserPreferences();
+        this.checkForExtensionUpdates();
         console.log('CryptoTweetReplyGenerator initialized');
     }
 
@@ -1890,40 +2066,27 @@ class CryptoTweetReplyGenerator {
     }
 
     updateRateLimitDisplay(rateLimitInfo) {
-        if (!rateLimitInfo) return;
-        
-        const remaining = rateLimitInfo.remaining || 0;
-        const limit = rateLimitInfo.limit || 50;
-        const used = limit - remaining;
-        
-        // Find or create rate limit display
+        // Rate limiting disabled - show unlimited status
         let rateLimitDisplay = document.getElementById('rate-limit-display');
         if (!rateLimitDisplay) {
             rateLimitDisplay = document.createElement('div');
             rateLimitDisplay.id = 'rate-limit-display';
             rateLimitDisplay.className = 'rate-limit-info';
             
-            // Insert after the button group
             const buttonGroup = document.querySelector('.button-group');
             if (buttonGroup) {
                 buttonGroup.parentNode.insertBefore(rateLimitDisplay, buttonGroup.nextSibling);
             }
         }
         
-        // Update display text with warning if running low
-        if (remaining <= 10 && remaining > 0) {
-            rateLimitDisplay.className = 'rate-limit-info warning';
-            rateLimitDisplay.innerHTML = `⚠️ Requests remaining today: ${remaining}/${limit} - Running low!`;
-        } else if (remaining === 0) {
-            rateLimitDisplay.className = 'rate-limit-info error';
-            const resetTime = rateLimitInfo.resetTime ? new Date(parseInt(rateLimitInfo.resetTime) * 1000).toLocaleTimeString() : 'soon';
-            rateLimitDisplay.innerHTML = `🚫 Daily limit reached (${used}/${limit}). Resets at ${resetTime}`;
-        } else {
-            rateLimitDisplay.className = 'rate-limit-info';
-            rateLimitDisplay.innerHTML = `✅ Requests remaining today: ${remaining}/${limit}`;
-        }
-        
+        rateLimitDisplay.className = 'rate-limit-info';
+        rateLimitDisplay.innerHTML = '<i data-lucide="infinity"></i> Unlimited requests available';
         rateLimitDisplay.style.display = 'block';
+        
+        // Re-initialize icons for dynamically added content
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     }
 
     showRateLimitWarning(remaining, limit) {
@@ -1961,7 +2124,7 @@ class CryptoTweetReplyGenerator {
                 const remaining = rateLimitInfo.remaining || 0;
                 const limit = rateLimitInfo.limit || 50;
                 
-                throw new Error(`Daily limit reached (${limit - remaining}/${limit} requests used). Resets at ${resetTimeStr}. Add credits to Fireworks AI for higher limits.`);
+                throw new Error(`Request limit reached. Please wait a moment before trying again.`);
             } else {
                 throw new Error('Rate limit exceeded. Please wait before making another request.');
             }
@@ -2342,22 +2505,99 @@ class CryptoTweetReplyGenerator {
         
         document.body.removeChild(textArea);
     }
+
+    async checkForExtensionUpdates() {
+        try {
+            const response = await fetch('/api/extension-version');
+            const updateInfo = await response.json();
+            
+            if (response.ok && updateInfo.isLatest) {
+                this.showUpdateNotice(updateInfo);
+            }
+        } catch (error) {
+            console.log('Could not check for extension updates:', error);
+        }
+    }
+
+    showUpdateNotice(updateInfo) {
+        // Check if user has dismissed this version's notice
+        const dismissedVersion = localStorage.getItem('dismissedUpdateNotice');
+        if (dismissedVersion === updateInfo.version) {
+            return;
+        }
+
+        const noticeBar = document.createElement('div');
+        noticeBar.className = 'update-notice-bar';
+        noticeBar.innerHTML = `
+            <div class="update-notice-header">
+                <i data-lucide="download" class="update-notice-icon"></i>
+                <h3 class="update-notice-title">Extension Update Available</h3>
+                <span class="update-notice-version">v${updateInfo.version}</span>
+            </div>
+            <div class="update-notice-content">
+                <div class="update-notice-time">Released: ${updateInfo.updateTime}</div>
+                <ul class="update-changes">
+                    ${updateInfo.changes.map(change => `<li>${change}</li>`).join('')}
+                </ul>
+            </div>
+            <div class="update-notice-actions">
+                <a href="${updateInfo.downloadUrl}" class="update-notice-btn primary">
+                    <i data-lucide="download"></i>
+                    Update Extension
+                </a>
+                <button class="update-notice-dismiss" onclick="this.parentElement.parentElement.style.display='none'; localStorage.setItem('dismissedUpdateNotice', '${updateInfo.version}');">
+                    Dismiss
+                </button>
+            </div>
+        `;
+
+        // Insert after header
+        const header = document.querySelector('header');
+        if (header) {
+            header.parentNode.insertBefore(noticeBar, header.nextSibling);
+        }
+
+        // Initialize icons for the notice bar
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
 }
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new CryptoTweetReplyGenerator();
     
-    // Add rate limit info
+    // Initialize Lucide icons
+    lucide.createIcons();
+    
+    // Add rate limit info - now showing unlimited
     const container = document.querySelector('.container');
     const rateLimitInfo = document.createElement('div');
     rateLimitInfo.className = 'rate-limit-info';
-    rateLimitInfo.textContent = '⚡ Free crypto engagement tool with rate limits: 10 requests per minute';
+    rateLimitInfo.innerHTML = '<i data-lucide="infinity"></i> Unlimited crypto engagement tool - no rate limits!';
     container.appendChild(rateLimitInfo);
+    
+    // Re-initialize icons for dynamically added content
+    lucide.createIcons();
 });
 
 async function downloadExtension() {
     window.location.href = '/install';
+}
+
+// Function to manually show update notice (for testing)
+function showUpdateNotice() {
+    fetch('/api/extension-version')
+        .then(response => response.json())
+        .then(updateInfo => {
+            // Clear any dismissed notices for testing
+            localStorage.removeItem('dismissedUpdateNotice');
+            
+            const generator = new CryptoTweetReplyGenerator();
+            generator.showUpdateNotice(updateInfo);
+        })
+        .catch(error => console.error('Error showing update notice:', error));
 }
     </script>
 </body>

@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reply Guy</title>
     <link rel="stylesheet" href="popup.css">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🔥 Reply Guy</h1>
+            <h1><i data-lucide="flame"></i> Reply Guy</h1>
             <p>Context-aware Crypto Twitter engagement tool</p>
         </header>
 
@@ -22,32 +24,32 @@
                 </div>
 
                 <div class="analysis-section" id="analysis-section" style="display: none;">
-                    <h3>📊 Tweet Analysis</h3>
+                    <h3><i data-lucide="bar-chart-3"></i> Tweet Analysis</h3>
                     <div id="analysis-result" class="analysis-box"></div>
                 </div>
 
                 <div class="preferences-section">
-                    <h3>⚙️ Crypto Engagement Settings</h3>
+                    <h3><i data-lucide="settings"></i> Crypto Engagement Settings</h3>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label for="persona-select">Persona:</label>
                             <select id="persona-select">
-                                <option value="builder">🔨 Builder</option>
-                                <option value="trader">📈 Trader</option>
-                                <option value="researcher">🔬 Researcher</option>
-                                <option value="degen">🎲 Degen</option>
-                                <option value="founder">🚀 Founder</option>
-                                <option value="community">🤝 Community</option>
+                                <option value="builder">Builder</option>
+                                <option value="trader">Trader</option>
+                                <option value="researcher">Researcher</option>
+                                <option value="degen">Degen</option>
+                                <option value="founder">Founder</option>
+                                <option value="community">Community</option>
                             </select>
                         </div>
 
                         <div class="form-group">
                             <label for="engagement-mode">Engagement Mode:</label>
                             <select id="engagement-mode">
-                                <option value="neutral">⚖️ Neutral</option>
-                                <option value="engagement_max">🔥 Engagement Max</option>
-                                <option value="signal_only">🎯 Signal Only</option>
+                                <option value="neutral">Neutral</option>
+                                <option value="engagement_max">Engagement Max</option>
+                                <option value="signal_only">Signal Only</option>
                             </select>
                         </div>
                     </div>
@@ -114,7 +116,7 @@
             </div>
 
             <div class="output-section" id="output-section" style="display: none;">
-                <h3>✨ Generated Reply</h3>
+                <h3><i data-lucide="sparkles"></i> Generated Reply</h3>
                 <div id="context-info" class="context-info" style="display: none;"></div>
                 <div id="generated-reply" class="reply-box"></div>
                 <div class="reply-actions">
