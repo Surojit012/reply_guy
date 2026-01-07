@@ -685,32 +685,6 @@ Return only the reply text, no labels or prefixes.`
     return variants;
 }
 
-// Test endpoint to trigger update notice
-app.get('/api/test-update-notice', (req, res) => {
-    res.json({
-        version: '1.4.0',
-        downloadUrl: `${process.env.SITE_URL || 'http://localhost:3000'}/install`,
-        releaseNotes: 'Test update notice functionality',
-        updateDate: new Date().toISOString(),
-        updateTime: new Date().toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            timeZoneName: 'short'
-        }),
-        changes: [
-            'Removed all rate limiting - now unlimited usage',
-            'Replaced emojis with modern Lucide icons',
-            'Switched to Fireworks AI for better performance',
-            'Added update notification system'
-        ],
-        required: false,
-        isLatest: true
-    });
-});
-
 app.get('/api/extension-version', (req, res) => {
     res.json({
         version: '1.4.0',

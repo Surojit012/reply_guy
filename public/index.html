@@ -1564,13 +1564,6 @@ textarea {
                     <button id="variants-btn" class="btn btn-outline">3 Variants</button>
                     <button id="quote-btn" class="btn btn-outline">Quote Tweet</button>
                 </div>
-
-                <!-- Development: Test update notice button (remove in production) -->
-                <div style="margin-top: 10px; text-align: center;">
-                    <button onclick="showUpdateNotice()" class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px;">
-                        Test Update Notice
-                    </button>
-                </div>
             </div>
 
             <div class="output-section" id="output-section" style="display: none;">
@@ -2066,27 +2059,8 @@ class CryptoTweetReplyGenerator {
     }
 
     updateRateLimitDisplay(rateLimitInfo) {
-        // Rate limiting disabled - show unlimited status
-        let rateLimitDisplay = document.getElementById('rate-limit-display');
-        if (!rateLimitDisplay) {
-            rateLimitDisplay = document.createElement('div');
-            rateLimitDisplay.id = 'rate-limit-display';
-            rateLimitDisplay.className = 'rate-limit-info';
-            
-            const buttonGroup = document.querySelector('.button-group');
-            if (buttonGroup) {
-                buttonGroup.parentNode.insertBefore(rateLimitDisplay, buttonGroup.nextSibling);
-            }
-        }
-        
-        rateLimitDisplay.className = 'rate-limit-info';
-        rateLimitDisplay.innerHTML = '<i data-lucide="infinity"></i> Unlimited requests available';
-        rateLimitDisplay.style.display = 'block';
-        
-        // Re-initialize icons for dynamically added content
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
+        // Rate limiting disabled - no display needed
+        return;
     }
 
     showRateLimitWarning(remaining, limit) {
@@ -2570,34 +2544,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize Lucide icons
     lucide.createIcons();
-    
-    // Add rate limit info - now showing unlimited
-    const container = document.querySelector('.container');
-    const rateLimitInfo = document.createElement('div');
-    rateLimitInfo.className = 'rate-limit-info';
-    rateLimitInfo.innerHTML = '<i data-lucide="infinity"></i> Unlimited crypto engagement tool - no rate limits!';
-    container.appendChild(rateLimitInfo);
-    
-    // Re-initialize icons for dynamically added content
-    lucide.createIcons();
 });
 
 async function downloadExtension() {
     window.location.href = '/install';
-}
-
-// Function to manually show update notice (for testing)
-function showUpdateNotice() {
-    fetch('/api/extension-version')
-        .then(response => response.json())
-        .then(updateInfo => {
-            // Clear any dismissed notices for testing
-            localStorage.removeItem('dismissedUpdateNotice');
-            
-            const generator = new CryptoTweetReplyGenerator();
-            generator.showUpdateNotice(updateInfo);
-        })
-        .catch(error => console.error('Error showing update notice:', error));
 }
     </script>
 </body>

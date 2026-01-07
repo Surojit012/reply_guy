@@ -242,27 +242,8 @@ class CryptoReplyGuyExtension {
     }
 
     updateRateLimitDisplay(rateLimitInfo) {
-        // Rate limiting disabled - show unlimited status
-        let rateLimitDisplay = document.getElementById('rate-limit-display');
-        if (!rateLimitDisplay) {
-            rateLimitDisplay = document.createElement('div');
-            rateLimitDisplay.id = 'rate-limit-display';
-            rateLimitDisplay.className = 'rate-limit-info';
-            
-            const buttonGroup = document.querySelector('.button-group');
-            if (buttonGroup) {
-                buttonGroup.parentNode.insertBefore(rateLimitDisplay, buttonGroup.nextSibling);
-            }
-        }
-        
-        rateLimitDisplay.className = 'rate-limit-info';
-        rateLimitDisplay.innerHTML = '<i data-lucide="infinity"></i> Unlimited requests available';
-        rateLimitDisplay.style.display = 'block';
-        
-        // Re-initialize icons for dynamically added content
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
+        // Rate limiting disabled - no display needed
+        return;
     }
 
     async testConnection() {
