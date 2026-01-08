@@ -101,8 +101,8 @@ body::before {
         padding: 30px;
     }
     
-    header h1, .logo-letter {
-        font-size: 5rem;
+    header h1, .logo-word {
+        font-size: 4rem;
     }
     
     header p {
@@ -135,9 +135,9 @@ header {
 }
 
 header h1 {
-    font-size: 4rem;
+    font-size: 3.5rem;
     font-weight: 900;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
     margin-bottom: 10px;
     position: relative;
     display: inline-block;
@@ -147,14 +147,14 @@ header h1 {
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.1em;
+    gap: 0.3em;
     transform-style: preserve-3d;
     animation: logoFloat 4s ease-in-out infinite;
 }
 
-.logo-letter {
+.logo-word {
     display: inline-block;
-    font-size: 4rem;
+    font-size: 3.5rem;
     font-weight: 900;
     position: relative;
     z-index: 2;
@@ -162,7 +162,7 @@ header h1 {
     transition: all 0.3s ease;
 }
 
-.logo-r {
+.logo-reply {
     background: linear-gradient(45deg, #ff0080, #ff4081, #e91e63, #ad1457);
     background-size: 400% 400%;
     -webkit-background-clip: text;
@@ -170,7 +170,7 @@ header h1 {
     background-clip: text;
     animation: 
         gradientShift 2s ease-in-out infinite,
-        letterBounce 3s ease-in-out infinite,
+        wordBounce 3s ease-in-out infinite,
         glitch 4s linear infinite;
     text-shadow: 
         0 0 20px rgba(255, 0, 128, 0.8),
@@ -178,7 +178,7 @@ header h1 {
         0 0 60px rgba(233, 30, 99, 0.4);
 }
 
-.logo-g {
+.logo-guy {
     background: linear-gradient(45deg, #00ff88, #4dd0e1, #26c6da, #00bcd4);
     background-size: 400% 400%;
     -webkit-background-clip: text;
@@ -186,7 +186,7 @@ header h1 {
     background-clip: text;
     animation: 
         gradientShift 2s ease-in-out infinite reverse,
-        letterBounce 3s ease-in-out infinite 0.5s,
+        wordBounce 3s ease-in-out infinite 0.5s,
         pulse 2s ease-in-out infinite;
     text-shadow: 
         0 0 20px rgba(0, 255, 136, 0.8),
@@ -198,10 +198,10 @@ header h1 {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 200%;
-    height: 200%;
+    width: 120%;
+    height: 150%;
     background: radial-gradient(
-        circle,
+        ellipse,
         rgba(255, 0, 128, 0.3) 0%,
         rgba(77, 208, 225, 0.3) 50%,
         transparent 70%
@@ -222,15 +222,15 @@ header h1 {
     }
 }
 
-@keyframes letterBounce {
+@keyframes wordBounce {
     0%, 100% { 
         transform: translateY(0px) scale(1) rotateZ(0deg);
     }
     25% { 
-        transform: translateY(-15px) scale(1.1) rotateZ(2deg);
+        transform: translateY(-15px) scale(1.05) rotateZ(1deg);
     }
     75% { 
-        transform: translateY(-5px) scale(0.95) rotateZ(-1deg);
+        transform: translateY(-5px) scale(0.98) rotateZ(-0.5deg);
     }
 }
 
@@ -269,7 +269,7 @@ header h1 {
         filter: brightness(1);
     }
     50% { 
-        transform: scale(1.05);
+        transform: scale(1.03);
         filter: brightness(1.2);
     }
 }
@@ -285,14 +285,14 @@ header h1 {
     }
 }
 
-.crazy-logo:hover .logo-r {
+.crazy-logo:hover .logo-reply {
     animation-duration: 0.5s;
-    transform: scale(1.2) rotateZ(10deg);
+    transform: scale(1.1) rotateZ(5deg);
 }
 
-.crazy-logo:hover .logo-g {
+.crazy-logo:hover .logo-guy {
     animation-duration: 0.5s;
-    transform: scale(1.2) rotateZ(-10deg);
+    transform: scale(1.1) rotateZ(-5deg);
 }
 
 .crazy-logo:hover .logo-glow {
@@ -999,8 +999,8 @@ textarea {
         text-align: center;
     }
     
-    header h1, .logo-letter {
-        font-size: 3rem;
+    header h1, .logo-word {
+        font-size: 2.5rem;
     }
     
     header p {
@@ -1063,8 +1063,8 @@ textarea {
         margin-bottom: 30px;
     }
     
-    header h1, .logo-letter {
-        font-size: 2.5rem;
+    header h1, .logo-word {
+        font-size: 2rem;
     }
     
     .input-section, .output-section {
@@ -1774,8 +1774,8 @@ textarea {
     <div class="container">
         <header>
             <h1 class="crazy-logo">
-                <span class="logo-letter logo-r">R</span>
-                <span class="logo-letter logo-g">G</span>
+                <span class="logo-word logo-reply">Reply</span>
+                <span class="logo-word logo-guy">Guy</span>
                 <span class="logo-glow"></span>
                 <div class="particles">
                     <span class="particle"></span>

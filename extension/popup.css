@@ -60,9 +60,9 @@ header {
 }
 
 header h1 {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     font-weight: 900;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.03em;
     margin-bottom: 5px;
     position: relative;
     display: inline-block;
@@ -72,14 +72,14 @@ header h1 {
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.05em;
+    gap: 0.2em;
     transform-style: preserve-3d;
     animation: logoFloat 4s ease-in-out infinite;
 }
 
-.logo-letter {
+.logo-word {
     display: inline-block;
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     font-weight: 900;
     position: relative;
     z-index: 2;
@@ -87,7 +87,7 @@ header h1 {
     transition: all 0.3s ease;
 }
 
-.logo-r {
+.logo-reply {
     background: linear-gradient(45deg, #ff0080, #ff4081, #e91e63, #ad1457);
     background-size: 400% 400%;
     -webkit-background-clip: text;
@@ -95,14 +95,14 @@ header h1 {
     background-clip: text;
     animation: 
         gradientShift 2s ease-in-out infinite,
-        letterBounce 3s ease-in-out infinite,
+        wordBounce 3s ease-in-out infinite,
         glitch 4s linear infinite;
     text-shadow: 
-        0 0 15px rgba(255, 0, 128, 0.8),
-        0 0 30px rgba(255, 64, 129, 0.6);
+        0 0 10px rgba(255, 0, 128, 0.8),
+        0 0 20px rgba(255, 64, 129, 0.6);
 }
 
-.logo-g {
+.logo-guy {
     background: linear-gradient(45deg, #00ff88, #4dd0e1, #26c6da, #00bcd4);
     background-size: 400% 400%;
     -webkit-background-clip: text;
@@ -110,21 +110,21 @@ header h1 {
     background-clip: text;
     animation: 
         gradientShift 2s ease-in-out infinite reverse,
-        letterBounce 3s ease-in-out infinite 0.5s,
+        wordBounce 3s ease-in-out infinite 0.5s,
         pulse 2s ease-in-out infinite;
     text-shadow: 
-        0 0 15px rgba(0, 255, 136, 0.8),
-        0 0 30px rgba(77, 208, 225, 0.6);
+        0 0 10px rgba(0, 255, 136, 0.8),
+        0 0 20px rgba(77, 208, 225, 0.6);
 }
 
 .logo-glow {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 180%;
-    height: 180%;
+    width: 120%;
+    height: 140%;
     background: radial-gradient(
-        circle,
+        ellipse,
         rgba(255, 0, 128, 0.3) 0%,
         rgba(77, 208, 225, 0.3) 50%,
         transparent 70%
@@ -141,19 +141,19 @@ header h1 {
         transform: translateY(0px) rotateX(0deg);
     }
     50% { 
-        transform: translateY(-8px) rotateX(3deg);
+        transform: translateY(-6px) rotateX(3deg);
     }
 }
 
-@keyframes letterBounce {
+@keyframes wordBounce {
     0%, 100% { 
         transform: translateY(0px) scale(1) rotateZ(0deg);
     }
     25% { 
-        transform: translateY(-10px) scale(1.08) rotateZ(1deg);
+        transform: translateY(-8px) scale(1.03) rotateZ(0.5deg);
     }
     75% { 
-        transform: translateY(-3px) scale(0.96) rotateZ(-0.5deg);
+        transform: translateY(-3px) scale(0.98) rotateZ(-0.3deg);
     }
 }
 
@@ -192,8 +192,8 @@ header h1 {
         filter: brightness(1);
     }
     50% { 
-        transform: scale(1.03);
-        filter: brightness(1.15);
+        transform: scale(1.02);
+        filter: brightness(1.1);
     }
 }
 
@@ -204,18 +204,18 @@ header h1 {
     }
     50% { 
         opacity: 0.8;
-        transform: translate(-50%, -50%) scale(1.15);
+        transform: translate(-50%, -50%) scale(1.1);
     }
 }
 
-.crazy-logo:hover .logo-r {
+.crazy-logo:hover .logo-reply {
     animation-duration: 0.5s;
-    transform: scale(1.15) rotateZ(8deg);
+    transform: scale(1.08) rotateZ(3deg);
 }
 
-.crazy-logo:hover .logo-g {
+.crazy-logo:hover .logo-guy {
     animation-duration: 0.5s;
-    transform: scale(1.15) rotateZ(-8deg);
+    transform: scale(1.08) rotateZ(-3deg);
 }
 
 .crazy-logo:hover .logo-glow {
