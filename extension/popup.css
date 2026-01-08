@@ -60,7 +60,9 @@ header {
 }
 
 header h1 {
-    font-size: 1.8rem;
+    font-size: 2.5rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
     background: linear-gradient(45deg, #4dd0e1 0%, #26c6da 25%, #00bcd4 50%, #00acc1 75%, #0097a7 100%);
     background-size: 200% 200%;
     animation: gradientText 3s ease infinite;
