@@ -15,19 +15,78 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
-    background-size: 400% 400%;
-    animation: gradientShift 8s ease infinite;
+    background: #0a0a0a;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, #4dd0e1, transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 90px 40px, #4dd0e1, transparent),
+        radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(2px 2px at 160px 30px, #26c6da, transparent),
+        radial-gradient(1px 1px at 200px 90px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(2px 2px at 240px 50px, #4dd0e1, transparent),
+        radial-gradient(1px 1px at 280px 10px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(1px 1px at 320px 70px, #26c6da, transparent),
+        radial-gradient(2px 2px at 360px 40px, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 400px 80px, #4dd0e1, transparent),
+        radial-gradient(2px 2px at 440px 20px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 480px 60px, #26c6da, transparent),
+        radial-gradient(1px 1px at 520px 90px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(2px 2px at 560px 30px, #4dd0e1, transparent),
+        radial-gradient(1px 1px at 600px 70px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 640px 10px, #26c6da, transparent),
+        radial-gradient(2px 2px at 680px 50px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(1px 1px at 720px 80px, #4dd0e1, transparent),
+        radial-gradient(1px 1px at 760px 40px, rgba(255,255,255,0.5), transparent),
+        radial-gradient(2px 2px at 800px 20px, #26c6da, transparent),
+        radial-gradient(1px 1px at 840px 60px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 880px 90px, #4dd0e1, transparent),
+        radial-gradient(2px 2px at 920px 30px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 960px 70px, #26c6da, transparent),
+        radial-gradient(1px 1px at 1000px 10px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(2px 2px at 1040px 50px, #4dd0e1, transparent),
+        radial-gradient(1px 1px at 1080px 80px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(1px 1px at 1120px 40px, #26c6da, transparent),
+        radial-gradient(2px 2px at 1160px 20px, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 1200px 60px, #4dd0e1, transparent),
+        radial-gradient(1px 1px at 1240px 90px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(2px 2px at 1280px 30px, #26c6da, transparent),
+        radial-gradient(1px 1px at 1320px 70px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 1360px 10px, #4dd0e1, transparent),
+        radial-gradient(2px 2px at 1400px 50px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 1440px 80px, #26c6da, transparent),
+        radial-gradient(1px 1px at 1480px 40px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(2px 2px at 1520px 20px, #4dd0e1, transparent),
+        radial-gradient(1px 1px at 1560px 60px, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 1600px 90px, #26c6da, transparent);
+    background-repeat: repeat;
+    background-size: 1600px 100px;
+    animation: starfield 120s linear infinite;
     color: #ffffff;
     min-height: 100vh;
     line-height: 1.6;
+    position: relative;
 }
 
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at center, transparent 0%, rgba(10,10,10,0.4) 70%, rgba(10,10,10,0.8) 100%),
+        linear-gradient(180deg, rgba(10,10,10,0.1) 0%, rgba(26,26,46,0.3) 50%, rgba(10,10,10,0.6) 100%);
+    pointer-events: none;
+    z-index: -1;
 }
+
+@keyframes starfield {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(-100px); }
+}
+
+
 
 .container {
     max-width: 800px;
@@ -77,14 +136,14 @@ header {
 
 header h1 {
     font-size: 2.5rem;
-    background: linear-gradient(45deg, #64b5f6 0%, #42a5f5 25%, #2196f3 50%, #1e88e5 75%, #1976d2 100%);
+    background: linear-gradient(45deg, #4dd0e1 0%, #26c6da 25%, #00bcd4 50%, #00acc1 75%, #0097a7 100%);
     background-size: 200% 200%;
     animation: gradientText 3s ease infinite;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: 10px;
-    text-shadow: 0 0 30px rgba(33, 150, 243, 0.5);
+    text-shadow: 0 0 30px rgba(77, 208, 225, 0.5);
 }
 
 @keyframes gradientText {
@@ -94,9 +153,9 @@ header h1 {
 }
 
 header p {
-    color: #64b5f6;
+    color: #4dd0e1;
     font-size: 1.1rem;
-    text-shadow: 0 0 10px rgba(100, 181, 246, 0.3);
+    text-shadow: 0 0 10px rgba(77, 208, 225, 0.3);
 }
 
 .creator-badge {
@@ -147,8 +206,8 @@ header p {
     border-radius: 20px;
     padding: 30px;
     margin-bottom: 30px;
-    border: 2px solid rgba(33, 150, 243, 0.3);
-    box-shadow: 0 8px 32px rgba(33, 150, 243, 0.2), 0 0 50px rgba(100, 181, 246, 0.1);
+    border: 2px solid rgba(77, 208, 225, 0.3);
+    box-shadow: 0 8px 32px rgba(77, 208, 225, 0.2), 0 0 50px rgba(38, 198, 218, 0.1);
 }
 
 .form-group {
@@ -182,8 +241,8 @@ input, textarea, select {
 
 input:focus, textarea:focus, select:focus {
     outline: none;
-    border-color: #2196f3;
-    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+    border-color: #4dd0e1;
+    box-shadow: 0 0 0 3px rgba(77, 208, 225, 0.3);
     background: rgba(255, 255, 255, 0.15);
 }
 
@@ -244,15 +303,15 @@ textarea {
 }
 
 .btn-primary {
-    background: linear-gradient(45deg, #2196f3 0%, #1976d2 50%, #1565c0 100%);
+    background: linear-gradient(45deg, #4dd0e1 0%, #26c6da 50%, #00bcd4 100%);
     color: white;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+    box-shadow: 0 4px 15px rgba(77, 208, 225, 0.4);
 }
 
 .btn-primary:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(33, 150, 243, 0.6);
+    box-shadow: 0 8px 25px rgba(77, 208, 225, 0.6);
 }
 
 .btn-secondary {
@@ -1077,8 +1136,8 @@ textarea {
     border-radius: 20px;
     padding: 30px;
     margin-bottom: 30px;
-    border: 2px solid rgba(100, 181, 246, 0.3);
-    box-shadow: 0 8px 32px rgba(100, 181, 246, 0.2), 0 0 50px rgba(33, 150, 243, 0.1);
+    border: 2px solid rgba(77, 208, 225, 0.3);
+    box-shadow: 0 8px 32px rgba(77, 208, 225, 0.2), 0 0 50px rgba(38, 198, 218, 0.1);
 }
 
 .quote-preview {
@@ -1103,7 +1162,7 @@ textarea {
 }
 
 .quote-label {
-    color: #64b5f6;
+    color: #4dd0e1;
     font-weight: 600;
     font-size: 0.9rem;
 }
@@ -1112,11 +1171,11 @@ textarea {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 12px;
     padding: 20px;
-    border-left: 4px solid #64b5f6;
+    border-left: 4px solid #4dd0e1;
     margin: 15px 0;
     white-space: pre-wrap;
     word-wrap: break-word;
-    box-shadow: 0 4px 15px rgba(100, 181, 246, 0.2);
+    box-shadow: 0 4px 15px rgba(77, 208, 225, 0.2);
     min-height: 60px;
     font-size: 1.1rem;
     line-height: 1.5;
@@ -1129,7 +1188,7 @@ textarea {
 }
 
 .quote-tip {
-    color: rgba(100, 181, 246, 0.8);
+    color: rgba(77, 208, 225, 0.8);
     font-size: 0.85rem;
     font-style: italic;
 }
