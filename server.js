@@ -687,15 +687,16 @@ Return only the reply text, no labels or prefixes.`
 
 app.get('/api/extension-version', (req, res) => {
     res.json({
-        version: '1.7.0',
+        version: '1.8.0',
         downloadUrl: `${process.env.SITE_URL || 'http://localhost:3000'}/install`,
         releaseNotes: 'Unlimited usage enabled! Replaced emojis with modern icons. Switched to Fireworks AI for better performance.',
-        updateDate: '2026-01-08T18:51:25.354Z', // Update this with each release
-        updateTime: 'January 9, 2026 at 12:21 AM GMT+5:30',
+        updateDate: '2026-01-08T19:08:02.518Z', // Update this with each release
+        updateTime: 'January 9, 2026 at 12:38 AM GMT+5:30',
         changes: [
-            'Updated to new RG logo',
-            'Removed icons from branding',
-            'Clean minimalist logo design'
+            'Added CRAZY animated logo with effects',
+            'Multi-color gradient animations',
+            'Floating particles and glitch effects',
+            'Screen shake and hover interactions'
         ],
         required: false,
         isLatest: true

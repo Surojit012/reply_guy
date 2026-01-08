@@ -101,7 +101,7 @@ body::before {
         padding: 30px;
     }
     
-    header h1 {
+    header h1, .logo-letter {
         font-size: 5rem;
     }
     
@@ -138,14 +138,265 @@ header h1 {
     font-size: 4rem;
     font-weight: 900;
     letter-spacing: 0.1em;
-    background: linear-gradient(45deg, #4dd0e1 0%, #26c6da 25%, #00bcd4 50%, #00acc1 75%, #0097a7 100%);
-    background-size: 200% 200%;
-    animation: gradientText 3s ease infinite;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+}
+
+.crazy-logo {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.1em;
+    transform-style: preserve-3d;
+    animation: logoFloat 4s ease-in-out infinite;
+}
+
+.logo-letter {
+    display: inline-block;
+    font-size: 4rem;
+    font-weight: 900;
+    position: relative;
+    z-index: 2;
+    transform-style: preserve-3d;
+    transition: all 0.3s ease;
+}
+
+.logo-r {
+    background: linear-gradient(45deg, #ff0080, #ff4081, #e91e63, #ad1457);
+    background-size: 400% 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 10px;
-    text-shadow: 0 0 30px rgba(77, 208, 225, 0.5);
+    animation: 
+        gradientShift 2s ease-in-out infinite,
+        letterBounce 3s ease-in-out infinite,
+        glitch 4s linear infinite;
+    text-shadow: 
+        0 0 20px rgba(255, 0, 128, 0.8),
+        0 0 40px rgba(255, 64, 129, 0.6),
+        0 0 60px rgba(233, 30, 99, 0.4);
+}
+
+.logo-g {
+    background: linear-gradient(45deg, #00ff88, #4dd0e1, #26c6da, #00bcd4);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: 
+        gradientShift 2s ease-in-out infinite reverse,
+        letterBounce 3s ease-in-out infinite 0.5s,
+        pulse 2s ease-in-out infinite;
+    text-shadow: 
+        0 0 20px rgba(0, 255, 136, 0.8),
+        0 0 40px rgba(77, 208, 225, 0.6),
+        0 0 60px rgba(38, 198, 218, 0.4);
+}
+
+.logo-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        circle,
+        rgba(255, 0, 128, 0.3) 0%,
+        rgba(77, 208, 225, 0.3) 50%,
+        transparent 70%
+    );
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: glowPulse 3s ease-in-out infinite;
+    z-index: 1;
+    filter: blur(20px);
+}
+
+@keyframes logoFloat {
+    0%, 100% { 
+        transform: translateY(0px) rotateX(0deg);
+    }
+    50% { 
+        transform: translateY(-10px) rotateX(5deg);
+    }
+}
+
+@keyframes letterBounce {
+    0%, 100% { 
+        transform: translateY(0px) scale(1) rotateZ(0deg);
+    }
+    25% { 
+        transform: translateY(-15px) scale(1.1) rotateZ(2deg);
+    }
+    75% { 
+        transform: translateY(-5px) scale(0.95) rotateZ(-1deg);
+    }
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes glitch {
+    0%, 90%, 100% { 
+        transform: translateX(0);
+        filter: hue-rotate(0deg);
+    }
+    92% { 
+        transform: translateX(-2px);
+        filter: hue-rotate(90deg);
+    }
+    94% { 
+        transform: translateX(2px);
+        filter: hue-rotate(180deg);
+    }
+    96% { 
+        transform: translateX(-1px);
+        filter: hue-rotate(270deg);
+    }
+    98% { 
+        transform: translateX(1px);
+        filter: hue-rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% { 
+        transform: scale(1.05);
+        filter: brightness(1.2);
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% { 
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% { 
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+}
+
+.crazy-logo:hover .logo-r {
+    animation-duration: 0.5s;
+    transform: scale(1.2) rotateZ(10deg);
+}
+
+.crazy-logo:hover .logo-g {
+    animation-duration: 0.5s;
+    transform: scale(1.2) rotateZ(-10deg);
+}
+
+.crazy-logo:hover .logo-glow {
+    animation-duration: 0.8s;
+    opacity: 1;
+}
+
+.particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: radial-gradient(circle, #ff0080, #4dd0e1);
+    border-radius: 50%;
+    opacity: 0;
+    animation: particleFloat 4s ease-in-out infinite;
+}
+
+.particle:nth-child(1) {
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+    background: radial-gradient(circle, #ff0080, transparent);
+}
+
+.particle:nth-child(2) {
+    top: 60%;
+    left: 80%;
+    animation-delay: 0.8s;
+    background: radial-gradient(circle, #4dd0e1, transparent);
+}
+
+.particle:nth-child(3) {
+    top: 80%;
+    left: 20%;
+    animation-delay: 1.6s;
+    background: radial-gradient(circle, #00ff88, transparent);
+}
+
+.particle:nth-child(4) {
+    top: 30%;
+    left: 70%;
+    animation-delay: 2.4s;
+    background: radial-gradient(circle, #ff4081, transparent);
+}
+
+.particle:nth-child(5) {
+    top: 70%;
+    left: 50%;
+    animation-delay: 3.2s;
+    background: radial-gradient(circle, #26c6da, transparent);
+}
+
+.particle:nth-child(6) {
+    top: 10%;
+    left: 90%;
+    animation-delay: 1.2s;
+    background: radial-gradient(circle, #e91e63, transparent);
+}
+
+@keyframes particleFloat {
+    0% {
+        opacity: 0;
+        transform: translateY(0px) scale(0);
+    }
+    20% {
+        opacity: 1;
+        transform: translateY(-20px) scale(1);
+    }
+    80% {
+        opacity: 1;
+        transform: translateY(-40px) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-60px) scale(0);
+    }
+}
+
+/* Add some screen shake on hover */
+.crazy-logo:hover {
+    animation: screenShake 0.5s ease-in-out;
+}
+
+@keyframes screenShake {
+    0%, 100% { transform: translateX(0); }
+    10% { transform: translateX(-2px); }
+    20% { transform: translateX(2px); }
+    30% { transform: translateX(-2px); }
+    40% { transform: translateX(2px); }
+    50% { transform: translateX(-1px); }
+    60% { transform: translateX(1px); }
+    70% { transform: translateX(-1px); }
+    80% { transform: translateX(1px); }
+    90% { transform: translateX(-1px); }
 }
 
 @keyframes gradientText {
@@ -748,7 +999,7 @@ textarea {
         text-align: center;
     }
     
-    header h1 {
+    header h1, .logo-letter {
         font-size: 3rem;
     }
     
@@ -812,7 +1063,7 @@ textarea {
         margin-bottom: 30px;
     }
     
-    header h1 {
+    header h1, .logo-letter {
         font-size: 2.5rem;
     }
     
@@ -1522,7 +1773,19 @@ textarea {
 <body>
     <div class="container">
         <header>
-            <h1>RG</h1>
+            <h1 class="crazy-logo">
+                <span class="logo-letter logo-r">R</span>
+                <span class="logo-letter logo-g">G</span>
+                <span class="logo-glow"></span>
+                <div class="particles">
+                    <span class="particle"></span>
+                    <span class="particle"></span>
+                    <span class="particle"></span>
+                    <span class="particle"></span>
+                    <span class="particle"></span>
+                    <span class="particle"></span>
+                </div>
+            </h1>
             <p>Context-aware Crypto Twitter engagement tool</p>
             <div class="creator-badge">
                 <span class="badge-text">Created by</span>

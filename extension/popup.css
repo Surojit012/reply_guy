@@ -60,17 +60,167 @@ header {
 }
 
 header h1 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 900;
     letter-spacing: 0.1em;
-    background: linear-gradient(45deg, #4dd0e1 0%, #26c6da 25%, #00bcd4 50%, #00acc1 75%, #0097a7 100%);
-    background-size: 200% 200%;
-    animation: gradientText 3s ease infinite;
+    margin-bottom: 5px;
+    position: relative;
+    display: inline-block;
+}
+
+.crazy-logo {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.05em;
+    transform-style: preserve-3d;
+    animation: logoFloat 4s ease-in-out infinite;
+}
+
+.logo-letter {
+    display: inline-block;
+    font-size: 2.2rem;
+    font-weight: 900;
+    position: relative;
+    z-index: 2;
+    transform-style: preserve-3d;
+    transition: all 0.3s ease;
+}
+
+.logo-r {
+    background: linear-gradient(45deg, #ff0080, #ff4081, #e91e63, #ad1457);
+    background-size: 400% 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 5px;
-    text-shadow: 0 0 30px rgba(77, 208, 225, 0.5);
+    animation: 
+        gradientShift 2s ease-in-out infinite,
+        letterBounce 3s ease-in-out infinite,
+        glitch 4s linear infinite;
+    text-shadow: 
+        0 0 15px rgba(255, 0, 128, 0.8),
+        0 0 30px rgba(255, 64, 129, 0.6);
+}
+
+.logo-g {
+    background: linear-gradient(45deg, #00ff88, #4dd0e1, #26c6da, #00bcd4);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: 
+        gradientShift 2s ease-in-out infinite reverse,
+        letterBounce 3s ease-in-out infinite 0.5s,
+        pulse 2s ease-in-out infinite;
+    text-shadow: 
+        0 0 15px rgba(0, 255, 136, 0.8),
+        0 0 30px rgba(77, 208, 225, 0.6);
+}
+
+.logo-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 180%;
+    height: 180%;
+    background: radial-gradient(
+        circle,
+        rgba(255, 0, 128, 0.3) 0%,
+        rgba(77, 208, 225, 0.3) 50%,
+        transparent 70%
+    );
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: glowPulse 3s ease-in-out infinite;
+    z-index: 1;
+    filter: blur(15px);
+}
+
+@keyframes logoFloat {
+    0%, 100% { 
+        transform: translateY(0px) rotateX(0deg);
+    }
+    50% { 
+        transform: translateY(-8px) rotateX(3deg);
+    }
+}
+
+@keyframes letterBounce {
+    0%, 100% { 
+        transform: translateY(0px) scale(1) rotateZ(0deg);
+    }
+    25% { 
+        transform: translateY(-10px) scale(1.08) rotateZ(1deg);
+    }
+    75% { 
+        transform: translateY(-3px) scale(0.96) rotateZ(-0.5deg);
+    }
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes glitch {
+    0%, 90%, 100% { 
+        transform: translateX(0);
+        filter: hue-rotate(0deg);
+    }
+    92% { 
+        transform: translateX(-1px);
+        filter: hue-rotate(90deg);
+    }
+    94% { 
+        transform: translateX(1px);
+        filter: hue-rotate(180deg);
+    }
+    96% { 
+        transform: translateX(-0.5px);
+        filter: hue-rotate(270deg);
+    }
+    98% { 
+        transform: translateX(0.5px);
+        filter: hue-rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% { 
+        transform: scale(1.03);
+        filter: brightness(1.15);
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% { 
+        opacity: 0.5;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% { 
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1.15);
+    }
+}
+
+.crazy-logo:hover .logo-r {
+    animation-duration: 0.5s;
+    transform: scale(1.15) rotateZ(8deg);
+}
+
+.crazy-logo:hover .logo-g {
+    animation-duration: 0.5s;
+    transform: scale(1.15) rotateZ(-8deg);
+}
+
+.crazy-logo:hover .logo-glow {
+    animation-duration: 0.6s;
+    opacity: 1;
 }
 
 @keyframes gradientText {
