@@ -6,21 +6,21 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #0a0a0a;
+    background: linear-gradient(135deg, #0f1419 0%, #1a2332 25%, #0d1421 50%, #162033 75%, #0a0f1a 100%);
     background-image: 
-        radial-gradient(1px 1px at 20px 30px, rgba(255,255,255,0.08), transparent),
-        radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.04), transparent),
-        radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.06), transparent),
-        radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.02), transparent),
-        radial-gradient(1px 1px at 160px 30px, rgba(255,255,255,0.05), transparent),
-        radial-gradient(1px 1px at 200px 90px, rgba(255,255,255,0.03), transparent),
-        radial-gradient(1px 1px at 240px 50px, rgba(255,255,255,0.07), transparent),
-        radial-gradient(1px 1px at 280px 10px, rgba(255,255,255,0.04), transparent),
-        radial-gradient(1px 1px at 320px 70px, rgba(255,255,255,0.06), transparent),
-        radial-gradient(1px 1px at 360px 40px, rgba(255,255,255,0.02), transparent);
+        radial-gradient(1px 1px at 20px 30px, #4a90e2, transparent),
+        radial-gradient(1px 1px at 40px 70px, rgba(74,144,226,0.8), transparent),
+        radial-gradient(1px 1px at 90px 40px, #5ba3f5, transparent),
+        radial-gradient(1px 1px at 130px 80px, rgba(91,163,245,0.6), transparent),
+        radial-gradient(1px 1px at 160px 30px, #6bb6ff, transparent),
+        radial-gradient(1px 1px at 200px 90px, rgba(107,182,255,0.7), transparent),
+        radial-gradient(1px 1px at 240px 50px, #4a90e2, transparent),
+        radial-gradient(1px 1px at 280px 10px, rgba(74,144,226,0.9), transparent),
+        radial-gradient(1px 1px at 320px 70px, #5ba3f5, transparent),
+        radial-gradient(1px 1px at 360px 40px, rgba(107,182,255,0.5), transparent);
     background-repeat: repeat;
     background-size: 380px 100px;
-    animation: starfield 120s linear infinite;
+    animation: starfield 60s linear infinite;
     color: #ffffff;
     width: 380px;
     min-height: 500px;
@@ -56,33 +56,37 @@ body::before {
 .logo-text {
     font-size: 1.8rem;
     font-weight: 900;
-    color: #ffffff;
+    background: linear-gradient(45deg, #4a90e2 0%, #5ba3f5 50%, #6bb6ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     position: relative;
     display: inline-block;
     letter-spacing: 0.03em;
     animation: subtleGlitch 8s linear infinite;
+    text-shadow: 0 0 20px rgba(74, 144, 226, 0.5);
 }
 
 @keyframes subtleGlitch {
     0%, 95%, 100% { 
         transform: translateX(0);
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        filter: drop-shadow(0 0 10px rgba(74, 144, 226, 0.3));
     }
     96% { 
         transform: translateX(-0.5px);
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        filter: drop-shadow(0 0 15px rgba(91, 163, 245, 0.4));
     }
     97% { 
         transform: translateX(0.5px);
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+        filter: drop-shadow(0 0 10px rgba(107, 182, 255, 0.3));
     }
     98% { 
         transform: translateX(-0.3px);
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
+        filter: drop-shadow(0 0 20px rgba(74, 144, 226, 0.5));
     }
     99% { 
         transform: translateX(0.3px);
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        filter: drop-shadow(0 0 10px rgba(91, 163, 245, 0.3));
     }
 }
 
@@ -116,19 +120,21 @@ header h1 {
 }
 
 header p {
-    color: #888888;
+    color: #7bb3ff;
     font-size: 0.9rem;
-    text-shadow: none;
+    text-shadow: 0 0 10px rgba(123, 179, 255, 0.3);
 }
 
 .input-section, .output-section {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(15, 20, 25, 0.4);
     backdrop-filter: blur(15px);
     border-radius: 15px;
     padding: 15px;
     margin-bottom: 15px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(74, 144, 226, 0.3);
+    box-shadow: 
+        0 4px 20px rgba(74, 144, 226, 0.2),
+        inset 0 1px 0 rgba(74, 144, 226, 0.1);
 }
 
 .form-group {
@@ -163,9 +169,9 @@ input, textarea, select {
 
 input:focus, textarea:focus, select:focus {
     outline: none;
-    border-color: #ffffff;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.15);
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3);
+    background: rgba(74, 144, 226, 0.1);
 }
 
 textarea {
@@ -174,10 +180,10 @@ textarea {
 }
 
 .preferences-section h3, .analysis-section h3, .output-section h3 {
-    color: #ffffff;
+    color: #6bb6ff;
     margin-bottom: 12px;
     font-size: 1rem;
-    text-shadow: none;
+    text-shadow: 0 0 10px rgba(107, 182, 255, 0.3);
 }
 
 .checkbox-group {
@@ -235,15 +241,15 @@ textarea {
 }
 
 .btn-primary {
-    background: linear-gradient(45deg, #666666 0%, #555555 50%, #444444 100%);
+    background: linear-gradient(45deg, #4a90e2 0%, #5ba3f5 50%, #6bb6ff 100%);
     color: white;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.4);
 }
 
 .btn-primary:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.6);
 }
 
 .btn-secondary {
@@ -259,26 +265,26 @@ textarea {
 
 .btn-outline {
     background: transparent;
-    color: #cccccc;
-    border: 2px solid #cccccc;
+    color: #5ba3f5;
+    border: 2px solid #5ba3f5;
 }
 
 .btn-outline:hover:not(:disabled) {
-    background: #cccccc;
-    color: #000000;
+    background: #5ba3f5;
+    color: white;
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(91, 163, 245, 0.4);
 }
 
 .analysis-box, .reply-box {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(15, 20, 25, 0.3);
     border-radius: 8px;
     padding: 12px;
-    border-left: 3px solid #ffffff;
+    border-left: 3px solid #4a90e2;
     margin: 10px 0;
     white-space: pre-wrap;
     word-wrap: break-word;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
     font-size: 12px;
     max-height: 120px;
     overflow-y: auto;
@@ -292,8 +298,8 @@ textarea {
 .spinner {
     width: 30px;
     height: 30px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-top: 3px solid #ffffff;
+    border: 3px solid rgba(74, 144, 226, 0.3);
+    border-top: 3px solid #4a90e2;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 15px;
@@ -355,13 +361,15 @@ textarea {
 }
 
 .variants-section, .quote-section {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(15, 20, 25, 0.4);
     backdrop-filter: blur(15px);
     border-radius: 15px;
     padding: 15px;
     margin-bottom: 15px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(91, 163, 245, 0.3);
+    box-shadow: 
+        0 4px 20px rgba(91, 163, 245, 0.2),
+        inset 0 1px 0 rgba(91, 163, 245, 0.1);
 }
 
 .variants-container {
@@ -371,27 +379,27 @@ textarea {
 }
 
 .variant-item {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(74, 144, 226, 0.05);
     border-radius: 10px;
     padding: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(74, 144, 226, 0.2);
 }
 
 .variant-item h4 {
-    color: #ffffff;
+    color: #6bb6ff;
     margin-bottom: 8px;
     font-size: 0.9rem;
 }
 
 .quote-box {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(15, 20, 25, 0.3);
     border-radius: 8px;
     padding: 12px;
-    border-left: 3px solid #ffffff;
+    border-left: 3px solid #4a90e2;
     margin: 10px 0;
     white-space: pre-wrap;
     word-wrap: break-word;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
     font-size: 11px;
     max-height: 100px;
     overflow-y: auto;
@@ -406,17 +414,17 @@ textarea {
 }
 
 .variants-section h3, .quote-section h3 {
-    color: #ffffff;
+    color: #6bb6ff;
     margin-bottom: 12px;
     font-size: 1rem;
-    text-shadow: none;
+    text-shadow: 0 0 10px rgba(107, 182, 255, 0.3);
 }
 /* Polished Quote Tweet Styles */
 .quote-preview {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(74, 144, 226, 0.05);
     border-radius: 10px;
     padding: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(74, 144, 226, 0.2);
     margin: 10px 0;
 }
 
@@ -426,7 +434,7 @@ textarea {
     gap: 8px;
     margin-bottom: 10px;
     padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(74, 144, 226, 0.2);
 }
 
 .quote-icon {
@@ -434,7 +442,7 @@ textarea {
 }
 
 .quote-label {
-    color: #ffffff;
+    color: #6bb6ff;
     font-weight: 600;
     font-size: 0.8rem;
 }
@@ -442,11 +450,11 @@ textarea {
 .quote-footer {
     margin-top: 10px;
     padding-top: 8px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(74, 144, 226, 0.2);
 }
 
 .quote-tip {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(123, 179, 255, 0.8);
     font-size: 0.75rem;
     font-style: italic;
 }
