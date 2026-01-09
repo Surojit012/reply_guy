@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #0f1419 0%, #1a2332 25%, #0d1421 50%, #162033 75%, #0a0f1a 100%);
+    background: #0a0a0a;
     background-image: 
         radial-gradient(1px 1px at 20px 30px, #4a90e2, transparent),
         radial-gradient(1px 1px at 40px 70px, rgba(74,144,226,0.8), transparent),
@@ -126,7 +126,7 @@ header p {
 }
 
 .input-section, .output-section {
-    background: rgba(15, 20, 25, 0.4);
+    background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(15px);
     border-radius: 15px;
     padding: 15px;
@@ -277,7 +277,7 @@ textarea {
 }
 
 .analysis-box, .reply-box {
-    background: rgba(15, 20, 25, 0.3);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     padding: 12px;
     border-left: 3px solid #4a90e2;
@@ -361,7 +361,7 @@ textarea {
 }
 
 .variants-section, .quote-section {
-    background: rgba(15, 20, 25, 0.4);
+    background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(15px);
     border-radius: 15px;
     padding: 15px;
@@ -379,7 +379,7 @@ textarea {
 }
 
 .variant-item {
-    background: rgba(74, 144, 226, 0.05);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
     padding: 12px;
     border: 1px solid rgba(74, 144, 226, 0.2);
@@ -392,7 +392,7 @@ textarea {
 }
 
 .quote-box {
-    background: rgba(15, 20, 25, 0.3);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     padding: 12px;
     border-left: 3px solid #4a90e2;
@@ -421,7 +421,7 @@ textarea {
 }
 /* Polished Quote Tweet Styles */
 .quote-preview {
-    background: rgba(74, 144, 226, 0.05);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
     padding: 12px;
     border: 1px solid rgba(74, 144, 226, 0.2);
