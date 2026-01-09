@@ -687,16 +687,16 @@ Return only the reply text, no labels or prefixes.`
 
 app.get('/api/extension-version', (req, res) => {
     res.json({
-        version: '1.9.0',
+        version: '2.0.0',
         downloadUrl: `${process.env.SITE_URL || 'http://localhost:3000'}/install`,
         releaseNotes: 'Unlimited usage enabled! Replaced emojis with modern icons. Switched to Fireworks AI for better performance.',
-        updateDate: '2026-01-08T19:19:40.013Z', // Update this with each release
-        updateTime: 'January 9, 2026 at 12:49 AM GMT+5:30',
+        updateDate: '2026-01-09T13:41:17.053Z', // Update this with each release
+        updateTime: 'January 9, 2026 at 07:11 PM GMT+5:30',
         changes: [
-            'Changed back to Reply Guy logo',
-            'Crazy animated Reply Guy with effects',
-            'Pink Reply + Teal Guy with particles',
-            'Floating animations and glitch effects'
+            'Complete minimalist redesign',
+            'Clean monochrome interface',
+            'Subtle glitch effect on logo only',
+            'Removed all colorful animations'
         ],
         required: false,
         isLatest: true
