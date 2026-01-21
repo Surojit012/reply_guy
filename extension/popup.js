@@ -1,4 +1,4 @@
-// Interactive Particle Background System for Extension
+// Minimalist Ambient Particle Background System for Extension
 class ExtensionParticleSystem {
     constructor() {
         this.canvas = document.getElementById('particle-canvas-ext');
@@ -6,10 +6,10 @@ class ExtensionParticleSystem {
         
         this.ctx = this.canvas.getContext('2d');
         this.particles = [];
-        this.mouse = { x: 0, y: 0, radius: 80 };
-        this.particleCount = 150; // Fewer particles for extension
-        this.connectionDistance = 60;
-        this.mouseInfluence = 0.2;
+        this.mouse = { x: 0, y: 0, radius: 120 };
+        this.particleCount = 25; // Very few particles for extension
+        this.connectionDistance = 100;
+        this.mouseInfluence = 0.03; // Extremely subtle
         
         this.init();
         this.bindEvents();
@@ -32,24 +32,27 @@ class ExtensionParticleSystem {
             this.particles.push({
                 x: Math.random() * this.canvas.width,
                 y: Math.random() * this.canvas.height,
-                vx: (Math.random() - 0.5) * 0.3,
-                vy: (Math.random() - 0.5) * 0.3,
-                size: Math.random() * 1.5 + 0.5,
-                opacity: Math.random() * 0.6 + 0.2,
-                color: this.getRandomBlueColor(),
-                originalVx: (Math.random() - 0.5) * 0.3,
-                originalVy: (Math.random() - 0.5) * 0.3
+                vx: (Math.random() - 0.5) * 0.08, // Very slow movement
+                vy: (Math.random() - 0.5) * 0.08,
+                size: Math.random() * 0.8 + 0.4, // Smaller particles
+                opacity: Math.random() * 0.12 + 0.03, // Very low opacity
+                baseOpacity: Math.random() * 0.12 + 0.03,
+                color: this.getSubtleColor(),
+                originalVx: (Math.random() - 0.5) * 0.08,
+                originalVy: (Math.random() - 0.5) * 0.08,
+                phase: Math.random() * Math.PI * 2
             });
         }
     }
     
-    getRandomBlueColor() {
-        const blues = [
-            'rgba(74, 144, 226, ',
-            'rgba(91, 163, 245, ',
-            'rgba(107, 182, 255, '
+    getSubtleColor() {
+        // Even more muted for extension
+        const colors = [
+            'rgba(90, 105, 120, ',  // Very muted blue-gray
+            'rgba(85, 100, 115, ',  // Darker muted
+            'rgba(95, 110, 125, ',  // Slightly lighter
         ];
-        return blues[Math.floor(Math.random() * blues.length)];
+        return colors[Math.floor(Math.random() * colors.length)];
     }
     
     bindEvents() {
@@ -66,44 +69,42 @@ class ExtensionParticleSystem {
     }
     
     updateParticles() {
+        const time = Date.now() * 0.0003; // Even slower time
+        
         this.particles.forEach(particle => {
             const dx = this.mouse.x - particle.x;
             const dy = this.mouse.y - particle.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
+            // Barely noticeable mouse interaction
             if (distance < this.mouse.radius) {
                 const force = (this.mouse.radius - distance) / this.mouse.radius;
                 const angle = Math.atan2(dy, dx);
                 
-                if (distance < this.mouse.radius * 0.3) {
-                    particle.vx -= Math.cos(angle) * force * this.mouseInfluence;
-                    particle.vy -= Math.sin(angle) * force * this.mouseInfluence;
-                } else {
-                    particle.vx += Math.cos(angle) * force * this.mouseInfluence * 0.5;
-                    particle.vy += Math.sin(angle) * force * this.mouseInfluence * 0.5;
-                }
+                particle.vx += Math.cos(angle) * force * this.mouseInfluence * 0.2;
+                particle.vy += Math.sin(angle) * force * this.mouseInfluence * 0.2;
             }
             
-            particle.vx += (particle.originalVx - particle.vx) * 0.02;
-            particle.vy += (particle.originalVy - particle.vy) * 0.02;
+            particle.vx += (particle.originalVx - particle.vx) * 0.003;
+            particle.vy += (particle.originalVy - particle.vy) * 0.003;
             
             particle.x += particle.vx;
             particle.y += particle.vy;
             
-            if (particle.x < 0) particle.x = this.canvas.width;
-            if (particle.x > this.canvas.width) particle.x = 0;
-            if (particle.y < 0) particle.y = this.canvas.height;
-            if (particle.y > this.canvas.height) particle.y = 0;
+            if (particle.x < -30) particle.x = this.canvas.width + 30;
+            if (particle.x > this.canvas.width + 30) particle.x = -30;
+            if (particle.y < -30) particle.y = this.canvas.height + 30;
+            if (particle.y > this.canvas.height + 30) particle.y = -30;
             
-            particle.opacity += Math.sin(Date.now() * 0.001 + particle.x * 0.01) * 0.005;
-            particle.opacity = Math.max(0.1, Math.min(0.7, particle.opacity));
+            // Gentle breathing effect
+            const breathe = Math.sin(time + particle.phase) * 0.02;
+            particle.opacity = particle.baseOpacity + breathe;
+            particle.opacity = Math.max(0.01, Math.min(0.18, particle.opacity));
         });
     }
     
     drawConnections() {
-        this.ctx.strokeStyle = 'rgba(74, 144, 226, 0.08)';
-        this.ctx.lineWidth = 0.5;
-        
+        // Very subtle connections
         for (let i = 0; i < this.particles.length; i++) {
             for (let j = i + 1; j < this.particles.length; j++) {
                 const dx = this.particles[i].x - this.particles[j].x;
@@ -111,8 +112,9 @@ class ExtensionParticleSystem {
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
                 if (distance < this.connectionDistance) {
-                    const opacity = (1 - distance / this.connectionDistance) * 0.2;
-                    this.ctx.strokeStyle = `rgba(74, 144, 226, ${opacity})`;
+                    const opacity = (1 - distance / this.connectionDistance) * 0.05; // Extremely low
+                    this.ctx.strokeStyle = `rgba(90, 105, 120, ${opacity})`;
+                    this.ctx.lineWidth = 0.2;
                     this.ctx.beginPath();
                     this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
                     this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
@@ -124,35 +126,21 @@ class ExtensionParticleSystem {
     
     drawParticles() {
         this.particles.forEach(particle => {
-            const mouseDistance = Math.sqrt(
-                (this.mouse.x - particle.x) ** 2 + 
-                (this.mouse.y - particle.y) ** 2
-            );
-            
-            let glowIntensity = 1;
-            if (mouseDistance < this.mouse.radius) {
-                glowIntensity = 1 + (this.mouse.radius - mouseDistance) / this.mouse.radius * 0.5;
-            }
-            
+            // Simple, no-glow particles
             this.ctx.save();
             this.ctx.globalAlpha = particle.opacity;
-            
-            if (glowIntensity > 1) {
-                this.ctx.shadowColor = particle.color + '0.6)';
-                this.ctx.shadowBlur = particle.size * glowIntensity * 2;
-            }
-            
             this.ctx.fillStyle = particle.color + particle.opacity + ')';
             this.ctx.beginPath();
-            this.ctx.arc(particle.x, particle.y, particle.size * glowIntensity, 0, Math.PI * 2);
+            this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
             this.ctx.fill();
-            
             this.ctx.restore();
         });
     }
     
     animate() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // Subtle trail effect
+        this.ctx.fillStyle = 'rgba(10, 10, 10, 0.03)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         this.updateParticles();
         this.drawConnections();
