@@ -1,3 +1,167 @@
+// Interactive Particle Background System for Extension
+class ExtensionParticleSystem {
+    constructor() {
+        this.canvas = document.getElementById('particle-canvas-ext');
+        if (!this.canvas) return;
+        
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.mouse = { x: 0, y: 0, radius: 80 };
+        this.particleCount = 150; // Fewer particles for extension
+        this.connectionDistance = 60;
+        this.mouseInfluence = 0.2;
+        
+        this.init();
+        this.bindEvents();
+        this.animate();
+    }
+    
+    init() {
+        this.resize();
+        this.createParticles();
+    }
+    
+    resize() {
+        this.canvas.width = 380;
+        this.canvas.height = Math.max(500, document.body.scrollHeight);
+    }
+    
+    createParticles() {
+        this.particles = [];
+        for (let i = 0; i < this.particleCount; i++) {
+            this.particles.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                vx: (Math.random() - 0.5) * 0.3,
+                vy: (Math.random() - 0.5) * 0.3,
+                size: Math.random() * 1.5 + 0.5,
+                opacity: Math.random() * 0.6 + 0.2,
+                color: this.getRandomBlueColor(),
+                originalVx: (Math.random() - 0.5) * 0.3,
+                originalVy: (Math.random() - 0.5) * 0.3
+            });
+        }
+    }
+    
+    getRandomBlueColor() {
+        const blues = [
+            'rgba(74, 144, 226, ',
+            'rgba(91, 163, 245, ',
+            'rgba(107, 182, 255, '
+        ];
+        return blues[Math.floor(Math.random() * blues.length)];
+    }
+    
+    bindEvents() {
+        document.addEventListener('mousemove', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            this.mouse.x = e.clientX - rect.left;
+            this.mouse.y = e.clientY - rect.top;
+        });
+        
+        document.addEventListener('mouseleave', () => {
+            this.mouse.x = -1000;
+            this.mouse.y = -1000;
+        });
+    }
+    
+    updateParticles() {
+        this.particles.forEach(particle => {
+            const dx = this.mouse.x - particle.x;
+            const dy = this.mouse.y - particle.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < this.mouse.radius) {
+                const force = (this.mouse.radius - distance) / this.mouse.radius;
+                const angle = Math.atan2(dy, dx);
+                
+                if (distance < this.mouse.radius * 0.3) {
+                    particle.vx -= Math.cos(angle) * force * this.mouseInfluence;
+                    particle.vy -= Math.sin(angle) * force * this.mouseInfluence;
+                } else {
+                    particle.vx += Math.cos(angle) * force * this.mouseInfluence * 0.5;
+                    particle.vy += Math.sin(angle) * force * this.mouseInfluence * 0.5;
+                }
+            }
+            
+            particle.vx += (particle.originalVx - particle.vx) * 0.02;
+            particle.vy += (particle.originalVy - particle.vy) * 0.02;
+            
+            particle.x += particle.vx;
+            particle.y += particle.vy;
+            
+            if (particle.x < 0) particle.x = this.canvas.width;
+            if (particle.x > this.canvas.width) particle.x = 0;
+            if (particle.y < 0) particle.y = this.canvas.height;
+            if (particle.y > this.canvas.height) particle.y = 0;
+            
+            particle.opacity += Math.sin(Date.now() * 0.001 + particle.x * 0.01) * 0.005;
+            particle.opacity = Math.max(0.1, Math.min(0.7, particle.opacity));
+        });
+    }
+    
+    drawConnections() {
+        this.ctx.strokeStyle = 'rgba(74, 144, 226, 0.08)';
+        this.ctx.lineWidth = 0.5;
+        
+        for (let i = 0; i < this.particles.length; i++) {
+            for (let j = i + 1; j < this.particles.length; j++) {
+                const dx = this.particles[i].x - this.particles[j].x;
+                const dy = this.particles[i].y - this.particles[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < this.connectionDistance) {
+                    const opacity = (1 - distance / this.connectionDistance) * 0.2;
+                    this.ctx.strokeStyle = `rgba(74, 144, 226, ${opacity})`;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
+                    this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
+                    this.ctx.stroke();
+                }
+            }
+        }
+    }
+    
+    drawParticles() {
+        this.particles.forEach(particle => {
+            const mouseDistance = Math.sqrt(
+                (this.mouse.x - particle.x) ** 2 + 
+                (this.mouse.y - particle.y) ** 2
+            );
+            
+            let glowIntensity = 1;
+            if (mouseDistance < this.mouse.radius) {
+                glowIntensity = 1 + (this.mouse.radius - mouseDistance) / this.mouse.radius * 0.5;
+            }
+            
+            this.ctx.save();
+            this.ctx.globalAlpha = particle.opacity;
+            
+            if (glowIntensity > 1) {
+                this.ctx.shadowColor = particle.color + '0.6)';
+                this.ctx.shadowBlur = particle.size * glowIntensity * 2;
+            }
+            
+            this.ctx.fillStyle = particle.color + particle.opacity + ')';
+            this.ctx.beginPath();
+            this.ctx.arc(particle.x, particle.y, particle.size * glowIntensity, 0, Math.PI * 2);
+            this.ctx.fill();
+            
+            this.ctx.restore();
+        });
+    }
+    
+    animate() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        this.updateParticles();
+        this.drawConnections();
+        this.drawParticles();
+        
+        requestAnimationFrame(() => this.animate());
+    }
+}
+
 class CryptoReplyGuyExtension {
     constructor() {
         this.serverUrl = 'https://reply-guy-eta.vercel.app';
@@ -887,6 +1051,10 @@ function pasteReplyToTwitter(replyText) {
 
 // Initialize the extension when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize particle system
+    new ExtensionParticleSystem();
+    
+    // Initialize main extension
     new CryptoReplyGuyExtension();
     
     // Initialize Lucide icons
