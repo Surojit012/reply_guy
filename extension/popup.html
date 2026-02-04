@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RG - Reply Guy</title>
     <link rel="stylesheet" href="popup.css">
-    <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <!-- Lucide Icons - bundled locally for CSP compliance -->
+    <script src="lucide.min.js"></script>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -32,7 +34,7 @@
 
                 <div class="preferences-section">
                     <h3><i data-lucide="settings"></i> Crypto Engagement Settings</h3>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="persona-select">Persona:</label>
@@ -109,7 +111,8 @@
                     <button id="generate-btn" class="btn btn-primary">Generate Reply</button>
                     <button id="variants-btn" class="btn btn-outline">3 Variants</button>
                     <button id="quote-btn" class="btn btn-outline">Quote Tweet</button>
-                    <button id="test-connection-btn" class="btn btn-secondary" style="font-size: 12px;">Test Connection</button>
+                    <button id="test-connection-btn" class="btn btn-secondary" style="font-size: 12px;">Test
+                        Connection</button>
                 </div>
             </div>
 
@@ -154,7 +157,8 @@
                     </div>
                     <div id="generated-quote" class="quote-box"></div>
                     <div class="quote-footer">
-                        <span class="quote-tip"><i data-lucide="lightbulb"></i> Perfect for adding your perspective</span>
+                        <span class="quote-tip"><i data-lucide="lightbulb"></i> Perfect for adding your
+                            perspective</span>
                     </div>
                 </div>
                 <div class="reply-actions">
@@ -194,4 +198,5 @@
 
     <script src="popup.js"></script>
 </body>
+
 </html>
