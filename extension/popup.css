@@ -489,3 +489,113 @@ textarea {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
 }
+
+/* Thread Selection Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-dialog {
+    background: linear-gradient(145deg, rgba(20, 20, 30, 0.98), rgba(10, 10, 20, 0.95));
+    border: 2px solid rgba(74, 144, 226, 0.4);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 320px;
+    width: 90%;
+    box-shadow: 
+        0 8px 32px rgba(74, 144, 226, 0.3),
+        0 0 60px rgba(74, 144, 226, 0.1);
+    animation: slideUp 0.3s ease;
+    text-align: center;
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.modal-header i {
+    color: #6bb6ff;
+    width: 24px;
+    height: 24px;
+}
+
+.modal-header h3 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    margin: 0;
+    background: linear-gradient(45deg, #4a90e2, #6bb6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.modal-description {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.modal-buttons .btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 16px;
+}
+
+.modal-buttons .btn i {
+    width: 16px;
+    height: 16px;
+}
+
+.btn-text {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    border: none;
+    font-size: 0.85rem;
+    padding: 8px;
+    width: 100%;
+}
+
+.btn-text:hover {
+    color: rgba(255, 255, 255, 0.8);
+}

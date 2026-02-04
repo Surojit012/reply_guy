@@ -23,6 +23,13 @@ class CryptoReplyGuyExtension {
         this.autoFillBtn = document.getElementById('auto-fill-btn');
         this.testConnectionBtn = document.getElementById('test-connection-btn');
         
+        // Thread modal elements
+        this.threadModal = document.getElementById('thread-modal');
+        this.fillSingleBtn = document.getElementById('fill-single-btn');
+        this.fillThreadBtn = document.getElementById('fill-thread-btn');
+        this.modalCancelBtn = document.getElementById('modal-cancel-btn');
+        this.pendingThreadData = null;
+        
         this.analysisSection = document.getElementById('analysis-section');
         this.analysisResult = document.getElementById('analysis-result');
         this.outputSection = document.getElementById('output-section');
@@ -101,6 +108,22 @@ class CryptoReplyGuyExtension {
         if (this.testConnectionBtn) {
             this.testConnectionBtn.addEventListener('click', () => this.testConnection());
             console.log('Test connection button event bound');
+        }
+        
+        // Thread modal event bindings
+        if (this.fillSingleBtn) {
+            this.fillSingleBtn.addEventListener('click', () => this.handleThreadChoice('single'));
+        }
+        if (this.fillThreadBtn) {
+            this.fillThreadBtn.addEventListener('click', () => this.handleThreadChoice('thread'));
+        }
+        if (this.modalCancelBtn) {
+            this.modalCancelBtn.addEventListener('click', () => this.hideThreadModal());
+        }
+        if (this.threadModal) {
+            this.threadModal.addEventListener('click', (e) => {
+                if (e.target === this.threadModal) this.hideThreadModal();
+            });
         }
         
         // Copy variant buttons
@@ -718,6 +741,38 @@ class CryptoReplyGuyExtension {
         }
     }
 
+    showThreadModal(threadData) {
+        this.pendingThreadData = threadData;
+        if (this.threadModal) {
+            this.threadModal.style.display = 'flex';
+            // Re-initialize Lucide icons for modal
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+    }
+
+    hideThreadModal() {
+        if (this.threadModal) {
+            this.threadModal.style.display = 'none';
+        }
+        this.pendingThreadData = null;
+    }
+
+    handleThreadChoice(choice) {
+        if (!this.pendingThreadData) return;
+        
+        if (choice === 'single') {
+            this.tweetInput.value = this.pendingThreadData.singleTweet;
+            this.showSuccess('Single tweet auto-filled!');
+        } else if (choice === 'thread') {
+            this.tweetInput.value = this.pendingThreadData.fullThread;
+            this.showSuccess(`Thread auto-filled! (${this.pendingThreadData.tweetCount} tweets)`);
+        }
+        
+        this.hideThreadModal();
+    }
+
     async autoFillFromTwitter() {
         try {
             const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -729,14 +784,25 @@ class CryptoReplyGuyExtension {
 
             // Check if we have permission to access the tab
             try {
-                const results = await chrome.scripting.executeScript({
+                // First, check if this is a thread
+                const threadResults = await chrome.scripting.executeScript({
                     target: { tabId: tab.id },
-                    function: extractTweetText
+                    function: detectAndExtractThread
                 });
 
-                if (results && results[0] && results[0].result) {
-                    this.tweetInput.value = results[0].result;
-                    this.showSuccess('Tweet text auto-filled!');
+                if (threadResults && threadResults[0] && threadResults[0].result) {
+                    const result = threadResults[0].result;
+                    
+                    if (result.isThread && result.tweetCount > 1) {
+                        // Show modal to let user choose
+                        this.showThreadModal(result);
+                    } else if (result.singleTweet) {
+                        // Not a thread, just fill the single tweet
+                        this.tweetInput.value = result.singleTweet;
+                        this.showSuccess('Tweet text auto-filled!');
+                    } else {
+                        this.showError('No tweet found. Please click on a tweet or scroll to make one visible.');
+                    }
                 } else {
                     this.showError('No tweet found. Please click on a tweet or scroll to make one visible.');
                 }
@@ -788,6 +854,85 @@ class CryptoReplyGuyExtension {
 }
 
 // Functions to inject into Twitter pages
+function detectAndExtractThread() {
+    // Get all tweet articles on the page
+    const articles = document.querySelectorAll('[data-testid="tweet"]');
+    
+    if (articles.length === 0) {
+        return { isThread: false, singleTweet: null, fullThread: null, tweetCount: 0 };
+    }
+    
+    // Get the main/focused tweet (usually the first one in detail view)
+    let mainTweetText = null;
+    const mainTweetElement = document.querySelector('[data-testid="tweet"] [data-testid="tweetText"]');
+    if (mainTweetElement && mainTweetElement.offsetParent !== null) {
+        mainTweetText = mainTweetElement.textContent.trim();
+    }
+    
+    // Check if we're on a tweet detail page (URL contains /status/)
+    const isDetailView = window.location.pathname.includes('/status/');
+    
+    if (!isDetailView) {
+        // Not on detail view, just return single tweet
+        return { 
+            isThread: false, 
+            singleTweet: mainTweetText, 
+            fullThread: mainTweetText, 
+            tweetCount: 1 
+        };
+    }
+    
+    // Try to find the author of the main tweet
+    let mainAuthor = null;
+    const authorElements = document.querySelectorAll('[data-testid="tweet"] [data-testid="User-Name"] a[href^="/"]');
+    for (const el of authorElements) {
+        const href = el.getAttribute('href');
+        if (href && href.startsWith('/') && !href.includes('/status/')) {
+            mainAuthor = href.split('/')[1];
+            break;
+        }
+    }
+    
+    // Collect all tweets from the same author (thread tweets)
+    const threadTweets = [];
+    const seenTexts = new Set();
+    
+    articles.forEach((article) => {
+        // Check if this tweet is from the same author
+        const authorLink = article.querySelector('[data-testid="User-Name"] a[href^="/"]');
+        if (authorLink) {
+            const href = authorLink.getAttribute('href');
+            const author = href ? href.split('/')[1] : null;
+            
+            // Only include tweets from the main author (thread author)
+            if (author && mainAuthor && author.toLowerCase() === mainAuthor.toLowerCase()) {
+                const tweetTextEl = article.querySelector('[data-testid="tweetText"]');
+                if (tweetTextEl && tweetTextEl.offsetParent !== null) {
+                    const text = tweetTextEl.textContent.trim();
+                    // Avoid duplicates
+                    if (text.length > 0 && !seenTexts.has(text)) {
+                        seenTexts.add(text);
+                        threadTweets.push(text);
+                    }
+                }
+            }
+        }
+    });
+    
+    // Determine if this is a thread (more than 1 tweet from same author)
+    const isThread = threadTweets.length > 1;
+    
+    // Combine thread tweets with separator
+    const fullThread = threadTweets.join('\n\n---\n\n');
+    
+    return {
+        isThread: isThread,
+        singleTweet: mainTweetText || threadTweets[0] || null,
+        fullThread: fullThread || mainTweetText,
+        tweetCount: threadTweets.length
+    };
+}
+
 function extractTweetText() {
     // Try multiple selectors for different Twitter layouts
     const tweetSelectors = [
