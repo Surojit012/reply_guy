@@ -104,11 +104,11 @@ async function makeFireworksRequest(messages, maxTokens = 500) {
     console.log('Making Fireworks AI request with messages:', messages);
     console.log('API Key configured:', !!process.env.FIREWORKS_API_KEY);
     console.log('API Key length:', process.env.FIREWORKS_API_KEY ? process.env.FIREWORKS_API_KEY.length : 0);
-    
+
     if (!process.env.FIREWORKS_API_KEY) {
         throw new Error('Fireworks API key is not configured');
     }
-    
+
     try {
         const requestBody = {
             model: 'accounts/fireworks/models/llama-v3p3-70b-instruct',
@@ -116,9 +116,9 @@ async function makeFireworksRequest(messages, maxTokens = 500) {
             max_tokens: maxTokens,
             temperature: 0.7
         };
-        
+
         console.log('Request body:', JSON.stringify(requestBody, null, 2));
-        
+
         const response = await fetch('https://api.fireworks.ai/inference/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -141,7 +141,7 @@ async function makeFireworksRequest(messages, maxTokens = 500) {
             } catch (e) {
                 errorData = { error: { message: responseText } };
             }
-            
+
             // Handle rate limiting specifically
             if (response.status === 429) {
                 const rateLimitInfo = {
@@ -153,21 +153,21 @@ async function makeFireworksRequest(messages, maxTokens = 500) {
                     limit: parseInt(response.headers.get('x-ratelimit-limit')) || 50,
                     retryAfter: response.headers.get('retry-after')
                 };
-                
+
                 console.log('Rate limit info:', rateLimitInfo);
-                
+
                 const error = new Error('Rate limit exceeded');
                 error.rateLimitInfo = rateLimitInfo;
                 throw error;
             }
-            
+
             console.error('Fireworks API Error:', {
                 status: response.status,
                 statusText: response.statusText,
                 error: errorData,
                 headers: Object.fromEntries(response.headers.entries())
             });
-            
+
             throw new Error(errorData.error?.message || `API request failed: ${response.status} - ${response.statusText}`);
         }
 
@@ -178,14 +178,14 @@ async function makeFireworksRequest(messages, maxTokens = 500) {
             console.error('Failed to parse Fireworks response as JSON:', responseText);
             throw new Error('Invalid JSON response from Fireworks API');
         }
-        
+
         console.log('Fireworks parsed response:', data);
-        
+
         if (!data.choices || !data.choices[0] || !data.choices[0].message) {
             console.error('Unexpected response structure:', data);
             throw new Error('Unexpected response structure from Fireworks API');
         }
-        
+
         // Return both content and rate limit info for successful requests
         return {
             content: data.choices[0].message.content,
@@ -205,7 +205,7 @@ async function makeFireworksRequest(messages, maxTokens = 500) {
 app.post('/api/test-fireworks', strictLimiter, async (req, res) => {
     try {
         console.log('Test Fireworks endpoint called');
-        
+
         const messages = [
             {
                 role: 'system',
@@ -220,9 +220,9 @@ app.post('/api/test-fireworks', strictLimiter, async (req, res) => {
         console.log('Testing Fireworks API...');
         const result = await makeFireworksRequest(messages, 50);
         console.log('Test result:', result);
-        
-        res.json({ 
-            success: true, 
+
+        res.json({
+            success: true,
             result: result.content,
             rateLimitInfo: result.rateLimitInfo,
             message: 'Fireworks API test successful'
@@ -230,7 +230,7 @@ app.post('/api/test-fireworks', strictLimiter, async (req, res) => {
 
     } catch (error) {
         console.error('Test Fireworks error:', error);
-        
+
         // Handle rate limit errors specifically
         if (error.rateLimitInfo) {
             return res.status(429).json({
@@ -240,8 +240,8 @@ app.post('/api/test-fireworks', strictLimiter, async (req, res) => {
                 message: 'Fireworks API rate limit reached'
             });
         }
-        
-        res.status(500).json({ 
+
+        res.status(500).json({
             success: false,
             error: error.message,
             message: 'Fireworks API test failed'
@@ -283,15 +283,15 @@ Tweet: "${tweet}"`
         console.log('Calling Fireworks API...');
         const result = await makeFireworksRequest(messages, 300);
         console.log('Analysis result:', result);
-        
-        res.json({ 
+
+        res.json({
             analysis: result.content,
             rateLimitInfo: result.rateLimitInfo
         });
 
     } catch (error) {
         console.error('Analysis error:', error);
-        
+
         // Handle rate limit errors specifically
         if (error.rateLimitInfo) {
             return res.status(429).json({
@@ -299,9 +299,9 @@ Tweet: "${tweet}"`
                 rateLimitInfo: error.rateLimitInfo
             });
         }
-        
-        res.status(500).json({ 
-            error: 'Failed to analyze tweet. Please try again.' 
+
+        res.status(500).json({
+            error: 'Failed to analyze tweet. Please try again.'
         });
     }
 });
@@ -321,11 +321,11 @@ app.post('/api/generate-reply', strictLimiter, async (req, res) => {
 
         // Detect tweet context
         const tweetContext = detectTweetContext(tweet);
-        
+
         // Build persona-specific prompt
         const personaPrompt = buildPersonaPrompt(persona || 'builder');
         const engagementPrompt = buildEngagementPrompt(engagementMode || 'neutral');
-        
+
         const messages = [
             {
                 role: 'system',
@@ -353,23 +353,23 @@ CRITICAL RULES:
         if (generateVariants) {
             // Generate 3 variants: Safe, Bold, Alpha
             const variants = await generateReplyVariants(messages, tweet, preferences, persona, engagementMode);
-            
+
             // Clean and enforce preferences for each variant
             const cleanedVariants = {
                 safe: enforceUserPreferences(cleanAIResponse(variants.safe.content), preferences),
                 bold: enforceUserPreferences(cleanAIResponse(variants.bold.content), preferences),
                 alpha: enforceUserPreferences(cleanAIResponse(variants.alpha.content), preferences)
             };
-            
-            res.json({ 
+
+            res.json({
                 variants: cleanedVariants,
                 rateLimitInfo: variants.safe.rateLimitInfo // Use rate limit info from first request
             });
         } else {
             const result = await makeFireworksRequest(messages, 280);
             const cleanedReply = enforceUserPreferences(cleanAIResponse(result.content), preferences);
-            res.json({ 
-                reply: cleanedReply, 
+            res.json({
+                reply: cleanedReply,
                 context: tweetContext,
                 rateLimitInfo: result.rateLimitInfo
             });
@@ -377,7 +377,7 @@ CRITICAL RULES:
 
     } catch (error) {
         console.error('Generation error:', error);
-        
+
         // Handle rate limit errors specifically
         if (error.rateLimitInfo) {
             return res.status(429).json({
@@ -385,9 +385,9 @@ CRITICAL RULES:
                 rateLimitInfo: error.rateLimitInfo
             });
         }
-        
-        res.status(500).json({ 
-            error: 'Failed to generate reply. Please try again.' 
+
+        res.status(500).json({
+            error: 'Failed to generate reply. Please try again.'
         });
     }
 });
@@ -453,15 +453,15 @@ Keep answers concise, helpful, and friendly. If asked about something not relate
         ];
 
         const result = await makeFireworksRequest(messages, 200);
-        
-        res.json({ 
+
+        res.json({
             response: result.content,
             rateLimitInfo: result.rateLimitInfo
         });
 
     } catch (error) {
         console.error('Chatbot error:', error);
-        
+
         // Handle rate limit errors specifically
         if (error.rateLimitInfo) {
             return res.status(429).json({
@@ -469,9 +469,9 @@ Keep answers concise, helpful, and friendly. If asked about something not relate
                 rateLimitInfo: error.rateLimitInfo
             });
         }
-        
-        res.status(500).json({ 
-            error: 'Sorry, I\'m having trouble right now. Please try again in a moment.' 
+
+        res.status(500).json({
+            error: 'Sorry, I\'m having trouble right now. Please try again in a moment.'
         });
     }
 });
@@ -487,11 +487,11 @@ app.post('/api/generate-quote', strictLimiter, async (req, res) => {
 
         const tweetContext = detectTweetContext(tweet);
         const personaPrompt = buildPersonaPrompt(persona || 'builder');
-        
+
         const emojiInstruction = preferences?.emoji ? 'Include relevant emojis' : 'NO EMOJIS - do not use any emojis at all';
-        
+
         console.log('Quote generation params:', { tweetContext, persona, engagementMode, emojiInstruction });
-        
+
         const messages = [
             {
                 role: 'system',
@@ -522,22 +522,22 @@ No labels, no "Line 1:" or "Line 2:" prefixes. Just the two lines.`
         console.log('Making Fireworks request for quote...');
         const result = await makeFireworksRequest(messages, 200);
         console.log('Raw quote response:', result);
-        
+
         const cleanedQuote = cleanAIResponse(result.content);
         console.log('Cleaned quote:', cleanedQuote);
-        
+
         const finalQuote = enforceUserPreferences(cleanedQuote, preferences || { emoji: false });
         console.log('Final quote:', finalQuote);
-        
-        res.json({ 
-            quote: finalQuote, 
+
+        res.json({
+            quote: finalQuote,
             context: tweetContext,
             rateLimitInfo: result.rateLimitInfo
         });
 
     } catch (error) {
         console.error('Quote generation error:', error);
-        
+
         // Handle rate limit errors specifically
         if (error.rateLimitInfo) {
             return res.status(429).json({
@@ -545,9 +545,9 @@ No labels, no "Line 1:" or "Line 2:" prefixes. Just the two lines.`
                 rateLimitInfo: error.rateLimitInfo
             });
         }
-        
-        res.status(500).json({ 
-            error: 'Failed to generate quote tweet. Please try again.' 
+
+        res.status(500).json({
+            error: 'Failed to generate quote tweet. Please try again.'
         });
     }
 });
@@ -555,37 +555,37 @@ No labels, no "Line 1:" or "Line 2:" prefixes. Just the two lines.`
 // Helper functions for crypto context detection
 function detectTweetContext(tweet) {
     const text = tweet.toLowerCase();
-    
+
     // Partnership/Launch indicators
-    if (text.includes('partnership') || text.includes('launch') || text.includes('announcing') || 
+    if (text.includes('partnership') || text.includes('launch') || text.includes('announcing') ||
         text.includes('excited to') || text.includes('proud to') || text.includes('introducing')) {
         return 'partnership_launch';
     }
-    
+
     // Technical thread indicators
     if (text.includes('thread') || text.includes('1/') || text.includes('🧵') ||
         text.includes('technical') || text.includes('deep dive') || text.includes('breakdown')) {
         return 'technical_thread';
     }
-    
+
     // Hot take indicators
     if (text.includes('unpopular opinion') || text.includes('hot take') || text.includes('controversial') ||
         text.includes('change my mind') || text.includes('fight me') || text.includes('🔥')) {
         return 'hot_take';
     }
-    
+
     // Opinion indicators
     if (text.includes('i think') || text.includes('imo') || text.includes('in my opinion') ||
         text.includes('believe') || text.includes('feel like') || text.includes('personally')) {
         return 'opinion';
     }
-    
+
     // Announcement indicators
     if (text.includes('announcement') || text.includes('news') || text.includes('update') ||
         text.includes('breaking') || text.includes('just dropped') || text.includes('live now')) {
         return 'announcement';
     }
-    
+
     return 'general';
 }
 
@@ -598,7 +598,7 @@ function buildPersonaPrompt(persona) {
         founder: "You're a crypto founder/entrepreneur. Focus on: building ecosystems, scaling, partnerships, vision, adoption, business strategy. Use terms like 'ecosystem', 'scaling', 'adoption', 'partnerships', 'vision'.",
         community: "You're a crypto community builder. Focus on: education, onboarding, collaboration, inclusivity, helping newcomers. Use terms like 'fren', 'community', 'together', 'learning', 'welcome to crypto'."
     };
-    
+
     return personas[persona] || personas.builder;
 }
 
@@ -608,20 +608,20 @@ function buildEngagementPrompt(mode) {
         neutral: "ENGAGEMENT STRATEGY: Provide balanced, helpful responses. Be informative and valuable without being pushy or controversial. Focus on adding genuine insight.",
         signal_only: "ENGAGEMENT STRATEGY: Pure signal, minimal noise. Be concise and insight-heavy. Focus on valuable information, data, or unique perspectives. No fluff or engagement tactics."
     };
-    
+
     return modes[mode] || modes.neutral;
 }
 
 async function generateReplyVariants(baseMessages, tweet, preferences, persona, engagementMode) {
     const variants = {};
-    
-    const lengthInstruction = preferences.length === 'ultra-short' ? 'Maximum 10 words' : 
-                             preferences.length === 'short' ? '1-2 sentences maximum' : 
-                             preferences.length === 'medium' ? '2-3 sentences maximum' : 
-                             '3-4 sentences maximum';
-    
+
+    const lengthInstruction = preferences.length === 'ultra-short' ? 'Maximum 10 words' :
+        preferences.length === 'short' ? '1-2 sentences maximum' :
+            preferences.length === 'medium' ? '2-3 sentences maximum' :
+                '3-4 sentences maximum';
+
     const emojiInstruction = preferences.emoji ? 'Include relevant emojis' : 'NO EMOJIS - do not use any emojis at all';
-    
+
     // Safe variant
     const safeMessages = [
         {
@@ -641,7 +641,7 @@ Return only the reply text, no labels or prefixes.`
         }
     ];
     variants.safe = await makeFireworksRequest(safeMessages, 100);
-    
+
     // Bold variant  
     const boldMessages = [
         {
@@ -661,7 +661,7 @@ Return only the reply text, no labels or prefixes.`
         }
     ];
     variants.bold = await makeFireworksRequest(boldMessages, 100);
-    
+
     // Alpha variant
     const alphaMessages = [
         {
@@ -681,22 +681,22 @@ Return only the reply text, no labels or prefixes.`
         }
     ];
     variants.alpha = await makeFireworksRequest(alphaMessages, 100);
-    
+
     return variants;
 }
 
 app.get('/api/extension-version', (req, res) => {
     res.json({
-        version: '2.0.0',
+        version: '2.1.0',
         downloadUrl: `${process.env.SITE_URL || 'http://localhost:3000'}/install`,
-        releaseNotes: 'Unlimited usage enabled! Replaced emojis with modern icons. Switched to Fireworks AI for better performance.',
-        updateDate: '2026-01-09T13:41:17.053Z', // Update this with each release
-        updateTime: 'January 9, 2026 at 07:11 PM GMT+5:30',
+        releaseNotes: 'New thread auto-fill feature! Choose between filling a single tweet or the entire thread.',
+        updateDate: '2026-02-04T15:27:00.000Z',
+        updateTime: 'February 4, 2026 at 03:27 PM GMT+5:30',
         changes: [
-            'Complete minimalist redesign',
-            'Clean monochrome interface',
-            'Subtle glitch effect on logo only',
-            'Removed all colorful animations'
+            'Thread detection for Twitter auto-fill',
+            'Choose between single tweet or entire thread',
+            'Sleek modal dialog for thread selection',
+            'Thread tweets combined with separators'
         ],
         required: false,
         isLatest: true
@@ -716,14 +716,14 @@ app.get('/api/health', (req, res) => {
         apiKeyLength: process.env.FIREWORKS_API_KEY ? process.env.FIREWORKS_API_KEY.length : 0,
         apiKeyPrefix: process.env.FIREWORKS_API_KEY ? process.env.FIREWORKS_API_KEY.substring(0, 12) + '...' : 'none'
     };
-    
+
     res.json(healthStatus);
 });
 
 // Extension download endpoint
 app.get('/api/download-extension', (req, res) => {
     // Simple fallback - redirect to extension folder
-    res.json({ 
+    res.json({
         message: 'Extension files available',
         instructions: [
             '1. Download all files from /extension/ folder',
@@ -762,7 +762,7 @@ app.use((req, res) => {
 function validateEnvironment() {
     const required = ['FIREWORKS_API_KEY'];
     const missing = required.filter(key => !process.env[key]);
-    
+
     if (missing.length > 0) {
         console.error('❌ Missing required environment variables:', missing);
         console.error('💡 Please check your Vercel environment variables');
@@ -788,15 +788,15 @@ app.listen(PORT, () => {
 // Enforce user preferences on the response
 function enforceUserPreferences(text, preferences) {
     if (!text) return '';
-    
+
     let result = text;
-    
+
     // Enforce emoji preference
     if (!preferences.emoji) {
         // Remove all emojis if user doesn't want them
         result = result.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
     }
-    
+
     // Enforce length preference
     if (preferences.length === 'ultra-short') {
         const words = result.split(' ');
@@ -808,15 +808,15 @@ function enforceUserPreferences(text, preferences) {
             }
         }
     }
-    
+
     return result.trim();
 }
 // Clean AI response from unwanted tags and artifacts
 function cleanAIResponse(text) {
     if (!text) return '';
-    
+
     let cleaned = text;
-    
+
     const artifactsToRemove = [
         /<s>/g, /<\/s>/g, /\[s\]/g, /\[\/s\]/g,
         /\[BOT\]/g, /\[\/BOT\]/g, /\[B_INST\]/g, /\[\/B_INST\]/g,
@@ -837,19 +837,19 @@ function cleanAIResponse(text) {
         // Remove extra asterisks and formatting
         /\*\*\*+/g, /\*\*/g
     ];
-    
+
     artifactsToRemove.forEach(pattern => {
         cleaned = cleaned.replace(pattern, '');
     });
-    
+
     // Clean up extra whitespace and newlines
     cleaned = cleaned.trim().replace(/\s+/g, ' ').replace(/\n\s*\n/g, '\n');
-    
+
     // Remove leading/trailing quotes
-    if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || 
+    if ((cleaned.startsWith('"') && cleaned.endsWith('"')) ||
         (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
         cleaned = cleaned.slice(1, -1).trim();
     }
-    
+
     return cleaned;
 }
