@@ -731,11 +731,13 @@ class CryptoReplyGuyExtension {
             if (btn) {
                 const originalText = btn.textContent;
                 btn.textContent = 'Copied! ✓';
-                btn.style.background = '#28a745';
+                btn.style.background = 'var(--success)';
+                btn.style.color = '#ffffff';
                 
                 setTimeout(() => {
                     btn.textContent = originalText;
                     btn.style.background = '';
+                    btn.style.color = '';
                 }, 2000);
             }
             
@@ -755,11 +757,13 @@ class CryptoReplyGuyExtension {
             if (copyQuoteBtn) {
                 const originalText = copyQuoteBtn.textContent;
                 copyQuoteBtn.textContent = 'Copied! ✓';
-                copyQuoteBtn.style.background = '#28a745';
+                copyQuoteBtn.style.background = 'var(--success)';
+                copyQuoteBtn.style.color = '#ffffff';
                 
                 setTimeout(() => {
                     copyQuoteBtn.textContent = originalText;
                     copyQuoteBtn.style.background = '';
+                    copyQuoteBtn.style.color = '';
                 }, 2000);
             }
             
@@ -775,11 +779,13 @@ class CryptoReplyGuyExtension {
             
             const originalText = this.copyBtn.textContent;
             this.copyBtn.textContent = 'Copied! ✓';
-            this.copyBtn.style.background = '#28a745';
+            this.copyBtn.style.background = 'var(--success)';
+            this.copyBtn.style.color = '#ffffff';
             
             setTimeout(() => {
                 this.copyBtn.textContent = originalText;
                 this.copyBtn.style.background = '';
+                this.copyBtn.style.color = '';
             }, 2000);
             
         } catch (error) {
