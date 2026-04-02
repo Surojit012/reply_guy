@@ -87,6 +87,14 @@ app.get('/styles.css', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'styles.css'));
 });
 
+app.get('/theme.css', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'theme.css'));
+});
+
+app.get('/images/:file', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'images', req.params.file));
+});
+
 app.get('/extension-installer.js', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'extension-installer.js'));
 });
