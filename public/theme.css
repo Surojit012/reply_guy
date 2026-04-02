@@ -1,33 +1,33 @@
 :root {
-    --font-sans: "Avenir Next", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    --bg: #f3eee6;
-    --bg-grad-a: #efe4d5;
-    --bg-grad-b: #f9f4ed;
-    --surface: #fffdf8;
-    --surface-soft: #f7f1e7;
-    --border: #dfd3c2;
-    --border-strong: #c8b39a;
-    --text: #2c241c;
-    --text-muted: #746657;
-    --accent: #b66a1f;
-    --accent-hover: #9f5915;
-    --accent-soft: #f4e1ca;
-    --success: #2f7a57;
-    --danger: #b2483f;
-    --radius-xl: 22px;
-    --radius-lg: 16px;
-    --radius-md: 12px;
-    --shadow-soft: 0 18px 40px rgba(74, 54, 34, 0.12);
-    --focus-ring: 0 0 0 3px rgba(182, 106, 31, 0.22);
-    --duration: 220ms;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    --bg: #ffffff;
+    --bg-grad-a: #fdfdfd;
+    --bg-grad-b: #fafafa;
+    --surface: #ffffff;
+    --surface-soft: #f4f4f4;
+    --border: #e0e0e0;
+    --border-strong: #000000;
+    --text: #000000;
+    --text-muted: #666666;
+    --accent: #fc4a26;
+    --accent-hover: #e03915;
+    --accent-soft: #ffece8;
+    --success: #000000;
+    --danger: #fc4a26;
+    --radius-xl: 0px;
+    --radius-lg: 0px;
+    --radius-md: 0px;
+    --shadow-soft: 8px 8px 0 rgba(0, 0, 0, 0.1);
+    --focus-ring: 0 0 0 2px #000000;
+    --duration: 150ms;
 }
 
 :root[data-theme="dark"] {
-    --bg: #15100c;
-    --bg-grad-a: #1d1610;
-    --bg-grad-b: #261d14;
-    --surface: #251d16;
-    --surface-soft: #31261d;
+    --bg: #000000;
+    --bg-grad-a: #111111;
+    --bg-grad-b: #050505;
+    --surface: #0a0a0a;
+    --surface-soft: #1a1a1a;
     --border: #443729;
     --border-strong: #5e4b39;
     --text: #f2e8db;
@@ -428,3 +428,8 @@ select option {
         padding: 18px;
     }
 }
+
+/* Brutalist additions */
+button, .rg-btn, input, textarea, .stat-card { border: 2px solid var(--border-strong); border-radius: 0; }
+h1, h2, h3 { font-weight: 900; letter-spacing: -0.04em; text-transform: lowercase; }
+button { text-transform: uppercase; font-weight: bold; font-family: 'Courier New', Courier, monospace; letter-spacing: 0.1em; }
