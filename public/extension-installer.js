@@ -3,12 +3,53 @@ class ExtensionInstaller {
     constructor() {
         this.quickInstallBtn = document.getElementById('quick-install-btn');
         this.statusDiv = document.getElementById('quick-install-status');
+        this.themeToggleBtn = document.getElementById('theme-toggle-btn');
+        this.initializeTheme();
         this.init();
+    }
+
+    initializeTheme() {
+        try {
+            const savedTheme = localStorage.getItem('replyguy-theme');
+            if (savedTheme === 'light' || savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+        } catch (error) {
+            console.warn('Unable to read theme preference:', error);
+        }
+    }
+
+    getActiveTheme() {
+        const explicitTheme = document.documentElement.getAttribute('data-theme');
+        if (explicitTheme === 'light' || explicitTheme === 'dark') {
+            return explicitTheme;
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    updateThemeToggleButton() {
+        if (!this.themeToggleBtn) return;
+        const activeTheme = this.getActiveTheme();
+        this.themeToggleBtn.textContent = activeTheme === 'dark' ? '🌙' : '☀️';
+        this.themeToggleBtn.setAttribute('aria-label', `Switch to ${activeTheme === 'dark' ? 'light' : 'dark'} theme`);
+        this.themeToggleBtn.title = `Switch to ${activeTheme === 'dark' ? 'light' : 'dark'} theme`;
+    }
+
+    toggleTheme() {
+        const currentTheme = this.getActiveTheme();
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', nextTheme);
+        localStorage.setItem('replyguy-theme', nextTheme);
+        this.updateThemeToggleButton();
     }
 
     init() {
         if (this.quickInstallBtn) {
             this.quickInstallBtn.addEventListener('click', () => this.attemptQuickInstall());
+        }
+        if (this.themeToggleBtn) {
+            this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
+            this.updateThemeToggleButton();
         }
         
         // Check if extension is already installed

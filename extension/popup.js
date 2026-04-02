@@ -4,10 +4,51 @@ class CryptoReplyGuyExtension {
         this.lastRequestTime = 0;
         this.cooldownDuration = 3000; // 3 seconds cooldown
         console.log('Crypto Extension initialized with server URL:', this.serverUrl);
+        this.initializeTheme();
         this.initializeElements();
         this.bindEvents();
         this.loadSettings();
         console.log('Extension fully initialized');
+    }
+
+    async initializeTheme() {
+        try {
+            const result = await chrome.storage.sync.get(['uiTheme']);
+            const savedTheme = result.uiTheme;
+            if (savedTheme === 'light' || savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+        } catch (error) {
+            console.warn('Unable to read extension theme preference:', error);
+        }
+    }
+
+    getActiveTheme() {
+        const explicitTheme = document.documentElement.getAttribute('data-theme');
+        if (explicitTheme === 'light' || explicitTheme === 'dark') {
+            return explicitTheme;
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    updateThemeToggleButton() {
+        if (!this.themeToggleBtn) return;
+        const activeTheme = this.getActiveTheme();
+        this.themeToggleBtn.textContent = activeTheme === 'dark' ? '🌙' : '☀️';
+        this.themeToggleBtn.setAttribute('aria-label', `Switch to ${activeTheme === 'dark' ? 'light' : 'dark'} theme`);
+        this.themeToggleBtn.title = `Switch to ${activeTheme === 'dark' ? 'light' : 'dark'} theme`;
+    }
+
+    async toggleTheme() {
+        const currentTheme = this.getActiveTheme();
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', nextTheme);
+        this.updateThemeToggleButton();
+        try {
+            await chrome.storage.sync.set({ uiTheme: nextTheme });
+        } catch (error) {
+            console.warn('Unable to save extension theme preference:', error);
+        }
     }
 
     initializeElements() {
@@ -22,6 +63,7 @@ class CryptoReplyGuyExtension {
         this.regenerateBtn = document.getElementById('regenerate-btn');
         this.autoFillBtn = document.getElementById('auto-fill-btn');
         this.testConnectionBtn = document.getElementById('test-connection-btn');
+        this.themeToggleBtn = document.getElementById('theme-toggle-btn');
         
         // Thread modal elements
         this.threadModal = document.getElementById('thread-modal');
@@ -108,6 +150,10 @@ class CryptoReplyGuyExtension {
         if (this.testConnectionBtn) {
             this.testConnectionBtn.addEventListener('click', () => this.testConnection());
             console.log('Test connection button event bound');
+        }
+        if (this.themeToggleBtn) {
+            this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
+            this.updateThemeToggleButton();
         }
         
         // Thread modal event bindings

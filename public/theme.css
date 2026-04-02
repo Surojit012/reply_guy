@@ -1,0 +1,430 @@
+:root {
+    --font-sans: "Avenir Next", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    --bg: #f3eee6;
+    --bg-grad-a: #efe4d5;
+    --bg-grad-b: #f9f4ed;
+    --surface: #fffdf8;
+    --surface-soft: #f7f1e7;
+    --border: #dfd3c2;
+    --border-strong: #c8b39a;
+    --text: #2c241c;
+    --text-muted: #746657;
+    --accent: #b66a1f;
+    --accent-hover: #9f5915;
+    --accent-soft: #f4e1ca;
+    --success: #2f7a57;
+    --danger: #b2483f;
+    --radius-xl: 22px;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --shadow-soft: 0 18px 40px rgba(74, 54, 34, 0.12);
+    --focus-ring: 0 0 0 3px rgba(182, 106, 31, 0.22);
+    --duration: 220ms;
+}
+
+:root[data-theme="dark"] {
+    --bg: #15100c;
+    --bg-grad-a: #1d1610;
+    --bg-grad-b: #261d14;
+    --surface: #251d16;
+    --surface-soft: #31261d;
+    --border: #443729;
+    --border-strong: #5e4b39;
+    --text: #f2e8db;
+    --text-muted: #bfae98;
+    --accent: #dd9348;
+    --accent-hover: #efa458;
+    --accent-soft: rgba(221, 147, 72, 0.18);
+    --success: #66c493;
+    --danger: #f07f6e;
+    --shadow-soft: 0 22px 46px rgba(0, 0, 0, 0.35);
+    --focus-ring: 0 0 0 3px rgba(221, 147, 72, 0.33);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #15100c;
+        --bg-grad-a: #1d1610;
+        --bg-grad-b: #261d14;
+        --surface: #251d16;
+        --surface-soft: #31261d;
+        --border: #443729;
+        --border-strong: #5e4b39;
+        --text: #f2e8db;
+        --text-muted: #bfae98;
+        --accent: #dd9348;
+        --accent-hover: #efa458;
+        --accent-soft: rgba(221, 147, 72, 0.18);
+        --success: #66c493;
+        --danger: #f07f6e;
+        --shadow-soft: 0 22px 46px rgba(0, 0, 0, 0.35);
+        --focus-ring: 0 0 0 3px rgba(221, 147, 72, 0.33);
+    }
+}
+
+body {
+    font-family: var(--font-sans);
+    background: radial-gradient(circle at 0% 0%, var(--bg-grad-a), transparent 45%),
+        radial-gradient(circle at 100% 0%, rgba(182, 106, 31, 0.11), transparent 40%),
+        linear-gradient(150deg, var(--bg), var(--bg-grad-b));
+    color: var(--text);
+    animation: none;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(1200px 400px at 50% -20%, rgba(182, 106, 31, 0.09), transparent 55%);
+    pointer-events: none;
+    animation: ambience 18s ease-in-out infinite alternate;
+}
+
+@keyframes ambience {
+    from {
+        transform: translateY(-8px);
+        opacity: 0.75;
+    }
+    to {
+        transform: translateY(8px);
+        opacity: 1;
+    }
+}
+
+.container {
+    max-width: 920px;
+}
+
+header {
+    position: relative;
+}
+
+.theme-toggle {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-soft);
+    color: var(--text);
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--duration) ease, border-color var(--duration) ease, background-color var(--duration) ease;
+}
+
+.theme-toggle:hover {
+    transform: translateY(-1px);
+    border-color: var(--border-strong);
+    background: var(--surface);
+}
+
+.website-theme-toggle {
+    position: absolute;
+    top: -8px;
+    right: 0;
+}
+
+.page-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.install-theme-toggle {
+    flex: 0 0 auto;
+}
+
+.minimalist-logo .logo-text,
+.logo-text {
+    color: var(--text);
+    background: none;
+    -webkit-text-fill-color: var(--text);
+    animation: none;
+    text-shadow: none;
+}
+
+header p,
+.badge-text,
+.creator-name,
+.install-hero p,
+.method-description,
+.manual-steps li,
+.warning-box p,
+.faq-answer,
+.quote-tip {
+    color: var(--text-muted);
+    text-shadow: none;
+}
+
+.creator-twitter,
+.back-link {
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    box-shadow: none;
+}
+
+.creator-twitter:hover,
+.back-link:hover {
+    background: var(--surface);
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+}
+
+.input-section,
+.output-section,
+.variants-section,
+.quote-section,
+.extension-section,
+.faq-section,
+.creator-section,
+.install-method,
+.manual-steps,
+.warning-box,
+.preview-box {
+    background: linear-gradient(170deg, var(--surface), var(--surface-soft));
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(6px);
+}
+
+.input-section,
+.output-section,
+.variants-section,
+.quote-section,
+.extension-section,
+.faq-section,
+.creator-section,
+.install-method,
+.manual-steps,
+.warning-box {
+    border-radius: var(--radius-xl);
+}
+
+label,
+.preferences-section h3,
+.analysis-section h3,
+.output-section h3,
+.variants-section h3,
+.quote-section h3,
+.extension-title,
+.faq-question,
+.method-title,
+.manual-steps h3,
+.warning-box h4,
+.install-hero h1,
+header h1 {
+    color: var(--text);
+    text-shadow: none;
+}
+
+input,
+textarea,
+select {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--accent);
+    box-shadow: var(--focus-ring);
+    background: var(--surface);
+}
+
+select option {
+    background: var(--surface);
+    color: var(--text);
+}
+
+.checkbox-label input[type="checkbox"] {
+    accent-color: var(--accent);
+}
+
+.btn,
+.install-btn,
+.update-notice-btn {
+    border-radius: var(--radius-md);
+    font-weight: 650;
+    transition: transform var(--duration) ease, background-color var(--duration) ease, border-color var(--duration) ease, box-shadow var(--duration) ease;
+}
+
+.btn:hover,
+.install-btn:hover,
+.update-notice-btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary,
+.install-btn,
+.update-notice-btn.primary,
+.btn-extension {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 10px 20px rgba(182, 106, 31, 0.24);
+}
+
+.btn-primary:hover,
+.install-btn:hover,
+.update-notice-btn.primary:hover,
+.btn-extension:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+}
+
+.btn-secondary,
+.update-notice-btn.secondary {
+    background: var(--surface-soft);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+}
+
+.btn-outline:hover {
+    background: var(--accent-soft);
+}
+
+.analysis-box,
+.reply-box,
+.quote-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    box-shadow: none;
+}
+
+.variant-item,
+.quote-preview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+.quote-header,
+.quote-footer {
+    border-color: var(--border);
+}
+
+.quote-label,
+.variant-item h4 {
+    color: var(--text);
+}
+
+.error,
+.rate-limit-info.error {
+    background: rgba(178, 72, 63, 0.11);
+    border: 1px solid rgba(178, 72, 63, 0.36);
+    color: var(--danger);
+}
+
+.success {
+    background: rgba(47, 122, 87, 0.12);
+    border: 1px solid rgba(47, 122, 87, 0.35);
+    color: var(--success);
+}
+
+.rate-limit-info,
+.rate-limit-info.warning {
+    background: var(--accent-soft);
+    border: 1px solid rgba(182, 106, 31, 0.34);
+    color: var(--accent);
+}
+
+.spinner {
+    border-color: var(--border);
+    border-top-color: var(--accent);
+}
+
+.faq-item,
+.faq-question,
+.faq-answer {
+    border-color: var(--border);
+}
+
+.faq-item[open] .faq-question {
+    background: var(--surface-soft);
+}
+
+.faq-arrow,
+.faq-icon,
+.twitter-icon-small {
+    color: var(--accent);
+}
+
+.install-hero h1 {
+    background: none;
+    -webkit-text-fill-color: var(--text);
+}
+
+.quick-install-status {
+    margin-top: 15px;
+    color: var(--text-muted);
+}
+
+.howto-block {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.howto-title {
+    color: var(--text);
+    margin-bottom: 20px;
+}
+
+.howto-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 25px;
+    text-align: left;
+    box-shadow: var(--shadow-soft);
+}
+
+.help-note-wrap {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.help-note {
+    color: var(--text-muted);
+}
+
+.help-note a {
+    color: var(--accent);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 14px;
+    }
+
+    .website-theme-toggle {
+        top: -4px;
+        right: -2px;
+    }
+
+    .input-section,
+    .output-section,
+    .variants-section,
+    .quote-section,
+    .extension-section,
+    .faq-section,
+    .creator-section,
+    .install-method,
+    .manual-steps,
+    .warning-box {
+        border-radius: var(--radius-lg);
+        padding: 18px;
+    }
+}

@@ -182,11 +182,15 @@ body {
     }
 }
     </style>
+    <link rel="stylesheet" href="theme.css">
 </head>
 <body>
     <div class="container">
         <div class="install-container">
-            <a href="/" class="back-link">← Back to Reply Guy</a>
+            <div class="page-actions">
+                <a href="/" class="back-link">← Back to Reply Guy</a>
+                <button id="theme-toggle-btn" class="theme-toggle install-theme-toggle" type="button" aria-label="Toggle theme">☀️</button>
+            </div>
             
             <div class="install-hero">
                 <h1>🔥 Install Reply Guy Extension</h1>
@@ -204,7 +208,7 @@ body {
                     <h3 class="method-title">Quick Install</h3>
                     <p class="method-description">One-click installation directly from your browser. Chrome will ask for permission to install.</p>
                     <button id="quick-install-btn" class="install-btn">Install Extension</button>
-                    <div id="quick-install-status" style="margin-top: 15px;"></div>
+                    <div id="quick-install-status" class="quick-install-status"></div>
                 </div>
 
                 <div class="install-method">
@@ -227,9 +231,9 @@ body {
                 </ol>
             </div>
 
-            <div style="text-align: center; margin-top: 40px;">
-                <h3 style="color: #64b5f6; margin-bottom: 20px;">🚀 How to Use</h3>
-                <div style="background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 25px; text-align: left;">
+            <div class="howto-block">
+                <h3 class="howto-title">🚀 How to Use</h3>
+                <div class="howto-panel">
                     <ol>
                         <li><strong>Visit Twitter/X</strong> and find a tweet you want to reply to</li>
                         <li><strong>Click the 🔥 button</strong> that appears on tweets, or use the extension popup</li>
@@ -239,12 +243,12 @@ body {
                 </div>
             </div>
 
-            <div style="text-align: center; margin-top: 30px;">
-                <p style="color: #64b5f6;">Need help? <a href="/" style="color: #2196f3;">Visit our main site</a> or check the extension documentation.</p>
+            <div class="help-note-wrap">
+                <p class="help-note">Need help? <a href="/">Visit our main site</a> or check the extension documentation.</p>
             </div>
         </div>
     </div>
 
-    <script>
+    <script src="extension-installer.js"></script>
 </body>
 </html>

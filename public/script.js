@@ -1,7 +1,19 @@
 class TweetReplyGenerator {
     constructor() {
+        this.initializeTheme();
         this.initializeElements();
         this.bindEvents();
+    }
+
+    initializeTheme() {
+        try {
+            const savedTheme = localStorage.getItem('replyguy-theme');
+            if (savedTheme === 'light' || savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+        } catch (error) {
+            console.warn('Unable to read theme preference:', error);
+        }
     }
 
     initializeElements() {

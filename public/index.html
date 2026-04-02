@@ -1620,11 +1620,13 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="theme.css">
 </head>
 
 <body>
     <div class="container">
         <header>
+            <button id="theme-toggle-btn" class="theme-toggle website-theme-toggle" type="button" aria-label="Toggle theme">☀️</button>
             <h1 class="minimalist-logo">
                 <span class="logo-text">Reply Guy</span>
             </h1>
@@ -2030,11 +2032,47 @@
                 console.log('CryptoTweetReplyGenerator constructor called');
                 this.lastRequestTime = 0;
                 this.cooldownDuration = 3000; // 3 seconds cooldown
+                this.initializeTheme();
                 this.initializeElements();
                 this.bindEvents();
                 this.loadUserPreferences();
                 this.checkForExtensionUpdates();
                 console.log('CryptoTweetReplyGenerator initialized');
+            }
+
+            initializeTheme() {
+                try {
+                    const savedTheme = localStorage.getItem('replyguy-theme');
+                    if (savedTheme === 'light' || savedTheme === 'dark') {
+                        document.documentElement.setAttribute('data-theme', savedTheme);
+                    }
+                } catch (error) {
+                    console.warn('Unable to read theme preference:', error);
+                }
+            }
+
+            getActiveTheme() {
+                const explicitTheme = document.documentElement.getAttribute('data-theme');
+                if (explicitTheme === 'light' || explicitTheme === 'dark') {
+                    return explicitTheme;
+                }
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            updateThemeToggleButton() {
+                if (!this.themeToggleBtn) return;
+                const activeTheme = this.getActiveTheme();
+                this.themeToggleBtn.textContent = activeTheme === 'dark' ? '🌙' : '☀️';
+                this.themeToggleBtn.setAttribute('aria-label', `Switch to ${activeTheme === 'dark' ? 'light' : 'dark'} theme`);
+                this.themeToggleBtn.title = `Switch to ${activeTheme === 'dark' ? 'light' : 'dark'} theme`;
+            }
+
+            toggleTheme() {
+                const currentTheme = this.getActiveTheme();
+                const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', nextTheme);
+                localStorage.setItem('replyguy-theme', nextTheme);
+                this.updateThemeToggleButton();
             }
 
             initializeElements() {
@@ -2069,6 +2107,7 @@
                 this.boldVariant = document.getElementById('bold-variant');
                 this.alphaVariant = document.getElementById('alpha-variant');
                 this.generatedQuote = document.getElementById('generated-quote');
+                this.themeToggleBtn = document.getElementById('theme-toggle-btn');
 
                 console.log('Elements found:', {
                     tweetInput: !!this.tweetInput,
@@ -2097,6 +2136,10 @@
                 }
                 if (this.regenerateBtn) {
                     this.regenerateBtn.addEventListener('click', () => this.generateReply());
+                }
+                if (this.themeToggleBtn) {
+                    this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
+                    this.updateThemeToggleButton();
                 }
 
                 // Copy variant buttons
